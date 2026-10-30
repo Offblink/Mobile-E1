@@ -73,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
             editNicknameLauncher.launch(i);
         });
 
+        findViewById(R.id.btn_contacts).setOnClickListener(v ->
+                startActivity(new Intent(this, ContactListActivity.class)));
+        findViewById(R.id.btn_chat).setOnClickListener(v ->
+                startActivity(new Intent(this, ChatActivity.class)));
         findViewById(R.id.btn_lab).setOnClickListener(v ->
                 startActivity(new Intent(this, LabActivity.class)));
         findViewById(R.id.btn_about).setOnClickListener(v ->

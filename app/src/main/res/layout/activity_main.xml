@@ -23,10 +23,25 @@
         android:layout_marginBottom="32dp" />
 
     <Button
+        android:id="@+id/btn_contacts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/contact_list_title" />
+
+    <Button
+        android:id="@+id/btn_chat"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/chat_title"
+        android:layout_marginTop="8dp" />
+
+    <Button
         android:id="@+id/btn_edit_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/edit_nickname_title" />
+        android:text="@string/edit_nickname_title"
+        android:layout_marginTop="8dp" />
 
     <Button
         android:id="@+id/btn_lab"

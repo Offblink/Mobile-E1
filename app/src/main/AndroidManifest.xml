@@ -23,6 +23,8 @@
         <activity android:name=".EditNicknameActivity" android:exported="false" />
         <activity android:name=".LabActivity" android:exported="false" />
         <activity android:name=".AboutActivity" android:exported="false" />
+        <activity android:name=".ContactListActivity" android:exported="false" />
+        <activity android:name=".ChatActivity" android:exported="false" />
 
         <!-- 任务 2：四种启动模式对比（差异只在 launchMode） -->
         <activity
