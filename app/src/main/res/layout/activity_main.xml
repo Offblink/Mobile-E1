@@ -7,11 +7,41 @@
     android:padding="24dp">
 
     <TextView
+        android:id="@+id/tv_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
         android:id="@+id/tv_hello"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textSize="28sp"
-        android:textStyle="bold" />
+        android:text="@string/main_subtitle"
+        android:textSize="14sp"
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/btn_edit_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_nickname_title" />
+
+    <Button
+        android:id="@+id/btn_lab"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lab_title"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/btn_about"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/about_title"
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>

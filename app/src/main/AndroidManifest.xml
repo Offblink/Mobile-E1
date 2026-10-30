@@ -8,14 +8,39 @@
         android:theme="@style/Theme.Keyou"
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config">
+
+        <!-- 任务 2 入口：登录页 -->
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".EditNicknameActivity" android:exported="false" />
+        <activity android:name=".LabActivity" android:exported="false" />
+        <activity android:name=".AboutActivity" android:exported="false" />
+
+        <!-- 任务 2：四种启动模式对比（差异只在 launchMode） -->
+        <activity
+            android:name=".StandardLabActivity"
+            android:exported="false"
+            android:launchMode="standard" />
+        <activity
+            android:name=".SingleTopLabActivity"
+            android:exported="false"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".SingleTaskLabActivity"
+            android:exported="false"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".SingleInstanceLabActivity"
+            android:exported="false"
+            android:launchMode="singleInstance" />
     </application>
 
 </manifest>

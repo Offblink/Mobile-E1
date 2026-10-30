@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lab_title"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lab_launch_mode_hint"
+        android:textSize="13sp"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_mode_standard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mode_standard" />
+
+    <Button
+        android:id="@+id/btn_mode_single_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mode_single_top" />
+
+    <Button
+        android:id="@+id/btn_mode_single_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mode_single_task" />
+
+    <Button
+        android:id="@+id/btn_mode_single_instance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mode_single_instance" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="16dp"
+        android:background="?attr/colorOutlineVariant" />
+
+    <Button
+        android:id="@+id/btn_implicit_intent"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lab_implicit_intent" />
+
+</LinearLayout>

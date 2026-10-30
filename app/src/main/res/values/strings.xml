@@ -1,4 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">课友</string>
+
+    <!-- 任务 2：登录 → 主页 -->
+    <string name="login_username_hint">请输入姓名</string>
+    <string name="login_btn">登录</string>
+    <string name="main_subtitle">班级同学录 · 课友（实验一任务 1/2 演示）</string>
+
+    <!-- 任务 2：结果回传 -->
+    <string name="edit_nickname_title">编辑昵称</string>
+    <string name="edit_nickname_hint">输入新昵称</string>
+    <string name="edit_nickname_submit">提交回传</string>
+
+    <!-- 任务 2：实验室 -->
+    <string name="lab_title">实验室</string>
+    <string name="lab_launch_mode_hint">启动模式演示：同一段启动代码，Manifest 里 launchMode 不同，反复点击观察 Logcat（Keyou/Mode）里实例 hashCode 与 onNewIntent</string>
+    <string name="mode_standard">standard：每次新建实例</string>
+    <string name="mode_single_top">singleTop：栈顶复用</string>
+    <string name="mode_single_task">singleTask：栈内复用并清上方</string>
+    <string name="mode_single_instance">singleInstance：独占任务栈</string>
+    <string name="lab_implicit_intent">隐式 Intent：打开系统浏览器</string>
+    <string name="launch_mode_instance">%1$s 实例: %2$s</string>
+    <string name="launch_relaunch_self">再次启动自己（观察实例数）</string>
+    <string name="launch_goto_login">跳回登录页（观察清栈）</string>
+
+    <!-- 任务 1：关于 / Log 自检 -->
+    <string name="about_title">关于 · Log 自检</string>
+    <string name="about_log_check">输出 v/d/i/w/e 五级日志</string>
+    <string name="about_log_guide">Logcat 过滤框输入 Keyou 看全部页面日志；输入 Keyou/About 只看本页。\nTAG 约定：Keyou/页面名，如 Keyou/Login、Keyou/Main。\n\n项目结构（任务 1 观察点）：\n• app/src/main/java —— 源码\n• app/src/main/res/layout —— 布局\n• app/src/main/res/values —— 字符串、颜色、主题\n• AndroidManifest.xml —— 清单（Activity 注册、启动模式、权限）</string>
 </resources>
