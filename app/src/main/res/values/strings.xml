@@ -35,6 +35,30 @@
     <string name="launch_relaunch_self">再次启动自己（观察实例数）</string>
     <string name="launch_goto_login">跳回登录页（观察清栈）</string>
 
+    <!-- 任务 5：文件草稿箱 / SP / SQLite 通讯录 -->
+    <string name="draft_title">草稿箱（文件存储）</string>
+    <string name="draft_hint">写点什么，保存到应用私有文件…</string>
+    <string name="draft_save">保存</string>
+    <string name="draft_load">读取</string>
+    <string name="draft_saved">草稿已保存</string>
+    <string name="draft_save_failed">保存失败</string>
+    <string name="common_cancel">取消</string>
+    <string name="contact_search_hint">按姓名模糊查询…</string>
+    <string name="contact_add">＋ 新增联系人</string>
+    <string name="contact_edit_title">编辑联系人</string>
+    <string name="contact_name_hint">姓名（必填）</string>
+    <string name="contact_phone_hint">电话</string>
+    <string name="contact_email_hint">邮箱</string>
+    <string name="gender_male">男</string>
+    <string name="gender_female">女</string>
+    <string name="gender_secret">保密</string>
+    <string name="contact_save">保存</string>
+    <string name="contact_name_required">姓名不能为空</string>
+    <string name="contact_delete_title">删除联系人</string>
+    <string name="contact_delete_message">确定删除 %1$s 吗？</string>
+    <string name="contact_delete_ok">删除</string>
+    <string name="contact_deleted">已删除</string>
+
     <!-- 任务 4：广播演示 -->
     <string name="lab_broadcast_hint">广播演示：自定义广播看 Logcat 的 Keyou/Broadcast 三组 TAG（Static/Dynamic/Ordered）；有序广播先点不截断再点截断，对比 OrderedLow 有无日志</string>
     <string name="broadcast_custom">自定义广播（静态+动态接收器对比）</string>
@@ -47,7 +71,7 @@
     <string name="banner_net_off">📡 网络已断开</string>
 
     <!-- 任务 3：同学录列表 + 聊天室 -->
-    <string name="contact_list_title">同学录（模拟数据）</string>
+    <string name="contact_list_title">本地同学录（SQLite）</string>
     <string name="contact_click_toast">点击了 %1$s</string>
     <string name="chat_title">课友圈 · 班级群</string>
     <string name="chat_input_hint">说点什么…</string>

@@ -49,6 +49,14 @@
         android:layout_marginTop="8dp" />
 
     <Button
+        android:id="@+id/btn_draft"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/draft_title"
+        android:layout_marginTop="8dp" />
+
+    <Button
         android:id="@+id/btn_edit_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

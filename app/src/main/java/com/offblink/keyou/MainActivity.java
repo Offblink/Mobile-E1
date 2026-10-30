@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ContactListActivity.class)));
         findViewById(R.id.btn_chat).setOnClickListener(v ->
                 startActivity(new Intent(this, ChatActivity.class)));
+        findViewById(R.id.btn_draft).setOnClickListener(v ->
+                startActivity(new Intent(this, DraftActivity.class)));
         findViewById(R.id.btn_lab).setOnClickListener(v ->
                 startActivity(new Intent(this, LabActivity.class)));
         findViewById(R.id.btn_about).setOnClickListener(v ->

@@ -25,12 +25,22 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.VH> {
         void onItemClick(Contact contact);
     }
 
+    /** 行长按回调（删除确认入口） */
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position);
+    }
+
     private final List<Contact> data;
     private final OnItemClickListener listener;
+    private OnItemLongClickListener longClickListener;
 
     public ContactAdapter(List<Contact> data, OnItemClickListener listener) {
         this.data = data;
         this.listener = listener;
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener l) {
+        this.longClickListener = l;
     }
 
     public static class VH extends RecyclerView.ViewHolder {
@@ -61,6 +71,13 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.VH> {
             if (listener != null) {
                 listener.onItemClick(c);
             }
+        });
+        h.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                longClickListener.onItemLongClick(h.getBindingAdapterPosition());
+                return true;
+            }
+            return false;
         });
     }
 

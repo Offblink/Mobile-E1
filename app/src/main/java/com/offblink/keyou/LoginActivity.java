@@ -22,6 +22,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "Keyou/Login";
 
+    /** 任务 5：SharedPreferences 文件名（/data/data/<pkg>/shared_prefs/login.xml） */
+    private static final String SP_NAME = "login";
+    private static final String SP_KEY_REMEMBER = "remember";
+    private static final String SP_KEY_USERNAME = "username";
+    private static final String SP_KEY_PASSWORD = "password";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +35,18 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate");
 
         EditText etUsername = findViewById(R.id.et_username);
+        EditText etPassword = findViewById(R.id.et_password);
+        android.widget.Switch swRemember = findViewById(R.id.sw_remember);
+
+        // 任务 5：SharedPreferences 读取 —— 上次勾过记住密码就预填
+        android.content.SharedPreferences sp = getSharedPreferences(SP_NAME, MODE_PRIVATE);
+        if (sp.getBoolean(SP_KEY_REMEMBER, false)) {
+            etUsername.setText(sp.getString(SP_KEY_USERNAME, ""));
+            etPassword.setText(sp.getString(SP_KEY_PASSWORD, ""));
+            swRemember.setChecked(true);
+            Log.i(TAG, "SP 命中：已预填上次保存的账号");
+        }
+
         Button btnLogin = findViewById(R.id.btn_login);
         Button btnRegister = findViewById(R.id.btn_register);
 
@@ -47,6 +65,17 @@ public class LoginActivity extends AppCompatActivity {
             android.widget.RadioGroup rgRole = findViewById(R.id.rg_role);
             RadioButton rb = findViewById(rgRole.getCheckedRadioButtonId());
             String role = rb != null ? rb.getText().toString() : "";
+
+            // 任务 5：SharedPreferences 写入 —— 记住密码（apply 异步落盘，无需等回调）
+            android.content.SharedPreferences.Editor editor = sp.edit();
+            if (swRemember.isChecked()) {
+                editor.putBoolean(SP_KEY_REMEMBER, true)
+                        .putString(SP_KEY_USERNAME, username)
+                        .putString(SP_KEY_PASSWORD, etPassword.getText().toString())
+                        .apply();   // apply 异步写内存+磁盘；commit 同步返回布尔（思考题对比点）
+            } else {
+                editor.clear().apply();
+            }
 
             // 显式 Intent + Bundle：多种类型数据一次传齐
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
