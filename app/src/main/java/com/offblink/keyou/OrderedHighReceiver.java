@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * 任务 4：有序广播 —— 高优先级接收器（priority=100）。
+ * 有序广播 —— 高优先级接收器（priority=100）。
  * 可调用 abortBroadcast() 截断，后续低优先级接收器收不到。
  */
 public class OrderedHighReceiver extends BroadcastReceiver {

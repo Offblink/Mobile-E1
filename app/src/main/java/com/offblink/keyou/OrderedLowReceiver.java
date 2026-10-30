@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * 任务 4：有序广播 —— 低优先级接收器（priority=0）。
+ * 有序广播 —— 低优先级接收器（priority=0）。
  * 高优先级截断时本类不会被调用。
  */
 public class OrderedLowReceiver extends BroadcastReceiver {

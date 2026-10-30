@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 /**
- * 任务 9：班级成员列表适配器（服务端数据，分页追加）。
+ * 班级成员列表适配器（服务端数据，分页追加）。
  */
 public class MateAdapter extends RecyclerView.Adapter<MateAdapter.VH> {
 

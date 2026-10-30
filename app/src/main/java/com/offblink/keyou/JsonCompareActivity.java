@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * 任务 7：JSON 解析对比 —— 同一接口数据分别用 org.json 与 Gson 解析。
+ * JSON 解析对比 —— 同一接口数据分别用 org.json 与 Gson 解析。
  *
  * 对比结论（写报告素材）：
  * - org.json：系统自带零依赖，手写 getString/getLong，字段多时代码冗长、

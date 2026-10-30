@@ -16,9 +16,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 任务 7：通用网络请求工具类。
+ * 通用网络请求工具类。
  *
- * 封装点（指导书验收点）：
+ * 封装点：
  * - GET / POST / PUT / DELETE（JSON body）；
  * - 子线程执行（统一单线程 Executor，禁止主线程网络请求 —— NetworkOnMainThreadException）；
  * - 回调统一回主线程（调用方不用再写 runOnUiThread）；

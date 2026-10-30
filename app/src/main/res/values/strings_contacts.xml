@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  同学录（分组列表 + 详情页）新增的字符串。
+  与 values/strings.xml 分文件存放，资源名一律 contacts_ 前缀，避免与既有 contact_* 冲突；
+  已存在的通用串（contact_delete_title / contact_delete_message / contact_deleted /
+  contact_save / contact_name_required / common_cancel / gender_* / permission_* /
+  import_result）直接复用，不在这里重复定义。
+-->
+<resources>
+    <!-- 列表页 -->
+    <string name="contacts_loading">正在加载…</string>
+    <string name="contacts_count">%1$d 位同学 · %2$d 个分组</string>
+    <string name="contacts_empty_tip">还没有同学\n点右下角 + 添加一位</string>
+    <string name="contacts_add_desc">新增同学</string>
+    <string name="contacts_value_empty">—</string>
+    <string name="contacts_import_entry">导入</string>
+    <string name="contacts_import_running">正在导入系统联系人…</string>
+    <string name="contacts_delete_failed">删除失败，该记录可能已不存在</string>
+
+    <!-- 详情 / 新增 -->
+    <string name="contacts_detail_title">同学详情</string>
+    <string name="contacts_new_title">新增同学</string>
+    <string name="contacts_name_placeholder">新同学</string>
+    <string name="contacts_not_found">该同学已不存在</string>
+    <string name="contacts_saved">已保存</string>
+    <string name="contacts_save_failed">保存失败</string>
+    <string name="contacts_name_required_reverted">姓名不能为空，已还原</string>
+    <string name="contacts_hint_editable">浅底格可直接编辑：改完按回车或点空白即自动保存</string>
+    <string name="contacts_gender_pick">选择性别</string>
+
+    <!-- 表格字段名 -->
+    <string name="contacts_label_name">姓名</string>
+    <string name="contacts_label_phone">电话</string>
+    <string name="contacts_label_email">邮箱</string>
+    <string name="contacts_label_gender">性别</string>
+</resources>

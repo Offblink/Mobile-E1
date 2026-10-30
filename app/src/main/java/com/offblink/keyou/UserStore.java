@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 /**
- * 任务 5 延伸：本地账号存储（SharedPreferences）。
+ * 本地账号存储（SharedPreferences）。
  *
  * 落位：/data/data/com.offblink.keyou/shared_prefs/users.xml
  * 结构：key = "u_" + 账号，value = 密码的 SHA-256 摘要（不存明文）。

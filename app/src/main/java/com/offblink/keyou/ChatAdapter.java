@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 /**
- * 任务 3：聊天室适配器 —— 区分左右气泡。
+ * 聊天室适配器 —— 区分左右气泡。
  * 同一 item 布局，按 isSelf 切换外层 gravity（左=对方 / 右=自己）与气泡背景。
  */
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.VH> {

@@ -6,11 +6,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
- * 任务 5：SQLiteOpenHelper —— contact.db 与 contact 表。
+ * SQLiteOpenHelper —— contact.db 与 contact 表。
  *
- * 版本升级演示（指导书验收点）：
+ * 版本升级演示：
  * - VERSION=2；onUpgrade 处理 oldV<2：ALTER TABLE contact ADD COLUMN gender。
- * - ⚠️ 教材样例的坑（写报告的"错误与改正"素材）：指导书 onCreate 建的是
+ * - ⚠️ 教材样例的坑：onCreate 建的是
  *   不含 gender 的 v1 表、VERSION 却是 2 —— 全新安装时 onCreate 直接建库，
  *   onUpgrade 永远不触发，gender 列永远不会出现。
  *   正确姿势（本类）：onCreate 建"当前版本完整 schema"，onUpgrade 只负责

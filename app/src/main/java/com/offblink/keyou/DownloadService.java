@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 任务 8：后台文件下载 —— 前台服务 + 进度通知。
+ * 后台文件下载 —— 前台服务 + 进度通知。
  *
  * 验收点：
  * - Service 生命周期（onCreate / onStartCommand / onDestroy，Log 可观察）；
@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
  *   BackgroundServiceStartNotAllowedException / IllegalStateException）；
  * - POST_NOTIFICATIONS 运行时权限（Android 13+，见 DownloadActivity）。
  *
- * 指导书提到 IntentService 已废弃：等价现代替代是 JobIntentService/WorkManager，
+ * IntentService 已废弃：等价现代替代是 JobIntentService/WorkManager，
  * 本类用「普通 Service + 前台通知」演示更直观的生命周期教学口径。
  */
 public class DownloadService extends Service {
@@ -191,7 +191,7 @@ public class DownloadService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // 任务 8 另一半：绑定式通信见 BoundNoteService（本下载服务是启动式）
+        // 另一半：绑定式通信见 BoundNoteService（本下载服务是启动式）
         return null;
     }
 

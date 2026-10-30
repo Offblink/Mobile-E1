@@ -1,7 +1,7 @@
 package com.offblink.keyou;
 
 /**
- * 任务 5：联系人实体（对应 SQLite contact 表）。
+ * 联系人实体（对应 SQLite contact 表）。
  * 字段 id/name/phone/email + gender（gender 由 VERSION 2 升级新增，见 ContactDBHelper）。
  * 可变对象：编辑页直接 set 后整体 update。
  */

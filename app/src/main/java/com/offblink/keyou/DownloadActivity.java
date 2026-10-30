@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 /**
- * 任务 8：下载中心页。
+ * 下载中心页。
  * - startService 启动前台下载服务（server /api/mates 作为演示下载目标太小，
  *   用 /files/demo-note.txt 静态文件端点）；
  * - POST_NOTIFICATIONS 运行时权限（Android 13+ 演示）；

@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * 任务 8：绑定式 Service —— BoundNoteService。
- * 与启动式 DownloadService 对比（思考题"两种方式适用场景"的实测素材）：
+ * 绑定式 Service —— BoundNoteService。
+ * 与启动式 DownloadService 对比：
  * - 启动式：与调用方无连接，startService/stopService，适合"发出去就不管"的任务；
  * - 绑定式：bindService 拿 IBinder 直接调服务方法，unbindService 断开，
  *   适合"要拿返回值/持续交互"的场景；Service 跟随最后一个客户端解绑销毁。

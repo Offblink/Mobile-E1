@@ -13,15 +13,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
- * 实验室：收纳指导书中「观察 / 对比」性质的演示入口。
- *
- * 任务 2 验收点：四种启动模式对比（4 个 Manifest 变体 Activity）、隐式 Intent。
- * 任务 4 验收点：自定义广播（静态 vs 动态对比）、有序广播 priority 与 abortBroadcast 截断。
- * 任务 7 的演示入口后续在此追加（JSON 双解析等）。
+ * 调试面板：启动模式、广播收发与网络解析的自检入口（工具箱 → 调试）。
  */
-public class LabActivity extends KeyouActivity {
+public class DiagnosticsActivity extends KeyouActivity {
 
-    private static final String TAG = "Keyou/Lab";
+    private static final String TAG = "Keyou/Diag";
 
     /** 动态接收器：与 Manifest 静态注册的 SyncDoneReceiver 收同一 action，用于对比 */
     private final BroadcastReceiver dynamicSyncReceiver = new BroadcastReceiver() {
@@ -35,12 +31,13 @@ public class LabActivity extends KeyouActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lab);
+        setContentView(R.layout.activity_diagnostics);
         Log.d(TAG, "onCreate");
 
-        // 任务 4：动态注册同一 action，对比静态/动态两个接收器都收到
+        // 动态注册同一 action，对比静态/动态两个接收器都收到
         IntentFilter syncFilter = new IntentFilter(BroadcastActions.SYNC_DONE);
-        registerReceiver(dynamicSyncReceiver, syncFilter);
+        // Android 14+：非系统广播必须显式声明是否导出（本广播仅 App 内收发）
+        registerReceiver(dynamicSyncReceiver, syncFilter, Context.RECEIVER_NOT_EXPORTED);
 
         // 四种启动模式：同一段启动代码，Manifest 里 launchMode 不同，观察任务栈实例数
         Button btnStandard = findViewById(R.id.btn_mode_standard);
@@ -66,13 +63,13 @@ public class LabActivity extends KeyouActivity {
             }
         });
 
-        // 任务 7：JSON 双解析对比 + RSS 解析
+        // 网络解析
         findViewById(R.id.btn_json_compare).setOnClickListener(v ->
                 startActivity(new Intent(this, JsonCompareActivity.class)));
         findViewById(R.id.btn_rss_parse).setOnClickListener(v ->
                 startActivity(new Intent(this, RssParseActivity.class)));
 
-        // 任务 4：发送自定义广播 —— setPackage 显式指定（8.0+ 静态接收器只收显式广播）
+        // 发送自定义广播：setPackage 显式指定（8.0+ 静态接收器只收显式广播）
         Button btnCustom = findViewById(R.id.btn_send_custom);
         btnCustom.setOnClickListener(v -> {
             Intent intent = new Intent(BroadcastActions.SYNC_DONE);
@@ -83,7 +80,7 @@ public class LabActivity extends KeyouActivity {
             Toast.makeText(this, R.string.broadcast_custom_sent, Toast.LENGTH_SHORT).show();
         });
 
-        // 任务 4：有序广播不截断 —— 高(priority=100) → 低(priority=0) 都收到
+        // 有序广播不截断：高(priority=100) → 低(priority=0) 都收到
         Button btnOrdered = findViewById(R.id.btn_send_ordered);
         btnOrdered.setOnClickListener(v -> {
             Intent intent = new Intent(BroadcastActions.ORDERED_DEMO);
@@ -94,7 +91,7 @@ public class LabActivity extends KeyouActivity {
             Toast.makeText(this, R.string.broadcast_ordered_sent, Toast.LENGTH_SHORT).show();
         });
 
-        // 任务 4：有序广播 + 截断 —— 高优先级 abortBroadcast 后低优先级收不到
+        // 有序广播 + 截断：高优先级 abortBroadcast 后低优先级收不到
         Button btnAbort = findViewById(R.id.btn_send_abort);
         btnAbort.setOnClickListener(v -> {
             Intent intent = new Intent(BroadcastActions.ORDERED_DEMO);

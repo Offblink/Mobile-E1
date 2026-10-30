@@ -1,46 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 同学录 tab：本地 SQLite 入口 + 说明 -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+  同学录 tab：分组 A-Z 列表 + 右侧字母索引条 + 右下「新增」FAB。
+  整块由 ContactsPage.attach(host, pageRoot) 接管，布局里不再放跳转按钮。
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
-    android:paddingBottom="104dp"
-    android:fillViewport="true">
+    android:background="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_contacts"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/contacts_tab_desc"
-            android:textSize="13sp"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:layout_marginBottom="16dp" />
-
-        <Button
-            android:id="@+id/btn_contacts"
+        <!-- 标题行：标题 + 计数，右侧一个轻入口（导入系统通讯录） -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/contact_list_title" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="6dp">
 
-        <Button
-            android:id="@+id/btn_draft"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/nav_contacts"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:id="@+id/tv_contacts_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/contacts_loading"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/btn_import"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:paddingStart="10dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="8dp"
+                android:text="@string/contacts_import_entry"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/draft_title"
-            android:layout_marginTop="8dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_contacts"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingEnd="18dp"
+                android:paddingBottom="104dp"
+                android:scrollbars="none" />
+
+            <TextView
+                android:id="@+id/tv_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:paddingStart="40dp"
+                android:paddingEnd="40dp"
+                android:text="@string/contacts_empty_tip"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <!-- 右侧字母索引条：A-Z 与 # 共 27 槽（下半截让开 FAB 与底部导航） -->
+            <com.offblink.keyou.LetterIndexBar
+                android:id="@+id/index_bar"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="104dp" />
+
+            <!-- 右下「新增」：横向让开索引条，纵向让开底部胶囊导航（76dp + 12dp margin） -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="52dp"
+                android:layout_marginBottom="104dp"
+                android:contentDescription="@string/contacts_add_desc"
+                android:src="@drawable/contact_ic_add"
+                app:backgroundTint="?attr/colorPrimaryContainer"
+                app:elevation="3dp"
+                app:tint="?attr/colorOnPrimaryContainer" />
+
+        </FrameLayout>
     </LinearLayout>
-</ScrollView>
+
+</FrameLayout>

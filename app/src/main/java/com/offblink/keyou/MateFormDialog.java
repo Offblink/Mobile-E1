@@ -7,7 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 /**
- * 任务 9：班级成员新增/编辑表单（AlertDialog 内嵌表单布局）。
+ * 班级成员新增/编辑表单（AlertDialog 内嵌表单布局）。
  * 复用 ContactEditActivity 的表单布局（同一组字段），保存回调交给页面发请求。
  */
 public final class MateFormDialog {

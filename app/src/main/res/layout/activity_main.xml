@@ -28,7 +28,7 @@
             android:id="@+id/page_mine" />
     </FrameLayout>
 
-    <!-- 任务 4：网络变化横幅（叠在最上层，3 秒自动隐藏） -->
+    <!-- 网络变化横幅（叠在最上层，3 秒自动隐藏） -->
     <TextView
         android:id="@+id/tv_net_banner"
         android:layout_width="match_parent"

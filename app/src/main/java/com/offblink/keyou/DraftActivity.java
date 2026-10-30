@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 任务 5：文件存储 —— 草稿箱。
+ * 文件存储 —— 草稿箱。
  *
  * 验收点：openFileOutput / openFileInput 与 MODE_PRIVATE。
  * 文件落位 /data/data/com.offblink.keyou/files/draft.txt（应用私有目录，卸载即删）。
@@ -58,7 +58,7 @@ public class DraftActivity extends KeyouActivity {
         }
     }
 
-    /** 读：openFileInput；首次无文件按"还没有草稿"处理（指导书排错点） */
+    /** 读：openFileInput；首次无文件按"还没有草稿"处理 */
     private void loadDraft() {
         try (FileInputStream fis = openFileInput(FILE_NAME)) {
             byte[] buf = new byte[fis.available()];

@@ -1,35 +1,35 @@
-# 课友（Keyou）· 移动应用开发 实验一
+# 课友（Keyou）
 
-《移动应用开发（AI 赋能版）》实验一「AI 赋能 Android 原生开发综合实验」的个人项目：
-**班级同学录 + 班级聊天 App（Android 原生 Java）× SSM 后端（Spring + SpringMVC + MyBatis + MySQL 8）**。
+班级同学录 + 班级群聊 App：Android 原生（Java + XML Views，Material 3）× SSM 后端
+（Spring 5.3 + SpringMVC + MyBatis + MySQL 8）。
 
-- 要求依据：[docs/实验一-要求整理.md](docs/实验一-要求整理.md)（逐任务提取自实验指导书）
-- 开发规格：[docs/SPEC.md](docs/SPEC.md)（任务 → 功能映射、API 契约、UI 设计、增量计划）
+- 开发规格：[docs/SPEC.md](docs/SPEC.md)（功能映射、API 契约、UI 设计）
+- 课程要求对照：[docs/实验一-要求整理.md](docs/实验一-要求整理.md)
 
 ## 仓库结构
 
 ```
-app/        主 App（com.offblink.keyou）—— 登录/主页/同学录/课友圈/实验室/工具箱
-reader/     任务 6 的第二 App（com.offblink.keyou.reader，跨 App 读 ContentProvider）
+app/        主 App（com.offblink.keyou）—— 登录 / 首页 / 同学录 / 课友圈 / 我的 / 工具箱
+reader/     第二个 App（com.offblink.keyou.reader）：跨 App 读 ContentProvider
 server/     SSM 后端（Maven WAR：Spring 5.3 + MyBatis + MySQL 8）
 scripts/    deploy.sh（打包→ROOT 部署→8081 起停→探活）
-docs/       要求整理、SPEC、报告素材
+docs/       规格、要求对照、报告素材
 tools/      本地 Tomcat 副本（不进 git）
 ```
 
-## 任务 → 功能对照（现场演示入口）
+## 功能一览
 
-| 任务 | 功能 | 演示入口 |
+| 模块 | 功能 | 入口 |
 |---|---|---|
-| 1 | Log 分级（v/d/i/w/e）+ TAG 约定 `Keyou/页面名` | 主页 → 关于 → 「输出五级日志」 |
-| 2 | 全生命周期日志 / Bundle 多类型传参 / registerForActivityResult 回传 / 四种启动模式 / 隐式 Intent | 登录→主页观察 Logcat；我的 → 编辑昵称；主页 → 实验室 |
-| 3 | 四大布局 + 七控件登录页 / RecyclerView / 左右气泡聊天室 | 登录页；同学录 tab；课友圈 tab |
-| 4 | 网络变化动态广播横幅 / 自定义广播（静态+动态对比）/ 有序广播截断 | 切 Wi-Fi 看主页横幅；实验室 → 广播三按钮 |
-| 5 | 文件草稿箱 / SP 记住密码 + 注册账号库（SHA-256 摘要） / SQLite 通讯录（版本升级/事务/模糊查询/CRUD） | 同学录 tab → 草稿箱；登录页「注册」→ 自动回填 → 登录（错误密码被拦、未注册按游客放行）；同学录列表 |
-| 6 | READ_CONTACTS 运行时权限三态流程 / 自定义 Provider / 跨 App 读取 | 同学录 → 「导入系统联系人」；装 reader App 点读取 |
-| 7 | HttpUtil 封装 / org.json vs Gson 双解析 / XmlPullParser RSS | 实验室 → JSON 双解析对比 / RSS 解析 |
-| 8 | 前台服务下载+通知 / 绑定式 Service / 定位 / MediaPlayer / 相机缩略图 | 我的 → 下载中心 / 工具箱 |
-| 9 | SSM 整合：分页列表 / POST JSON 新增 / PUT 编辑 / 长按删除 / 加载中/空态/异常提示 | 主页 → 班级成员 |
+| 登录与账号 | 账号密码校验、记住密码、注册（本地账号库，密码存 SHA-256 摘要） | 启动页；「注册」→ 自动回填 → 登录 |
+| 首页 | 欢迎语、本地联系人 / 班级成员统计、班级成员列表（分页、点击编辑、长按删除、右上角添加） | 底部「首页」tab |
+| 同学录 | 拼音分组列表 + 右侧字母索引条 + 吸顶字母；详情页可编辑表格；新增/删除；导入系统联系人 | 底部「同学录」tab |
+| 课友圈 | 左右气泡聊天室（RecyclerView + 底部输入） | 底部「课友圈」tab，直接进入聊天 |
+| 我的 | 头像（相册选择，无头像显示昵称首字）、昵称点击改名、工具箱、关于、退出登录 | 底部「我的」tab |
+| 工具箱 · 内容 | 草稿箱（文件存储）、下载中心（前台服务 + 进度通知） | 我的 → 工具箱 |
+| 工具箱 · 设备 | 定位、MediaPlayer、绑定式 Service | 我的 → 工具箱 |
+| 工具箱 · 网络 | org.json vs Gson 双解析对比、XmlPullParser 解析 RSS | 我的 → 工具箱 → 网络 |
+| 工具箱 · 调试 | 四种启动模式、自定义/有序广播、隐式 Intent | 我的 → 工具箱 → 调试面板 |
 
 ## 快速开始
 
@@ -64,8 +64,9 @@ curl -X POST -H "Content-Type: application/json" \
 底部胶囊导航（弹射 pill + 平移切页）、expressive 统计大卡、M3 紫罗兰角色色 + values-night 深色模式；
 动效双轨——位移 spring（OvershootInterpolator 0.7）、颜色直切不回弹。
 
-**返回**：所有二级页顶栏带 ← 返回箭头，由 `KeyouActivity` 基类在 `onContentChanged()` 里统一绑定
-`finish()`，页面代码零重复；主页按系统返回键先回「首页」tab，再按才退出。
+**返回**：二级页顶栏统一由 `KeyouActivity` 基类在 `onContentChanged()` 里绑定 `finish()`；
+主界面按系统返回键先回「首页」tab，再按才退出。**退出登录**在「我的」页。
+头像走系统相册（Photo Picker，无需存储权限），落盘到应用私有目录，Glide 圆裁加载。
 
 ## 排错
 

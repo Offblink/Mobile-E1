@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  联系人行：圆形首字头像 + 姓名 + 电话。
+  背景由 ContactGroupDecoration 按分组画圆角卡片，这里保持透明，只留水波纹。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:background="@drawable/contact_bg_row_ripple"
+    android:clickable="true"
+    android:defaultFocusHighlightEnabled="false"
+    android:focusable="false"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="12dp">
+
+    <TextView
+        android:id="@+id/tv_letter"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@drawable/contact_bg_avatar_letter"
+        android:gravity="center"
+        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="13dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tv_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:alpha="0.45"
+        android:contentDescription="@null"
+        android:src="@drawable/contact_ic_chevron"
+        android:tint="?attr/colorOnSurfaceVariant" />
+
+</LinearLayout>

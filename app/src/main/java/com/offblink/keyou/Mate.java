@@ -3,7 +3,7 @@ package com.offblink.keyou;
 import java.util.List;
 
 /**
- * 任务 9：Gson 序列化/反序列化目标实体（字段与 server 的 Mate 一致）。
+ * Gson 序列化/反序列化目标实体（字段与 server 的 Mate 一致）。
  * Gson 按字段名自动映射 JSON key；setter 供反序列化赋值使用。
  */
 public class Mate {

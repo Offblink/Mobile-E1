@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  任务 3 登录页：四大布局 + 七控件
+   登录页：四大布局 + 七控件
   • ConstraintLayout —— 根布局（扁平化，替代多层嵌套）
   • LinearLayout     —— horizontal + layout_weight：学号/姓名 两等分输入行
   • RelativeLayout   —— 底部按钮区：登录居左、注册 alignParentEnd 居右
@@ -112,7 +112,7 @@
         android:text="@string/login_agree"
         app:layout_constraintTop_toBottomOf="@id/rg_role" />
 
-    <!-- Switch：记住密码（任务 5 接 SharedPreferences） -->
+    <!-- Switch：记住密码 -->
     <Switch
         android:id="@+id/sw_remember"
         android:layout_width="match_parent"

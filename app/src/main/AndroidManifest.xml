@@ -2,18 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- 任务 7：网络请求（缺它所有 HTTP 全线失败） -->
+    <!-- 网络请求 -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 任务 8：前台服务 + 定位 + 通知 + 相机 -->
+    <!-- 前台服务 + 定位 + 通知 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!-- 任务 6：危险权限，运行时申请读系统通讯录 -->
+    <!-- 运行时申请：读系统通讯录 -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <!-- 任务 6：跨 App 访问 ContactProvider 的 signature 权限（同签名自动授予） -->
+    <!-- 跨 App 访问 ContactProvider 的 signature 权限（同签名自动授予） -->
     <uses-permission
         android:name="com.offblink.keyou.permission.READ_PROVIDER" />
     <permission
@@ -31,7 +30,7 @@
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config">
 
-        <!-- 任务 2 入口：登录页 -->
+        <!-- 入口：登录页 -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -42,20 +41,16 @@
         </activity>
 
         <activity android:name=".MainActivity" android:exported="false" />
-        <activity android:name=".EditNicknameActivity" android:exported="false" />
-        <activity android:name=".LabActivity" android:exported="false" />
+        <activity android:name=".ContactDetailActivity" android:exported="false" />
         <activity android:name=".AboutActivity" android:exported="false" />
-        <activity android:name=".ContactListActivity" android:exported="false" />
-        <activity android:name=".ContactEditActivity" android:exported="false" />
-        <activity android:name=".ChatActivity" android:exported="false" />
         <activity android:name=".DraftActivity" android:exported="false" />
         <activity android:name=".JsonCompareActivity" android:exported="false" />
         <activity android:name=".RssParseActivity" android:exported="false" />
         <activity android:name=".DownloadActivity" android:exported="false" />
         <activity android:name=".ToolsActivity" android:exported="false" />
-        <activity android:name=".MateActivity" android:exported="false" />
+        <activity android:name=".DiagnosticsActivity" android:exported="false" />
 
-        <!-- 任务 8：前台服务下载（dataSync 类型）+ 绑定式便签服务 -->
+        <!-- 前台服务下载（dataSync 类型）+ 绑定式便签服务 -->
         <service
             android:name=".DownloadService"
             android:exported="false"
@@ -64,7 +59,7 @@
             android:name=".BoundNoteService"
             android:exported="false" />
 
-        <!-- 任务 2：四种启动模式对比（差异只在 launchMode） -->
+        <!-- 四种启动模式对比（差异只在 launchMode） -->
         <activity
             android:name=".StandardLabActivity"
             android:exported="false"
@@ -81,7 +76,7 @@
             android:name=".SingleInstanceLabActivity"
             android:exported="false"
             android:launchMode="singleInstance" />
-        <!-- 任务 6：自定义 ContentProvider 共享 contact.db（读写权限拆分，signature 级） -->
+        <!-- 自定义 ContentProvider 共享 contact.db（读写权限拆分，signature 级） -->
         <provider
             android:name=".ContactProvider"
             android:authorities="com.offblink.keyou.provider.contact"
@@ -89,7 +84,7 @@
             android:readPermission="com.offblink.keyou.permission.READ_PROVIDER"
             android:writePermission="com.offblink.keyou.permission.WRITE_PROVIDER" />
 
-        <!-- 任务 4：静态注册的自定义广播接收器（8.0+ 只收 setPackage 显式广播） -->
+        <!-- 静态注册的自定义广播接收器（8.0+ 只收 setPackage 显式广播） -->
         <receiver
             android:name=".SyncDoneReceiver"
             android:exported="false">
@@ -98,7 +93,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- 任务 4：有序广播接收器对（priority 决定顺序，高者可 abortBroadcast 截断） -->
+        <!-- 有序广播接收器对（priority 决定顺序，高者可 abortBroadcast 截断） -->
         <receiver
             android:name=".OrderedHighReceiver"
             android:exported="false">

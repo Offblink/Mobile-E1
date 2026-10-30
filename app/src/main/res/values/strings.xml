@@ -7,17 +7,15 @@
     <string name="nav_home">首页</string>
     <string name="nav_home_sub">统计</string>
     <string name="nav_contacts">同学录</string>
-    <string name="nav_contacts_sub">SQLite</string>
+    <string name="nav_contacts_sub">分组</string>
     <string name="nav_chat">课友圈</string>
-    <string name="nav_chat_sub">聊天室</string>
+    <string name="nav_chat_sub">聊天</string>
     <string name="nav_mine">我的</string>
-    <string name="nav_mine_sub">工具</string>
+    <string name="nav_mine_sub">设置</string>
     <string name="stats_local_contacts">本地联系人</string>
     <string name="stats_server_members">班级成员（在线）</string>
-    <string name="contacts_tab_desc">本地同学录存 SQLite（任务 5），支持增删改查与导入系统联系人（任务 6）</string>
-    <string name="chat_tab_desc">班级群聊界面（任务 3）：左右气泡 RecyclerView + 底部输入</string>
 
-    <!-- 任务 2：登录 → 主页 -->
+    <!-- 登录 → 主页 -->
     <string name="login_username_hint">姓名</string>
     <string name="login_password_hint">密码</string>
     <string name="login_title">欢迎回来</string>
@@ -27,13 +25,13 @@
     <string name="login_role_student">学生</string>
     <string name="login_role_teacher">老师</string>
     <string name="login_agree">我已阅读并同意《课友用户协议》</string>
-    <string name="login_remember">记住密码（任务 5 接 SharedPreferences）</string>
+    <string name="login_remember">记住密码</string>
     <string name="login_username_empty">用户名不能为空</string>
     <string name="login_agree_required">请先勾选同意用户协议</string>
     <string name="login_wrong_password">密码错误</string>
     <string name="login_guest">未注册，以游客身份进入</string>
 
-    <!-- 任务 5 延伸：注册（SharedPreferences 账号库） -->
+    <!-- 注册（SharedPreferences 账号库） -->
     <string name="register_title">注册新账号</string>
     <string name="register_username_hint">账号</string>
     <string name="register_password_hint">密码（至少 6 位）</string>
@@ -43,16 +41,15 @@
     <string name="register_exists">该账号已注册</string>
     <string name="register_pwd_mismatch">两次密码不一致</string>
     <string name="register_pwd_short">密码至少 6 位</string>
-    <string name="main_subtitle">班级同学录 · 课友（实验一任务 1/2 演示）</string>
+    <string name="main_subtitle">班级同学录 · 课友</string>
 
-    <!-- 任务 2：结果回传 -->
+    <!-- 结果回传 -->
     <string name="edit_nickname_title">编辑昵称</string>
     <string name="edit_nickname_hint">输入新昵称</string>
-    <string name="edit_nickname_submit">提交回传</string>
 
-    <!-- 任务 2：实验室 -->
-    <string name="lab_title">实验室</string>
-    <string name="lab_launch_mode_hint">启动模式演示：同一段启动代码，Manifest 里 launchMode 不同，反复点击观察 Logcat（Keyou/Mode）里实例 hashCode 与 onNewIntent</string>
+    <!-- 调试面板 -->
+    <string name="lab_title">调试面板</string>
+    <string name="lab_launch_mode_hint">同一段启动代码，Manifest 里 launchMode 不同：反复点击观察 Logcat（Keyou/Mode）里的实例 hashCode 与 onNewIntent</string>
     <string name="mode_standard">standard：每次新建实例</string>
     <string name="mode_single_top">singleTop：栈顶复用</string>
     <string name="mode_single_task">singleTask：栈内复用并清上方</string>
@@ -62,32 +59,25 @@
     <string name="launch_relaunch_self">再次启动自己（观察实例数）</string>
     <string name="launch_goto_login">跳回登录页（观察清栈）</string>
 
-    <!-- 任务 9：SSM 整合班级成员管理 -->
-    <string name="mate_title">班级成员（SSM 后端）</string>
-    <string name="mate_search_hint">按姓名查询…</string>
-    <string name="mate_search">查询</string>
-    <string name="mate_add">＋ 新增成员</string>
+    <!-- SSM 整合班级成员管理 -->
     <string name="mate_add_title">新增班级成员</string>
     <string name="mate_edit_title">编辑班级成员</string>
     <string name="mate_remark_hint">备注</string>
-    <string name="mate_loading">加载中…</string>
-    <string name="mate_empty">暂无成员数据，点下方按钮新增</string>
     <string name="mate_saved">已保存</string>
     <string name="mate_deleted">已删除</string>
     <string name="mate_delete_title">删除成员</string>
     <string name="mate_delete_message">确定删除 %1$s 吗？</string>
     <string name="mate_parse_error">响应解析失败</string>
     <string name="mate_error_title">加载失败</string>
-    <string name="mate_retry">重试</string>
     <string name="mate_network_error">网络异常：%1$s\n\n请确认服务端已启动：双击 scripts\\start-server.cmd（端口 8081）</string>
 
-    <!-- 任务 8：服务 / 定位 / 多媒体 -->
+    <!-- 服务 / 定位 / 多媒体 -->
     <string name="download_title">下载中心（前台服务）</string>
-    <string name="download_start">开始下载演示文件</string>
+    <string name="download_start">开始下载示例文件</string>
     <string name="download_idle">尚未开始</string>
     <string name="download_starting">启动中…</string>
     <string name="notify_permission_denied">通知权限被拒：下载仍会进行，但没有进度通知</string>
-    <string name="tools_title">我的工具箱（定位 · 多媒体 · 服务）</string>
+    <string name="tools_title">工具箱</string>
     <string name="location_fetch">定位一次（ACCESS_FINE_LOCATION）</string>
     <string name="location_idle">尚未定位</string>
     <string name="location_result">纬度 %1$f\n经度 %2$f\n来源 %3$s</string>
@@ -98,8 +88,6 @@
     <string name="music_playing">播放中…</string>
     <string name="music_done">播放完毕</string>
     <string name="music_failed">播放失败：%1$s</string>
-    <string name="camera_take">拍照取缩略图（系统相机）</string>
-    <string name="camera_unavailable">没有可用的相机应用</string>
     <string name="service_bind">绑定服务</string>
     <string name="service_unbind">解绑</string>
     <string name="service_make_note">调用 makeNote() 生成便签</string>
@@ -107,7 +95,7 @@
     <string name="service_not_bound">服务未绑定</string>
     <string name="service_unbound">已解绑</string>
 
-    <!-- 任务 7：网络与 JSON/RSS -->
+    <!-- 网络与 JSON/RSS -->
     <string name="json_compare_title">JSON 双解析对比</string>
     <string name="json_fetch_btn">拉取 /api/mates 并双解析</string>
     <string name="json_orgjson_label">org.json（系统自带）</string>
@@ -117,13 +105,12 @@
     <string name="rss_title">RSS 解析（XmlPullParser）</string>
     <string name="rss_fetch_btn">拉取 /api/rss 并解析</string>
 
-    <!-- 任务 6：权限与跨 App -->
-    <string name="contact_import_system">导入系统联系人（READ_CONTACTS）</string>
+    <!-- 权限与跨 App -->
     <string name="permission_denied">权限被拒绝，无法读取系统通讯录</string>
     <string name="permission_permanent_denied">权限被永久拒绝，请到系统设置里开启「通讯录」权限</string>
     <string name="import_result">导入 %1$d 条系统联系人</string>
 
-    <!-- 任务 5：文件草稿箱 / SP / SQLite 通讯录 -->
+    <!-- 文件草稿箱 / SP / SQLite 通讯录 -->
     <string name="draft_title">草稿箱（文件存储）</string>
     <string name="draft_hint">写点什么，保存到应用私有文件…</string>
     <string name="draft_save">保存</string>
@@ -131,9 +118,6 @@
     <string name="draft_saved">草稿已保存</string>
     <string name="draft_save_failed">保存失败</string>
     <string name="common_cancel">取消</string>
-    <string name="contact_search_hint">按姓名模糊查询…</string>
-    <string name="contact_add">＋ 新增联系人</string>
-    <string name="contact_edit_title">编辑联系人</string>
     <string name="contact_name_hint">姓名（必填）</string>
     <string name="contact_phone_hint">电话</string>
     <string name="contact_email_hint">邮箱</string>
@@ -147,9 +131,9 @@
     <string name="contact_delete_ok">删除</string>
     <string name="contact_deleted">已删除</string>
 
-    <!-- 任务 4：广播演示 -->
-    <string name="lab_network_hint">网络演示：需先启动 server（scripts/deploy.sh），模拟器经 10.0.2.2:8081 访问本机</string>
-    <string name="lab_broadcast_hint">广播演示：自定义广播看 Logcat 的 Keyou/Broadcast 三组 TAG（Static/Dynamic/Ordered）；有序广播先点不截断再点截断，对比 OrderedLow 有无日志</string>
+    <!-- 广播演示 -->
+    <string name="lab_network_hint">需先启动服务端（scripts/deploy.sh），模拟器经 10.0.2.2:8081 访问本机</string>
+    <string name="lab_broadcast_hint">自定义广播看 Logcat 的 Keyou/Broadcast 三组 TAG（Static/Dynamic/Ordered）；有序广播先点不截断、再点截断，对比 OrderedLow 有无日志</string>
     <string name="broadcast_custom">自定义广播（静态+动态接收器对比）</string>
     <string name="broadcast_ordered">有序广播：高→低 全部送达</string>
     <string name="broadcast_abort">有序广播：高优先级截断</string>
@@ -159,18 +143,43 @@
     <string name="banner_net_on">📶 网络已恢复连接</string>
     <string name="banner_net_off">📡 网络已断开</string>
 
-    <!-- 任务 3：同学录列表 + 聊天室 -->
-    <string name="contact_list_title">本地同学录（SQLite）</string>
-    <string name="contact_click_toast">点击了 %1$s</string>
+    <!-- 同学录列表 + 聊天室 -->
     <string name="chat_title">课友圈 · 班级群</string>
     <string name="chat_input_hint">说点什么…</string>
     <string name="chat_send">发送</string>
     <string name="chat_empty_tip">消息不能为空</string>
 
-    <!-- 任务 1：关于 / Log 自检 -->
-    <string name="about_title">关于 · Log 自检</string>
+    <!-- 关于 / Log 自检 -->
+    <string name="about_title">关于</string>
     <string name="about_log_check">输出 v/d/i/w/e 五级日志</string>
     <string name="about_log_idle">点上面的按钮后，这里会回显五条日志摘要</string>
     <string name="about_log_emitted">已输出 5 条日志（Logcat 过滤 Keyou/About）</string>
-    <string name="about_log_guide">Logcat 过滤框输入 Keyou 看全部页面日志；输入 Keyou/About 只看本页。\nTAG 约定：Keyou/页面名，如 Keyou/Login、Keyou/Main。\n\n项目结构（任务 1 观察点）：\n• app/src/main/java —— 源码\n• app/src/main/res/layout —— 布局\n• app/src/main/res/values —— 字符串、颜色、主题\n• AndroidManifest.xml —— 清单（Activity 注册、启动模式、权限）</string>
+    <string name="about_log_guide">Logcat 过滤框输入 Keyou 看全部页面日志；输入 Keyou/About 只看本页。\nTAG 约定：Keyou/页面名，如 Keyou/Login、Keyou/Main。\n\n项目结构：\n• app/src/main/java —— 源码\n• app/src/main/res/layout —— 布局\n• app/src/main/res/values —— 字符串、颜色、主题\n• AndroidManifest.xml —— 清单（Activity 注册、启动模式、权限）</string>
+
+    <!-- 我的：头像 / 昵称 / 退出登录 -->
+    <string name="mine_avatar_hint">点击头像更换</string>
+    <string name="mine_nickname_hint">点击昵称修改</string>
+    <string name="mine_logout">退出登录</string>
+    <string name="mine_logout_title">退出登录</string>
+    <string name="mine_logout_message">确定退出当前账号吗？</string>
+    <string name="mine_logout_ok">退出</string>
+    <string name="avatar_pick_failed">图片读取失败</string>
+    <string name="avatar_saved">头像已更新</string>
+    <string name="nickname_saved">昵称已更新</string>
+    <string name="nickname_empty">昵称不能为空</string>
+
+    <!-- 主页：班级成员内联列表 -->
+    <string name="home_welcome">欢迎回来，%1$s</string>
+    <string name="home_members_title">班级成员</string>
+    <string name="home_members_empty">还没有班级成员</string>
+    <string name="home_member_add">添加</string>
+
+    <!-- 工具箱分区 -->
+    <string name="tools_section_content">内容</string>
+    <string name="tools_section_device">设备</string>
+    <string name="tools_section_network">网络</string>
+    <string name="tools_section_debug">调试</string>
+    <string name="tools_entry_draft">草稿箱</string>
+    <string name="tools_entry_download">下载中心</string>
+    <string name="tools_entry_diag">调试面板</string>
 </resources>

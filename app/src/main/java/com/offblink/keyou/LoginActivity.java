@@ -14,21 +14,19 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
- * 任务 2：FirstActivity 角色 —— 与 MainActivity 成对观察完整生命周期。
- * 任务 3：登录页 —— 四大布局 + 七控件 + 空值校验 Toast（指导书样例口径）。
+ * 登录页：账号 / 密码校验、记住密码、注册入口（本地账号库，密码存 SHA-256 摘要）。
  *
- * 任务 2 验收点：
- * 1. 重写全部生命周期方法并打日志（正常进入 / Home 键 / 旋转屏 / finish() 四种观察路径）；
- * 2. 显式 Intent 跳转 + Bundle 传递多种类型数据（String/int/boolean/double）。
+ * 生命周期七个方法全部重写并打日志：正常进入 / Home 键 / 旋转屏 / finish() 四条路径
+ * 都能在 Logcat（过滤 Keyou/Login）里看到完整序列。
+ * 登录成功后用显式 Intent + Bundle 把 String / int / boolean / double 多种类型参数传给主界面。
  *
- * 任务 5 延伸：注册 —— 账号库存 SharedPreferences（UserStore），密码存 SHA-256 摘要；
- * 登录时已注册账号校验密码，未注册账号按游客放行（不挡演示动线）。
+ * 登录策略：已注册账号校验密码；未注册账号直接放行（游客）。
  */
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "Keyou/Login";
 
-    /** 任务 5：SharedPreferences 文件名（/data/data/<pkg>/shared_prefs/login.xml） */
+    /** SharedPreferences 文件名（/data/data/<pkg>/shared_prefs/login.xml） */
     private static final String SP_NAME = "login";
     private static final String SP_KEY_REMEMBER = "remember";
     private static final String SP_KEY_USERNAME = "username";
@@ -44,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText etPassword = findViewById(R.id.et_password);
         android.widget.Switch swRemember = findViewById(R.id.sw_remember);
 
-        // 任务 5：SharedPreferences 读取 —— 上次勾过记住密码就预填
+        // SharedPreferences 读取 —— 上次勾过记住密码就预填
         android.content.SharedPreferences sp = getSharedPreferences(SP_NAME, MODE_PRIVATE);
         if (sp.getBoolean(SP_KEY_REMEMBER, false)) {
             etUsername.setText(sp.getString(SP_KEY_USERNAME, ""));
@@ -57,13 +55,13 @@ public class LoginActivity extends AppCompatActivity {
         Button btnRegister = findViewById(R.id.btn_register);
 
         btnLogin.setOnClickListener(v -> {
-            // 任务 3 样例：TextUtils.isEmpty 空值校验 + Toast
+            // 空值校验 + Toast
             String username = etUsername.getText().toString().trim();
             if (username.isEmpty()) {
                 Toast.makeText(this, R.string.login_username_empty, Toast.LENGTH_SHORT).show();
                 return;
             }
-            // 任务 5 延伸：账号库校验 —— 已注册校验密码；未注册放行（游客），不挡演示动线
+            // 账号库校验 —— 已注册校验密码；未注册放行（游客），不挡演示动线
             String password = etPassword.getText().toString();
             if (UserStore.exists(this, username)) {
                 if (!UserStore.check(this, username, password)) {
@@ -82,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
             RadioButton rb = findViewById(rgRole.getCheckedRadioButtonId());
             String role = rb != null ? rb.getText().toString() : "";
 
-            // 任务 5：SharedPreferences 写入 —— 记住密码（apply 异步落盘，无需等回调）
+            // SharedPreferences 写入 —— 记住密码（apply 异步落盘，无需等回调）
             android.content.SharedPreferences.Editor editor = sp.edit();
             if (swRemember.isChecked()) {
                 editor.putBoolean(SP_KEY_REMEMBER, true)
@@ -106,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // 任务 5 延伸：注册 —— 弹窗表单 → 校验 → 写入 SharedPreferences 账号库（SHA-256 摘要）
+        // 注册 —— 弹窗表单 → 校验 → 写入 SharedPreferences 账号库（SHA-256 摘要）
         btnRegister.setOnClickListener(v -> showRegisterDialog(etUsername, etPassword));
     }
 

@@ -1,7 +1,7 @@
 package com.offblink.keyou;
 
 /**
- * 任务 4：自定义广播的 action 常量集中处（发送方与接收方共用，防止拼错）。
+ * 自定义广播的 action 常量集中处（发送方与接收方共用，防止拼错）。
  */
 public final class BroadcastActions {
 

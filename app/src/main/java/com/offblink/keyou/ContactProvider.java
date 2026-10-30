@@ -11,14 +11,14 @@ import android.net.Uri;
 import android.util.Log;
 
 /**
- * 任务 6：自定义 ContentProvider —— 把任务 5 的 contact.db 对外共享。
+ * 自定义 ContentProvider —— 把 的 contact.db 对外共享。
  *
  * 验收点：
  * - UriMatcher 匹配两种 URI：整表 /content://<authority>/contact 与单行 /contact/{id}；
  * - insert/query/update/delete 四方法；
  * - Manifest 注册 exported + read/write 权限。
  *
- * 安全（android/skills android-permissions-security 口径）：
+ * 安全：
  * - 自定义权限 protectionLevel="signature"：只有同签名应用可申请到（跨 App 演示
  *   用的两个 App 都是 debug 签名，自动授与；第三方应用拿不到）；
  * - 读写权限拆分（readPermission / writePermission），最小授权。

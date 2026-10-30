@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 分组字母条：吸顶时由 ContactGroupDecoration 再画一份，外观保持一致 -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tv_section"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:background="?attr/colorSurface"
+    android:gravity="center_vertical"
+    android:letterSpacing="0.08"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:textColor="?attr/colorOnSurfaceVariant"
+    android:textSize="12sp" />

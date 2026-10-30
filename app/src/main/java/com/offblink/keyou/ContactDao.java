@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 任务 5：ContactDao —— 参数化 SQL 增删改查 + 模糊查询 + 事务演示。
+ * ContactDao —— 参数化 SQL 增删改查 + 模糊查询 + 事务演示。
  *
- * 安全要点（写报告"AI 代码审查"素材）：
+ * 安全要点：
  * - 全部走参数化（? 占位符 / ContentValues），不用字符串拼接 SQL —— 防注入；
- * - Cursor 必须 close，查询统一 try-with-resources（指导书排错点：Cursor 泄漏）；
+ * - Cursor 必须 close，查询统一 try-with-resources；
  * - 事务必须 setTransactionSuccessful，否则 endTransaction 时整体回滚。
  */
 public class ContactDao {

@@ -6,7 +6,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * 任务 1：关于页 + Log 自检。
+ * 关于页 + Log 自检。
  *
  * 验收点：Log 分级输出（v/d/i/w/e）与 Logcat 过滤。
  * 约定：全 App TAG 统一 "Keyou/xxx"，Logcat 过滤框输入 Keyou 即可看到全部页面日志；
