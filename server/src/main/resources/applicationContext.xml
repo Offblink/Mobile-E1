@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SSM 之 Spring 根容器：MySQL 数据源 + MyBatis 整合 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 数据初始化器（建表 + 灌种子数据）放在根容器 -->
+    <context:component-scan base-package="com.offblink.keyou.server.config"/>
+
+    <!-- 数据库口令只在本机 db.properties（不进 git），仓库放 db.properties.example -->
+    <context:property-placeholder location="classpath:db.properties" ignore-resource-not-found="true"/>
+
+    <!-- MySQL 8：schema keyou_e1，账号 keyou（低权限，只授 keyou_e1.*） -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.user}"/>
+        <property name="password" value="${db.password}"/>
+    </bean>
+
+    <!-- JdbcTemplate（健康检查 / 简单查询用；复杂查询走 MyBatis Mapper） -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- MyBatis 的 SqlSessionFactory（mapperLocations 在任务 9 引入 Mapper 后再加） -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="typeAliasesPackage" value="com.offblink.keyou.server.entity"/>
+    </bean>
+
+    <!-- 扫描 Mapper 接口，生成代理实现 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.offblink.keyou.server.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+</beans>

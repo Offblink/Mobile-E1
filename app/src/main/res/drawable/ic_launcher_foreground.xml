@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 简单的「双气泡」前台矢量：两个对话圆角矩形，呼应聊天室主题 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#6750A4"
+        android:pathData="M30,32 h30 a6,6 0 0 1 6,6 v18 a6,6 0 0 1 -6,6 h-18 l-9,8 v-8 h-3 a6,6 0 0 1 -6,-6 v-18 a6,6 0 0 1 6,-6 z" />
+    <path
+        android:fillColor="#21005D"
+        android:pathData="M48,50 h30 a6,6 0 0 1 6,6 v18 a6,6 0 0 1 -6,6 h-3 v8 l-9,-8 h-18 a6,6 0 0 1 -6,-6 v-18 a6,6 0 0 1 6,-6 z" />
+</vector>

@@ -1,0 +1,4 @@
+// Top-level build file: AGP 版本对齐 Andriod01（本机已验证组合）。
+plugins {
+    alias(libs.plugins.android.application) apply false
+}

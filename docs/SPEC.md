@@ -24,7 +24,7 @@
 | 构建 | Gradle wrapper 9.5.0 + AGP 9.3.3，`-I aliyun-init.gradle` 走阿里云镜像 | Andriod01 / 课堂08 实测 |
 | 后端 | **SSM**：Spring 5.3 + Spring MVC + MyBatis 3.5 + Jackson，Maven（mvnw 3.8.5）打包 WAR | 用户指定；骨架复用课堂08 HttpUrlServer 实测配方 |
 | 数据库 | **MySQL 8.0.43**（本机系统服务 `MySQL80`，127.0.0.1:3306，utf8mb4）；专用 schema **`keyou_e1`** + 低权限账号 `keyou`（口令只写本机 `server/src/main/resources/db.properties`，**不进 git**，仓库只放 `db.properties.example`） | 与指导书口径一致（MySQL 8）；root 口令不进仓库；可视化直接用 MySQL 生态（mysql CLI / 任意 GUI 客户端）截图进报告 |
-| Web 容器 | 便携 Tomcat 9.0.123（`Desktop\mobile\课堂\08\unpacked\apache-tomcat-9.0.123`），**ROOT 上下文** | 实测配方；客户端写 `10.0.2.2:8080/api/...` |
+| Web 容器 | 便携 Tomcat 9.0.123 独立副本 `tools/tomcat/`（源：`Desktop\mobile\课堂\08\unpacked\apache-tomcat-9.0.123`），**ROOT 上下文、端口 8081**（8080 被课堂08 的旧服务占用，不动它） | 实测配方；客户端写 `10.0.2.2:8081/api/...` |
 | 第二 App | 同仓库第二 application 模块 `reader`（任务 6 跨 App 验证） | 指导书要求「新建第二个 App」 |
 
 ## 3. 仓库结构

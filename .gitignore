@@ -1,0 +1,21 @@
+# Gradle / Android
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Maven server
+server/target/
+db.properties
+
+# Local Tomcat copy (deploy target, ~50MB, not part of repo)
+tools/tomcat/
+tools/*.log
+
+# OS
+.DS_Store
+Thumbs.db

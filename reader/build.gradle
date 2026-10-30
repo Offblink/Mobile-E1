@@ -1,0 +1,33 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+// 任务 6 的「第二个 App」：跨 App 通过 ContentResolver 读取主 App 的 ContactProvider。
+android {
+    namespace 'com.offblink.keyou.reader'
+    compileSdk {
+        version = release(37)
+    }
+
+    defaultConfig {
+        applicationId "com.offblink.keyou.reader"
+        minSdk 34
+        targetSdk 37
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.activity
+    implementation libs.constraintlayout
+    implementation libs.material
+
+    testImplementation libs.junit
+}
