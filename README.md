@@ -61,3 +61,14 @@ curl -X POST -H "Content-Type: application/json" \
 取材自 [mobile-design](https://github.com/Offblink/Mobile-Design) 的 android-m3 组件（Material 3 Expressive）：
 底部胶囊导航（弹射 pill + 平移切页）、expressive 统计大卡、M3 紫罗兰角色色 + values-night 深色模式；
 动效双轨——位移 spring（OvershootInterpolator 0.7）、颜色直切不回弹。
+
+**返回**：所有二级页顶栏带 ← 返回箭头，由 `KeyouActivity` 基类在 `onContentChanged()` 里统一绑定
+`finish()`，页面代码零重复；主页按系统返回键先回「首页」tab，再按才退出。
+
+## 排错
+
+| 现象 | 原因与处理 |
+|---|---|
+| App 报「网络异常：failed to connect to /10.0.2.2」但宿主机 `curl 127.0.0.1:8081/api/ping` 正常 | ① 服务端没起：双击 `scripts\start-server.cmd`；② **模拟器网络栈坏**（App 的 UID 拿不到默认网络，`adb shell` 里的 nc/curl 却正常，属假阳性）：冷重启模拟器（`adb emu kill` 后重开） |
+| 模拟器 Wi-Fi 显示开启但一直 Disconnected | 该 AVD 没有虚拟 Wi-Fi 硬件（只有 eth0），保持 Wi-Fi 关闭、走以太网即可 |
+| 端口 8080 被占用 | 课堂08 的旧 Tomcat 还开着；本项目固定用 **8081**，两者互不影响 |
