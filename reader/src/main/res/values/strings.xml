@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">课友读取器</string>
-    <string name="reader_title">课友读取器（任务 6 跨 App 验证）</string>
-    <string name="reader_read_btn">通过 ContentResolver 读取课友的通讯录</string>
-    <string name="reader_result_prefix">共读到 %1$d 条：</string>
+    <string name="app_name">读取器</string>
+    <string name="reader_title">读取器</string>
+    <string name="reader_reading">正在读取课友的通讯录…</string>
+    <string name="reader_count">共 %1$d 位联系人 · 来自课友</string>
+    <string name="reader_empty">课友里还没有联系人</string>
+    <string name="reader_failed">读取失败：%1$s</string>
     <string name="reader_permission_denied">跨 App 读取被拒（signature 权限未授予）——请先启动一次课友主 App</string>
 </resources>

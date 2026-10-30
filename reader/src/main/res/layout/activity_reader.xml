@@ -1,36 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 读取器：进入即直接显示课友通讯录，不需要按钮 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     android:orientation="vertical"
     android:padding="20dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
         android:text="@string/reader_title"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="24sp" />
 
-    <Button
-        android:id="@+id/btn_read_provider"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_reader_status"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/reader_read_btn" />
+        android:layout_marginTop="2dp"
+        android:text="@string/reader_reading"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="12sp" />
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="12dp"
+        android:layout_weight="1">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/ll_contacts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_reader"
+                android:dividerPadding="0dp"
+                android:orientation="vertical"
+                android:showDividers="middle" />
+        </ScrollView>
 
         <TextView
-            android:id="@+id/tv_reader_result"
-            android:layout_width="match_parent"
+            android:id="@+id/tv_reader_empty"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/reader_empty"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="14sp"
-            android:fontFamily="monospace" />
-    </ScrollView>
+            android:visibility="gone" />
+    </FrameLayout>
 
 </LinearLayout>

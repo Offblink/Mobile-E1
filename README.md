@@ -10,7 +10,7 @@
 
 ```
 app/        主 App（com.offblink.keyou）—— 登录 / 同学录 / 课友圈 / 我的
-reader/     第二个 App（com.offblink.keyou.reader）：跨 App 读 ContentProvider
+reader/     第二个 App「读取器」（com.offblink.keyou.reader）：进入直接显示课友通讯录（跨 App ContentProvider）
 server/     SSM 后端（Maven WAR：Spring 5.3 + MyBatis + MySQL 8）
 scripts/    deploy.sh（打包→ROOT 部署→8081 起停→探活）
 docs/       规格、要求对照、报告素材
