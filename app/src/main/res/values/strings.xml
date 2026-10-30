@@ -2,6 +2,20 @@
 <resources>
     <string name="app_name">课友</string>
 
+    <!-- m3 胶囊导航 -->
+    <string name="nav_home">首页</string>
+    <string name="nav_home_sub">统计</string>
+    <string name="nav_contacts">同学录</string>
+    <string name="nav_contacts_sub">SQLite</string>
+    <string name="nav_chat">课友圈</string>
+    <string name="nav_chat_sub">聊天室</string>
+    <string name="nav_mine">我的</string>
+    <string name="nav_mine_sub">工具</string>
+    <string name="stats_local_contacts">本地联系人</string>
+    <string name="stats_server_members">班级成员（在线）</string>
+    <string name="contacts_tab_desc">本地同学录存 SQLite（任务 5），支持增删改查与导入系统联系人（任务 6）</string>
+    <string name="chat_tab_desc">班级群聊界面（任务 3）：左右气泡 RecyclerView + 底部输入</string>
+
     <!-- 任务 2：登录 → 主页 -->
     <string name="login_username_hint">姓名</string>
     <string name="login_password_hint">密码</string>

@@ -11,4 +11,8 @@
     <color name="md_on_surface">#1D1B20</color>
     <color name="md_surface_variant">#E7E0EC</color>
     <color name="md_on_surface_variant">#49454F</color>
+
+    <!-- m3 胶囊导航标签色（tokens.css 口径：active=secondary 角色，未选中=on-surface-variant） -->
+    <color name="nav_label_on">#6750A4</color>
+    <color name="nav_label_off">#49454F</color>
 </resources>

@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- 主页：m3 胶囊导航（nav-pill-bar 配方）—— 4 页面叠 FrameLayout + 底部弹射 pill -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+    android:layout_height="match_parent">
 
-    <!-- 任务 4：网络变化横幅（动态广播接收器收到后显示 3 秒） -->
+    <!-- 四个 Tab 页叠放（平移切页，非当前页 GONE） -->
+    <FrameLayout
+        android:id="@+id/page_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            layout="@layout/page_home"
+            android:id="@+id/page_home" />
+
+        <include
+            layout="@layout/page_contacts"
+            android:id="@+id/page_contacts" />
+
+        <include
+            layout="@layout/page_chat"
+            android:id="@+id/page_chat" />
+
+        <include
+            layout="@layout/page_mine"
+            android:id="@+id/page_mine" />
+    </FrameLayout>
+
+    <!-- 任务 4：网络变化横幅（叠在最上层，3 秒自动隐藏） -->
     <TextView
         android:id="@+id/tv_net_banner"
         android:layout_width="match_parent"
@@ -16,90 +38,133 @@
         android:background="@color/md_secondary_container"
         android:textColor="@color/md_on_secondary_container"
         android:visibility="gone"
-        android:layout_marginBottom="8dp" />
+        android:layout_gravity="top" />
 
-    <TextView
-        android:id="@+id/tv_welcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:id="@+id/tv_hello"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/main_subtitle"
-        android:textSize="14sp"
-        android:layout_marginBottom="32dp" />
-
-    <!-- 任务 9 综合案例：班级成员管理（启动即加载，放最上） -->
-    <Button
-        android:id="@+id/btn_mates"
+    <!-- 底部胶囊导航条（配方：76dp + 三边 12dp margin + elevation 8dp） -->
+    <FrameLayout
+        android:id="@+id/nav_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/mate_title" />
+        android:layout_height="76dp"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="12dp"
+        android:elevation="8dp"
+        android:background="@drawable/nav_bar_bg">
 
-    <Button
-        android:id="@+id/btn_contacts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/contact_list_title" />
+        <!-- 弹射 pill 指示器（位移动画挂这里，OvershootInterpolator 0.7） -->
+        <View
+            android:id="@+id/nav_pill"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/nav_pill_bg"
+            android:visibility="gone" />
 
-    <Button
-        android:id="@+id/btn_chat"
-        style="@style/Widget.Material3.Button.TonalButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/chat_title"
-        android:layout_marginTop="8dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btn_draft"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/draft_title"
-        android:layout_marginTop="8dp" />
+            <LinearLayout
+                android:id="@+id/nav_tab_home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
-    <Button
-        android:id="@+id/btn_tools"
-        style="@style/Widget.Material3.Button.TonalButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/tools_title"
-        android:layout_marginTop="8dp" />
+                <TextView
+                    android:id="@+id/nav_label_home"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_home"
+                    android:textSize="12sp" />
 
-    <Button
-        android:id="@+id/btn_download"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/download_title"
-        android:layout_marginTop="8dp" />
+                <TextView
+                    android:id="@+id/nav_sub_home"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_home_sub"
+                    android:textSize="10sp"
+                    android:alpha="0.6" />
+            </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_edit_nickname"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/edit_nickname_title"
-        android:layout_marginTop="8dp" />
+            <LinearLayout
+                android:id="@+id/nav_tab_contacts"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
-    <Button
-        android:id="@+id/btn_lab"
-        style="@style/Widget.Material3.Button.TonalButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/lab_title"
-        android:layout_marginTop="8dp" />
+                <TextView
+                    android:id="@+id/nav_label_contacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_contacts"
+                    android:textSize="12sp" />
 
-    <Button
-        android:id="@+id/btn_about"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/about_title"
-        android:layout_marginTop="8dp" />
+                <TextView
+                    android:id="@+id/nav_sub_contacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_contacts_sub"
+                    android:textSize="10sp"
+                    android:alpha="0.6" />
+            </LinearLayout>
 
-</LinearLayout>
+            <LinearLayout
+                android:id="@+id/nav_tab_chat"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless">
+
+                <TextView
+                    android:id="@+id/nav_label_chat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_chat"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/nav_sub_chat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_chat_sub"
+                    android:textSize="10sp"
+                    android:alpha="0.6" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/nav_tab_mine"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless">
+
+                <TextView
+                    android:id="@+id/nav_label_mine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_mine"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/nav_sub_mine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_mine_sub"
+                    android:textSize="10sp"
+                    android:alpha="0.6" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>
