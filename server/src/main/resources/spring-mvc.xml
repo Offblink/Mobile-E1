@@ -16,4 +16,8 @@
     <!-- 开启注解驱动：@RestController 的方法返回值由 Jackson 写成 JSON -->
     <mvc:annotation-driven/>
 
+    <!-- 静态文件目录（任务 8 下载演示 /files/demo-note.txt）：
+         DispatcherServlet 映射 "/" 后默认 servlet 不再服务静态资源，需显式放行 -->
+    <mvc:resources mapping="/files/**" location="/files/"/>
+
 </beans>

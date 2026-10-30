@@ -35,6 +35,32 @@
     <string name="launch_relaunch_self">再次启动自己（观察实例数）</string>
     <string name="launch_goto_login">跳回登录页（观察清栈）</string>
 
+    <!-- 任务 8：服务 / 定位 / 多媒体 -->
+    <string name="download_title">下载中心（前台服务）</string>
+    <string name="download_start">开始下载演示文件</string>
+    <string name="download_idle">尚未开始</string>
+    <string name="download_starting">启动中…</string>
+    <string name="notify_permission_denied">通知权限被拒：下载仍会进行，但没有进度通知</string>
+    <string name="tools_title">我的工具箱（定位 · 多媒体 · 服务）</string>
+    <string name="location_fetch">定位一次（ACCESS_FINE_LOCATION）</string>
+    <string name="location_idle">尚未定位</string>
+    <string name="location_result">纬度 %1$f\n经度 %2$f\n来源 %3$s</string>
+    <string name="location_permission_denied">定位权限被拒绝</string>
+    <string name="location_none">没有可用定位（模拟器可先在 emulator 控制台 geo fix）</string>
+    <string name="music_play">播放（MediaPlayer）</string>
+    <string name="music_stop">停止</string>
+    <string name="music_playing">播放中…</string>
+    <string name="music_done">播放完毕</string>
+    <string name="music_failed">播放失败：%1$s</string>
+    <string name="camera_take">拍照取缩略图（系统相机）</string>
+    <string name="camera_unavailable">没有可用的相机应用</string>
+    <string name="service_bind">绑定服务</string>
+    <string name="service_unbind">解绑</string>
+    <string name="service_make_note">调用 makeNote() 生成便签</string>
+    <string name="service_note_idle">（绑定后点上面按钮，便签会出现在这里）</string>
+    <string name="service_not_bound">服务未绑定</string>
+    <string name="service_unbound">已解绑</string>
+
     <!-- 任务 7：网络与 JSON/RSS -->
     <string name="json_compare_title">JSON 双解析对比</string>
     <string name="json_fetch_btn">拉取 /api/mates 并双解析</string>

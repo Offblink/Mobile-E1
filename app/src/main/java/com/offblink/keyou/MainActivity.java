@@ -97,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ChatActivity.class)));
         findViewById(R.id.btn_draft).setOnClickListener(v ->
                 startActivity(new Intent(this, DraftActivity.class)));
+        findViewById(R.id.btn_tools).setOnClickListener(v ->
+                startActivity(new Intent(this, ToolsActivity.class)));
+        findViewById(R.id.btn_download).setOnClickListener(v ->
+                startActivity(new Intent(this, DownloadActivity.class)));
         findViewById(R.id.btn_lab).setOnClickListener(v ->
                 startActivity(new Intent(this, LabActivity.class)));
         findViewById(R.id.btn_about).setOnClickListener(v ->

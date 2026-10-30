@@ -57,6 +57,22 @@
         android:layout_marginTop="8dp" />
 
     <Button
+        android:id="@+id/btn_tools"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tools_title"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/btn_download"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/download_title"
+        android:layout_marginTop="8dp" />
+
+    <Button
         android:id="@+id/btn_edit_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
