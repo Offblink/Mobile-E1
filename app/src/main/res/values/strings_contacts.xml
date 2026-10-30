@@ -34,6 +34,7 @@
     <string name="contacts_label_email">邮箱</string>
     <string name="contacts_label_gender">性别</string>
     <string name="contacts_count_mixed">共 %1$d 人 · 本地 %2$d · 班级 %3$d</string>
+    <string name="contacts_count_merged">共 %1$d 人 · 本地 %2$d · 班级 %3$d · 已合并 %4$d</string>
     <string name="contacts_new_choose">新建联系人</string>
     <string name="contacts_new_local">本地同学</string>
     <string name="contacts_new_class">班级成员</string>

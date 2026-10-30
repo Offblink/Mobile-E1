@@ -203,7 +203,7 @@ public final class ContactsPage {
             return;
         }
         List<Contact> local = dao.query("");
-        applyList(local, null);
+        applyList(local, null, local.size(), 0);
         fetchClassmates(local);
     }
 
@@ -214,6 +214,7 @@ public final class ContactsPage {
             public void onSuccess(String body) {
                 List<Contact> all = new ArrayList<>();
                 int classCount = 0;
+                int mergedCount = 0;
                 try {
                     JSONObject root = new JSONObject(body);
                     if (root.getInt("code") == 0) {
@@ -238,6 +239,7 @@ public final class ContactsPage {
                             String key = dedupeKey(c);
                             Contact existing = byKey.get(key);
                             if (existing != null) {
+                                mergedCount++;
                                 if (TextUtils.isEmpty(existing.getAvatar())
                                         && !TextUtils.isEmpty(c.getAvatar())) {
                                     existing.setAvatar(c.getAvatar());
@@ -260,13 +262,13 @@ public final class ContactsPage {
                     AppLog.w(TAG, "班级成员解析失败，只显示本地联系人", e);
                     all.addAll(local);
                 }
-                applyList(all, classCount);
+                applyList(all, classCount, local.size(), mergedCount);
             }
 
             @Override
             public void onError(String message, Exception e) {
                 AppLog.w(TAG, "班级成员拉取失败，只显示本地联系人: " + message);
-                applyList(local, null);
+                applyList(local, null, local.size(), 0);
             }
         });
     }
@@ -293,7 +295,7 @@ public final class ContactsPage {
         return c;
     }
 
-    private void applyList(List<Contact> data, Integer classCount) {
+    private void applyList(List<Contact> data, Integer classCount, int localRows, int mergedCount) {
         adapter.setData(data);
         decoration.resetSection();
         indexBar.setAvailableLetters(adapter.availableLetters());
@@ -308,12 +310,17 @@ public final class ContactsPage {
                 }
             }
         }
-        int localCount = total - classes;
-
+        // 「本地」是本地库里的行数，不是列表里剩下多少条本地行：
+        // 同号同名的本地联系人会并进班级那条（班级优先），旧口径会把它算成 0。
         boolean empty = data.isEmpty();
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
-        subtitle.setText(host.getString(R.string.contacts_count_mixed,
-                total, localCount, classes));
+        if (mergedCount > 0) {
+            subtitle.setText(host.getString(R.string.contacts_count_merged,
+                    total, localRows, classes, mergedCount));
+        } else {
+            subtitle.setText(host.getString(R.string.contacts_count_mixed,
+                    total, localRows, classes));
+        }
 
         if (empty) {
             indexBar.setActiveLetter((char) 0);
@@ -329,8 +336,8 @@ public final class ContactsPage {
             }
         }
         firstLoad = false;
-        AppLog.i(TAG, "列表已刷新：共 " + total + " 人（本地 " + localCount
-                + " / 班级 " + classes + "）");
+        AppLog.i(TAG, "列表已刷新：共 " + total + " 人（本地库 " + localRows
+                + " / 班级 " + classes + " / 已合并 " + mergedCount + "）");
     }
 
     /**

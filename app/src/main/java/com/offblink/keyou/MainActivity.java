@@ -1,18 +1,24 @@
 package com.offblink.keyou;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
+import android.os.CancellationSignal;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -35,6 +41,11 @@ import com.bumptech.glide.request.RequestOptions;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 主界面：四个 Tab（首页 / 同学录 / 课友圈 / 我的）共用一套胶囊导航。
@@ -56,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvNickname;
     private TextView tvAvatarLetter;
     private ImageView ivAvatar;
+    private TextView tvProvince;
+    private TextView tvLocationDetail;
 
     private String account = "同学";
     private String nickname = "同学";
@@ -63,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
     private ChatPanel chatPanel;
 
     private final Handler bannerHandler = new Handler(Looper.getMainLooper());
+    /** 定位超时用独立 Handler：网络横幅会清空 bannerHandler 的回调 */
+    private final Handler locationHandler = new Handler(Looper.getMainLooper());
+    private CancellationSignal locatingSignal;
+    /** 自动定位的权限弹窗每次进程只弹一次，拒绝后不再打扰 */
+    private boolean permissionPrompted;
     private BroadcastReceiver networkReceiver;
 
     // ---------- m3 胶囊导航状态 ----------
@@ -80,6 +98,20 @@ public class MainActivity extends AppCompatActivity {
                     saveAvatar(uri);
                 }
             });
+
+    /** 「我的」页定位：一次申请 fine + coarse，不申请后台定位 */
+    private final ActivityResultLauncher<String[]> locationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
+                    results -> {
+                        Boolean fine = results.get(Manifest.permission.ACCESS_FINE_LOCATION);
+                        Boolean coarse = results.get(Manifest.permission.ACCESS_COARSE_LOCATION);
+                        if (Boolean.TRUE.equals(fine) || Boolean.TRUE.equals(coarse)) {
+                            fetchLocation();
+                        } else {
+                            tvLocationDetail.setText(R.string.mine_location_denied);
+                            AppLog.w(TAG, "定位权限被拒绝");
+                        }
+                    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,11 +176,173 @@ public class MainActivity extends AppCompatActivity {
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build()));
         tvNickname.setOnClickListener(v -> showNicknameDialog());
+
+        tvProvince = findViewById(R.id.tv_province);
+        tvLocationDetail = findViewById(R.id.tv_location_detail);
+        renderPlace();
+
         findViewById(R.id.btn_tools).setOnClickListener(v ->
                 startActivity(new Intent(this, ToolsActivity.class)));
         findViewById(R.id.btn_logs).setOnClickListener(v ->
                 startActivity(new Intent(this, LogActivity.class)));
         findViewById(R.id.btn_logout).setOnClickListener(v -> confirmLogout());
+    }
+
+    // ---------- 定位 → 省份（离线枚举） ----------
+
+    /** 进入「我的」自动定位：5 分钟内的结果直接复用，否则取新点；没授权才弹一次权限 */
+    private void ensureLocation() {
+        if (locatingSignal != null) {
+            return;   // 上一次还在定位，不重复发起
+        }
+        PlaceStore.Place place = PlaceStore.last(this);
+        if (place != null && place.time > 0
+                && System.currentTimeMillis() - place.time < 5 * 60 * 1000L) {
+            return;
+        }
+        if (hasLocationPermission()) {
+            fetchLocation();
+        } else if (!permissionPrompted) {
+            permissionPrompted = true;
+            locationPermissionLauncher.launch(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION});
+        } else {
+            tvLocationDetail.setText(R.string.mine_location_denied);
+        }
+    }
+
+    private boolean hasLocationPermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /** 缓存点够新（5 分钟内）直接用；否则请求一次实时定位，超时再退回缓存点 */
+    @SuppressWarnings("MissingPermission")  // requestLocation 已校验授权
+    private void fetchLocation() {
+        LocationManager lm = getSystemService(LocationManager.class);
+        if (lm == null) {
+            tvLocationDetail.setText(R.string.mine_location_none);
+            return;
+        }
+        Location last = lastKnownLocation(lm);
+        boolean fresh = last != null && last.getTime() > 0
+                && System.currentTimeMillis() - last.getTime() < 5 * 60 * 1000L;
+        if (fresh) {
+            onLocation(last);
+            return;
+        }
+
+        List<String> providers = new ArrayList<>();
+        for (String provider : new String[]{LocationManager.GPS_PROVIDER,
+                LocationManager.NETWORK_PROVIDER}) {
+            try {
+                if (lm.isProviderEnabled(provider)) {
+                    providers.add(provider);
+                }
+            } catch (Exception ignore) {
+                // 个别 provider 查询失败不影响其它
+            }
+        }
+        if (providers.isEmpty()) {
+            tvLocationDetail.setText(R.string.mine_location_none);
+            AppLog.w(TAG, "没有可用的定位 provider");
+            return;
+        }
+
+        tvLocationDetail.setText(R.string.mine_location_loading);
+        CancellationSignal signal = new CancellationSignal();
+        locatingSignal = signal;
+        Runnable timeout = () -> {
+            if (locatingSignal != signal) {
+                return;
+            }
+            locatingSignal = null;
+            signal.cancel();
+            if (last != null) {
+                onLocation(last);   // 实时定位没回来，退回缓存点（详情里带时间）
+            } else {
+                tvLocationDetail.setText(R.string.mine_location_none);
+            }
+            AppLog.w(TAG, "实时定位超时");
+        };
+        locationHandler.postDelayed(timeout, 8000);
+        try {
+            lm.getCurrentLocation(providers.get(0), signal, getMainExecutor(), location -> {
+                if (locatingSignal != signal) {
+                    return;
+                }
+                locatingSignal = null;
+                locationHandler.removeCallbacks(timeout);
+                if (location != null) {
+                    onLocation(location);
+                } else if (last != null) {
+                    onLocation(last);
+                } else {
+                    tvLocationDetail.setText(R.string.mine_location_none);
+                }
+            });
+        } catch (Exception e) {
+            AppLog.e(TAG, "实时定位失败", e);
+            locationHandler.removeCallbacks(timeout);
+            if (last != null) {
+                onLocation(last);
+            } else {
+                tvLocationDetail.setText(R.string.mine_location_none);
+            }
+        }
+    }
+
+    /** 各 provider 的缓存点里取时间最新的一条 */
+    private Location lastKnownLocation(LocationManager lm) {
+        Location best = null;
+        for (String provider : lm.getAllProviders()) {
+            try {
+                Location location = lm.getLastKnownLocation(provider);
+                if (location != null && (best == null || location.getTime() > best.getTime())) {
+                    best = location;
+                }
+            } catch (Exception ignore) {
+                // 权限/后端异常：跳过该 provider
+            }
+        }
+        return best;
+    }
+
+    private void onLocation(Location location) {
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
+        String province = ProvinceLocator.provinceOf(lat, lon);
+        if (province == null) {
+            province = getString(R.string.mine_location_outside);
+        }
+        PlaceStore.save(this, lat, lon, province, location.getProvider(),
+                location.getTime() > 0 ? location.getTime() : System.currentTimeMillis());
+        renderPlace();
+        AppLog.i(TAG, "定位: " + lat + ", " + lon + " → " + province
+                + "（" + location.getProvider() + "）");
+    }
+
+    /** 读上次结果填「我的」页；没有定位过就显示提示 */
+    private void renderPlace() {
+        PlaceStore.Place place = PlaceStore.last(this);
+        if (place == null) {
+            tvProvince.setVisibility(View.GONE);
+            tvLocationDetail.setText(R.string.mine_location_hint);
+            return;
+        }
+        tvProvince.setVisibility(View.VISIBLE);
+        tvProvince.setText(place.province);
+        String time = place.time <= 0 ? "—"
+                : new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
+                .format(new Date(place.time));
+        String provider = TextUtils.isEmpty(place.provider) ? "—" : place.provider;
+        tvLocationDetail.setText(getString(R.string.mine_location_detail,
+                String.format(Locale.US, "%.4f", place.lat),
+                String.format(Locale.US, "%.4f", place.lon),
+                provider, time));
     }
 
     /** 昵称修改：输入框校验非空后就地保存（不再跳页面） */
@@ -369,7 +563,9 @@ public class MainActivity extends AppCompatActivity {
         currentTab = target;
         AppLog.d(TAG, "切到 tab " + target);
 
-        if (target == 0) {
+        if (target == 2) {
+            ensureLocation();
+        } else if (target == 0) {
             // 同学录页在 onResume 时自行刷新（本地 + 服务端两路数据）
             AppLog.d(TAG, "回到同学录");
         }
@@ -450,6 +646,11 @@ public class MainActivity extends AppCompatActivity {
             AppLog.d(TAG, "已注销网络变化接收器");
         }
         bannerHandler.removeCallbacksAndMessages(null);
+        locationHandler.removeCallbacksAndMessages(null);
+        if (locatingSignal != null) {
+            locatingSignal.cancel();
+            locatingSignal = null;
+        }
     }
 
     @Override

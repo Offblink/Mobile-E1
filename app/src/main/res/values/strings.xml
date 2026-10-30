@@ -70,16 +70,12 @@
     <string name="download_starting">启动中…</string>
     <string name="notify_permission_denied">通知权限被拒：下载仍会进行，但没有进度通知</string>
     <string name="tools_title">工具箱</string>
-    <string name="location_fetch">定位一次（ACCESS_FINE_LOCATION）</string>
-    <string name="location_idle">尚未定位</string>
-    <string name="location_result">纬度 %1$f\n经度 %2$f\n来源 %3$s</string>
-    <string name="location_permission_denied">定位权限被拒绝</string>
-    <string name="location_none">没有可用定位（模拟器可先在 emulator 控制台 geo fix）</string>
-    <string name="music_play">播放（MediaPlayer）</string>
-    <string name="music_stop">停止</string>
-    <string name="music_playing">播放中…</string>
-    <string name="music_done">播放完毕</string>
-    <string name="music_failed">播放失败：%1$s</string>
+    <string name="mine_location_hint">进入页面自动定位 · 经纬度离线枚举省份</string>
+    <string name="mine_location_loading">正在获取位置…</string>
+    <string name="mine_location_denied">定位权限被拒绝，可在系统设置里开启</string>
+    <string name="mine_location_none">没有拿到定位（模拟器可先 adb emu geo fix 经度 纬度）</string>
+    <string name="mine_location_outside">境外</string>
+    <string name="mine_location_detail">%1$s, %2$s · %3$s · %4$s</string>
     <string name="service_bind">绑定服务</string>
     <string name="service_unbind">解绑</string>
     <string name="service_make_note">调用 makeNote() 生成便签</string>
@@ -160,7 +156,6 @@
 
     <!-- 工具箱分区 -->
     <string name="tools_section_content">内容</string>
-    <string name="tools_section_device">设备</string>
     <string name="tools_section_network">网络</string>
     <string name="tools_section_debug">调试</string>
     <string name="tools_entry_draft">草稿箱</string>
@@ -176,14 +171,10 @@
     <!-- 工具箱条目 -->
     <string name="tools_entry_draft_sub">文件存储：写一段文本，退出后仍在</string>
     <string name="tools_entry_download_sub">前台服务下载 + 进度通知</string>
-    <string name="tools_entry_device">定位与音频</string>
-    <string name="tools_entry_device_sub">一次定位、播放内置音频</string>
     <string name="tools_entry_service">服务演示</string>
     <string name="tools_entry_service_sub">绑定式 Service，拿 IBinder 直接调用</string>
     <string name="tools_entry_json_sub">org.json 与 Gson 解析同一接口</string>
     <string name="tools_entry_rss_sub">XmlPullParser 解析 RSS</string>
     <string name="tools_entry_diag_sub">启动模式、广播收发、隐式 Intent</string>
-    <string name="device_title">定位与音频</string>
-    <string name="audio_section">音频</string>
     <string name="service_title">绑定式服务</string>
 </resources>

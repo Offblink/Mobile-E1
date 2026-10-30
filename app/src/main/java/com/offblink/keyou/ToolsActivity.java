@@ -47,11 +47,6 @@ public class ToolsActivity extends KeyouActivity {
                 R.string.tools_entry_draft_sub, DraftActivity.class));
         items.add(new Item(null, R.string.tools_entry_download,
                 R.string.tools_entry_download_sub, DownloadActivity.class));
-        items.add(new Item(getString(R.string.tools_section_device), 0, 0, null));
-        items.add(new Item(null, R.string.tools_entry_device,
-                R.string.tools_entry_device_sub, DeviceActivity.class));
-        items.add(new Item(null, R.string.tools_entry_service,
-                R.string.tools_entry_service_sub, ServiceActivity.class));
         items.add(new Item(getString(R.string.tools_section_network), 0, 0, null));
         items.add(new Item(null, R.string.json_compare_title,
                 R.string.tools_entry_json_sub, JsonCompareActivity.class));
@@ -60,6 +55,8 @@ public class ToolsActivity extends KeyouActivity {
         items.add(new Item(getString(R.string.tools_section_debug), 0, 0, null));
         items.add(new Item(null, R.string.tools_entry_diag,
                 R.string.tools_entry_diag_sub, DiagnosticsActivity.class));
+        items.add(new Item(null, R.string.tools_entry_service,
+                R.string.tools_entry_service_sub, ServiceActivity.class));
 
         RecyclerView rv = findViewById(R.id.rv_tools);
         rv.setLayoutManager(new LinearLayoutManager(this));

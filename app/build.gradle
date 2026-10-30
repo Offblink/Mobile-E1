@@ -45,3 +45,49 @@ dependencies {
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.ext.junit
 }
+
+// 本机工程路径含中文（Desktop\mobile\实验\1）。Gradle 把 worker 的 classpath 写进
+// @argfile 时用 UTF-8，JDK 启动器却按系统编码（GBK）读，中文路径变成乱码，
+// 表现为测试类 ClassNotFoundException。这里只对 Test 任务把项目内的 classpath
+// 条目镜像到 ASCII 临时目录，构建产物与源码位置都不动。
+def asciiTestRoot = new File(System.getProperty('java.io.tmpdir'), 'keyou-test-classpath')
+def mirrorTestClasspath = tasks.register('mirrorTestClasspath', Sync) {
+    dependsOn 'compileDebugUnitTestJavaWithJavac', 'bundleDebugClassesToRuntimeJar',
+            'processDebugJavaRes', 'processDebugResources'
+    into asciiTestRoot
+    from(layout.buildDirectory.dir(
+            'intermediates/javac/debugUnitTest/compileDebugUnitTestJavaWithJavac/classes')) {
+        into 'test-classes'
+    }
+    from(layout.buildDirectory.file(
+            'intermediates/runtime_app_classes_jar/debug/bundleDebugClassesToRuntimeJar/classes.jar')) {
+        into 'app'
+    }
+    from(layout.buildDirectory.dir(
+            'intermediates/java_res/debug/processDebugJavaRes/out')) {
+        into 'java-res'
+    }
+    from(layout.buildDirectory.file(
+            'intermediates/compile_and_runtime_r_class_jar/debug/processDebugResources/R.jar')) {
+        into 'r'
+    }
+}
+
+afterEvaluate {
+    def projectRoot = projectDir.absolutePath
+    tasks.withType(Test).configureEach { testTask ->
+        testTask.dependsOn mirrorTestClasspath
+        // 原来的 classpath 里只保留缓存中的三方依赖（工程目录下的产物已被镜像替换）
+        def externalClasspath = testTask.classpath.filter {
+            !it.absolutePath.startsWith(projectRoot)
+        }
+        testTask.testClassesDirs = files(new File(asciiTestRoot, 'test-classes'))
+        testTask.classpath = files(
+                new File(asciiTestRoot, 'test-classes'),
+                new File(asciiTestRoot, 'app/classes.jar'),
+                new File(asciiTestRoot, 'java-res'),
+                new File(asciiTestRoot, 'r/R.jar'),
+                externalClasspath
+        )
+    }
+}
