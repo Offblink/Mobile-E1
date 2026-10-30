@@ -103,7 +103,11 @@ public class JsonCompareActivity extends AppCompatActivity {
             Type type = new TypeToken<List<Mate>>() {
             }.getType();
             List<Mate> mates = new Gson().fromJson(data.getJSONArray("list").toString(), type);
-            return "共 " + mates.size() + " 条\n" + Mate.summarize(mates);
+            StringBuilder sb = new StringBuilder("共 ").append(mates.size()).append(" 条\n");
+            for (Mate m : mates) {
+                sb.append(m.getId()).append(' ').append(m.brief()).append('\n');
+            }
+            return sb.toString().trim();
         } catch (Exception e) {
             Log.e(TAG, "Gson 解析失败", e);
             return "解析失败: " + e.getMessage();

@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
             editNicknameLauncher.launch(i);
         });
 
+        findViewById(R.id.btn_mates).setOnClickListener(v ->
+                startActivity(new Intent(this, MateActivity.class)));
         findViewById(R.id.btn_contacts).setOnClickListener(v ->
                 startActivity(new Intent(this, ContactListActivity.class)));
         findViewById(R.id.btn_chat).setOnClickListener(v ->

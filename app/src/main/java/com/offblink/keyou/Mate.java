@@ -3,56 +3,69 @@ package com.offblink.keyou;
 import java.util.List;
 
 /**
- * 任务 7：Gson 反序列化目标实体（字段与 server 的 Mate 对齐）。
- * Gson 会按字段名自动映射 JSON key；@SerializedName 可处理命名不一致。
+ * 任务 9：Gson 序列化/反序列化目标实体（字段与 server 的 Mate 一致）。
+ * Gson 按字段名自动映射 JSON key；setter 供反序列化赋值使用。
  */
 public class Mate {
 
-    private long id;
+    private Long id;
     private String name;
     private String phone;
     private String email;
     private String gender;
     private String remark;
 
-    public long getId() {
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getPhone() {
         return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getEmail() {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getGender() {
         return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getRemark() {
         return remark;
     }
 
-    /** Gson 解析结果的一行摘要（对比页展示用） */
-    public String brief() {
-        return id + " " + name + " " + phone;
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
-    /** 解析结果统计：从 List<Mate> 提取（对比页展示用） */
-    public static String summarize(List<Mate> mates) {
-        if (mates == null || mates.isEmpty()) {
-            return "(空)";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (Mate m : mates) {
-            sb.append(m.brief()).append('\n');
-        }
-        return sb.toString().trim();
+    /** 列表行展示文本 */
+    public String brief() {
+        return name + " · " + (phone != null ? phone : "-")
+                + (gender != null ? " · " + gender : "");
     }
 }

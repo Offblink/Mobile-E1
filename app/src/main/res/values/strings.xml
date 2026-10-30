@@ -35,6 +35,23 @@
     <string name="launch_relaunch_self">再次启动自己（观察实例数）</string>
     <string name="launch_goto_login">跳回登录页（观察清栈）</string>
 
+    <!-- 任务 9：SSM 整合班级成员管理 -->
+    <string name="mate_title">班级成员（SSM 后端）</string>
+    <string name="mate_search_hint">按姓名查询…</string>
+    <string name="mate_search">查询</string>
+    <string name="mate_add">＋ 新增成员</string>
+    <string name="mate_add_title">新增班级成员</string>
+    <string name="mate_edit_title">编辑班级成员</string>
+    <string name="mate_remark_hint">备注</string>
+    <string name="mate_loading">加载中…</string>
+    <string name="mate_empty">暂无成员数据，点下方按钮新增</string>
+    <string name="mate_saved">已保存</string>
+    <string name="mate_deleted">已删除</string>
+    <string name="mate_delete_title">删除成员</string>
+    <string name="mate_delete_message">确定删除 %1$s 吗？</string>
+    <string name="mate_parse_error">响应解析失败</string>
+    <string name="mate_network_error">网络异常：%1$s</string>
+
     <!-- 任务 8：服务 / 定位 / 多媒体 -->
     <string name="download_title">下载中心（前台服务）</string>
     <string name="download_start">开始下载演示文件</string>

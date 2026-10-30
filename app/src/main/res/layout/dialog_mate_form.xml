@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 任务 9：班级成员新增/编辑表单（AlertDialog 内嵌） -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="16dp">
+
+    <EditText
+        android:id="@+id/et_m_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/contact_name_hint"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/et_m_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/contact_phone_hint"
+        android:inputType="phone"
+        android:layout_marginTop="8dp" />
+
+    <EditText
+        android:id="@+id/et_m_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/contact_email_hint"
+        android:inputType="textEmailAddress"
+        android:layout_marginTop="8dp" />
+
+    <EditText
+        android:id="@+id/et_m_remark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/mate_remark_hint"
+        android:inputType="text"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

@@ -34,6 +34,13 @@
         android:textSize="14sp"
         android:layout_marginBottom="32dp" />
 
+    <!-- 任务 9 综合案例：班级成员管理（启动即加载，放最上） -->
+    <Button
+        android:id="@+id/btn_mates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mate_title" />
+
     <Button
         android:id="@+id/btn_contacts"
         android:layout_width="match_parent"
