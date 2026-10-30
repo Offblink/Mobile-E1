@@ -158,5 +158,7 @@
     <!-- 任务 1：关于 / Log 自检 -->
     <string name="about_title">关于 · Log 自检</string>
     <string name="about_log_check">输出 v/d/i/w/e 五级日志</string>
+    <string name="about_log_idle">点上面的按钮后，这里会回显五条日志摘要</string>
+    <string name="about_log_emitted">已输出 5 条日志（Logcat 过滤 Keyou/About）</string>
     <string name="about_log_guide">Logcat 过滤框输入 Keyou 看全部页面日志；输入 Keyou/About 只看本页。\nTAG 约定：Keyou/页面名，如 Keyou/Login、Keyou/Main。\n\n项目结构（任务 1 观察点）：\n• app/src/main/java —— 源码\n• app/src/main/res/layout —— 布局\n• app/src/main/res/values —— 字符串、颜色、主题\n• AndroidManifest.xml —— 清单（Activity 注册、启动模式、权限）</string>
 </resources>

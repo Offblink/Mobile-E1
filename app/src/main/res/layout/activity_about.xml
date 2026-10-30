@@ -31,6 +31,18 @@
             android:layout_height="wrap_content"
             android:text="@string/about_log_check" />
 
+        <!-- 屏上回显：证明按钮确实触发了五级日志（不必切到 Logcat 也能看到结果） -->
+        <TextView
+            android:id="@+id/tv_log_output"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="?attr/colorSurfaceVariant"
+            android:fontFamily="monospace"
+            android:padding="12dp"
+            android:textSize="12sp"
+            android:text="@string/about_log_idle" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
