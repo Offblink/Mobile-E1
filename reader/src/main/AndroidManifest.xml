@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- 任务 6：申请主 App 的 signature 级读权限（同 debug 签名 → 安装时自动授予） -->
+    <uses-permission android:name="com.offblink.keyou.permission.READ_PROVIDER" />
+
     <application
         android:allowBackup="true"
         android:label="@string/app_name"

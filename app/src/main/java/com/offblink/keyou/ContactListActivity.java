@@ -36,6 +36,35 @@ public class ContactListActivity extends AppCompatActivity {
     private final List<Contact> data = new ArrayList<>();
     private EditText etKeyword;
 
+    /**
+     * 任务 6：运行时权限 —— 现代结果 API（ActivityResultContracts.RequestPermission），
+     * 三态流程（android/skills android-permissions-security 口径）：
+     * 1. checkSelfPermission 已授权 → 直接干活；
+     * 2. shouldShowRequestPermissionRationale = true → 先解释再申请；
+     * 3. 拒绝且不再询问 → 引导去系统设置页。
+     */
+    private final ActivityResultLauncher<String> contactsPermissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(), granted -> {
+                if (granted) {
+                    importSystemContacts();
+                } else {
+                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
+                    if (!shouldShowRequestPermissionRationale(
+                            android.Manifest.permission.READ_CONTACTS)) {
+                        // 永久拒绝（"不再询问"）：引导到应用详情设置页
+                        Toast.makeText(this, R.string.permission_permanent_denied,
+                                Toast.LENGTH_LONG).show();
+                        android.content.Intent settings =
+                                new android.content.Intent(android.provider.Settings
+                                        .ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        android.net.Uri.fromParts("package",
+                                                getPackageName(), null));
+                        startActivity(settings);
+                    }
+                }
+            });
+
     /** 编辑页回传：新增/编辑完成后刷新全表 */
     private final ActivityResultLauncher<Intent> editLauncher =
             registerForActivityResult(
@@ -89,8 +118,62 @@ public class ContactListActivity extends AppCompatActivity {
         findViewById(R.id.btn_add_contact).setOnClickListener(v ->
                 editLauncher.launch(new Intent(this, ContactEditActivity.class)));
 
+        // 任务 6：导入系统联系人（READ_CONTACTS 危险权限运行时申请）
+        findViewById(R.id.btn_import_system).setOnClickListener(v -> requestContactsPermission());
+
         seedIfEmpty();
         refresh("");
+    }
+
+    /** 任务 6：三态流程入口 —— 已授权直接导入，否则发起运行时申请 */
+    private void requestContactsPermission() {
+        if (androidx.core.content.ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.READ_CONTACTS)
+                == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            importSystemContacts();
+        } else {
+            contactsPermissionLauncher.launch(android.Manifest.permission.READ_CONTACTS);
+        }
+    }
+
+    /**
+     * 任务 6：ContentResolver 读系统通讯录（理解 URI 与系统 Provider），
+     * 读到的联系人插入本地 contact 表（按 phone 去重）。
+     */
+    private void importSystemContacts() {
+        int imported = 0;
+        try (android.database.Cursor cursor = getContentResolver().query(
+                android.provider.ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                new String[]{
+                        android.provider.ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                        android.provider.ContactsContract.CommonDataKinds.Phone.NUMBER},
+                null, null, null)) {
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    String name = cursor.getString(0);
+                    String phone = cursor.getString(1);
+                    if (name == null || phone == null) {
+                        continue;
+                    }
+                    // 简单去重：本地已有同名同号就跳过
+                    boolean exists = false;
+                    for (Contact c : dao.query("")) {
+                        if (name.equals(c.getName()) && phone.equals(c.getPhone())) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        dao.insert(new Contact(0, name, phone, null, "保密"));
+                        imported++;
+                    }
+                }
+            }
+        }
+        refresh(etKeyword.getText().toString().trim());
+        Toast.makeText(this,
+                getString(R.string.import_result, imported), Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "导入系统联系人 " + imported + " 条");
     }
 
     /** 空库时事务批量导入种子数据（importBatch 内部是真事务） */

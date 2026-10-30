@@ -35,6 +35,12 @@
     <string name="launch_relaunch_self">再次启动自己（观察实例数）</string>
     <string name="launch_goto_login">跳回登录页（观察清栈）</string>
 
+    <!-- 任务 6：权限与跨 App -->
+    <string name="contact_import_system">导入系统联系人（READ_CONTACTS）</string>
+    <string name="permission_denied">权限被拒绝，无法读取系统通讯录</string>
+    <string name="permission_permanent_denied">权限被永久拒绝，请到系统设置里开启「通讯录」权限</string>
+    <string name="import_result">导入 %1$d 条系统联系人</string>
+
     <!-- 任务 5：文件草稿箱 / SP / SQLite 通讯录 -->
     <string name="draft_title">草稿箱（文件存储）</string>
     <string name="draft_hint">写点什么，保存到应用私有文件…</string>
