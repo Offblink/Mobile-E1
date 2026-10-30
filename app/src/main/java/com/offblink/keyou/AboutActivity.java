@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * 约定：全 App TAG 统一 "Keyou/xxx"，Logcat 过滤框输入 Keyou 即可看到全部页面日志；
  * 输入 Keyou/Login 可单独看登录页，这就是 Logcat 的 TAG 过滤用法。
  */
-public class AboutActivity extends AppCompatActivity {
+public class AboutActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/About";
 

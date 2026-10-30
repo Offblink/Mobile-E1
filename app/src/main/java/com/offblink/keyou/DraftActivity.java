@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
  * 文件落位 /data/data/com.offblink.keyou/files/draft.txt（应用私有目录，卸载即删）。
  * 首次进入必然触发 FileNotFoundException —— 按"还没有草稿"处理，不是错误。
  */
-public class DraftActivity extends AppCompatActivity {
+public class DraftActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/Draft";
     private static final String FILE_NAME = "draft.txt";

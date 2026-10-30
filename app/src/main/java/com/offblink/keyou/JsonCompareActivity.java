@@ -27,7 +27,7 @@ import java.util.List;
  *
  * 数据来自 server /api/mates（统一 {code,message,data:{list,total}}）。
  */
-public class JsonCompareActivity extends AppCompatActivity {
+public class JsonCompareActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/JsonCompare";
 

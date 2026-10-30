@@ -5,15 +5,25 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/mate_title"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="20dp"
-        android:background="?attr/colorSurfaceContainer" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="?attr/colorSurfaceContainer"
+        android:paddingEnd="20dp">
+
+        <include layout="@layout/view_back_bar" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/mate_title"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingVertical="20dp" />
+    </LinearLayout>
 
     <!-- 模糊查询 + 新增 -->
     <LinearLayout

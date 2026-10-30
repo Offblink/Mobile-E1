@@ -31,7 +31,7 @@ import androidx.core.content.ContextCompat;
  * - MediaPlayer：播放 assets 内置音频（prepare 异步，规避 IllegalStateException）；
  * - 相机：ACTION_IMAGE_CAPTURE 系统相机拍照回缩略图（onPictureReceived Bitmap）。
  */
-public class ToolsActivity extends AppCompatActivity {
+public class ToolsActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/Tools";
 

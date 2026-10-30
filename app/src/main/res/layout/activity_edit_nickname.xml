@@ -6,6 +6,8 @@
     android:gravity="center"
     android:padding="24dp">
 
+    <include layout="@layout/view_back_bar" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

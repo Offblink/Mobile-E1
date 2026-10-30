@@ -92,6 +92,21 @@ public class MainActivity extends AppCompatActivity {
         wirePageButtons();
         loadStats();
 
+        // 系统返回键：非首页 tab 时先回首页，首页再按才退出（现代返回分发 API）
+        getOnBackPressedDispatcher().addCallback(this,
+                new androidx.activity.OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        if (currentTab != 0) {
+                            switchTo(0);
+                        } else {
+                            // 关掉本回调再触发系统返回，避免死循环
+                            setEnabled(false);
+                            getOnBackPressedDispatcher().onBackPressed();
+                        }
+                    }
+                });
+
         // registerForActivityResult 回传：编辑昵称
         findViewById(R.id.btn_edit_nickname).setOnClickListener(v -> {
             Intent i = new Intent(this, EditNicknameActivity.class);

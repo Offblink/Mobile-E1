@@ -36,7 +36,7 @@ import java.util.List;
  * 2. 中文乱码：请求流必须 UTF-8（HttpUtil 已统一封装）；
  * 3. 列表不刷新：请求回调忘了切主线程 notifyDataSetChanged（HttpUtil 统一 post 回主线程）。
  */
-public class MateActivity extends AppCompatActivity {
+public class MateActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/Mate";
 
@@ -157,7 +157,7 @@ public class MateActivity extends AppCompatActivity {
                 dismissLoading();
                 loading = false;
                 // 网络异常统一提示（连不上 Tomcat / 超时 / 500）
-                showError(getString(R.string.mate_network_error, message));
+                showRetryableError(getString(R.string.mate_network_error, message));
             }
         });
     }
@@ -185,7 +185,7 @@ public class MateActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(String message, Exception e) {
-                    showError(getString(R.string.mate_network_error, message));
+                    showRetryableError(getString(R.string.mate_network_error, message));
                 }
             };
             if (saved.getId() != null) {
@@ -213,7 +213,7 @@ public class MateActivity extends AppCompatActivity {
 
                             @Override
                             public void onError(String message, Exception e) {
-                                showError(getString(R.string.mate_network_error, message));
+                                showRetryableError(getString(R.string.mate_network_error, message));
                             }
                         }))
                 .setNegativeButton(R.string.common_cancel, null)
@@ -222,6 +222,16 @@ public class MateActivity extends AppCompatActivity {
 
     private void showError(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    /** 网络类错误：弹可重试对话框（任务 9 验收点：异常统一提示） */
+    private void showRetryableError(String message) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.mate_error_title)
+                .setMessage(message)
+                .setPositiveButton(R.string.mate_retry, (d, w) -> reload())
+                .setNegativeButton(R.string.common_cancel, null)
+                .show();
     }
 
     private void dismissLoading() {

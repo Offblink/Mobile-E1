@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * EXTRA_ID 有值 = 编辑（预填并保存时 update），无值 = 新增（insert）。
  * 保存成功 setResult(RESULT_OK) + finish，列表页经 registerForActivityResult 刷新。
  */
-public class ContactEditActivity extends AppCompatActivity {
+public class ContactEditActivity extends KeyouActivity {
 
     public static final String EXTRA_ID = "contact_id";
 

@@ -24,7 +24,7 @@ import androidx.core.content.ContextCompat;
  * - POST_NOTIFICATIONS 运行时权限（Android 13+ 演示）；
  * - 动态接收进度广播刷新进度条（onDestroy 注销）。
  */
-public class DownloadActivity extends AppCompatActivity {
+public class DownloadActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/Download";
 

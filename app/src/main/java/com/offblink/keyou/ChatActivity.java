@@ -17,7 +17,7 @@ import java.util.List;
  * 任务 3：简易聊天室 —— 顶部标题栏 + 中间消息列表（左右气泡）+ 底部输入框与发送按钮。
  * 纯本地演示：发送后追加自己消息并模拟一条自动回复（不接后端，任务 7/9 联调后可扩展）。
  */
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/Chat";
 

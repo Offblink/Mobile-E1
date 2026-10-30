@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * 反复启动自己/跳主页，观察任务栈里实例数量与 onNewIntent 触发情况。
  * 四个子类的差异只在 AndroidManifest.xml 的 android:launchMode。
  */
-public abstract class LaunchModeLabActivity extends AppCompatActivity {
+public abstract class LaunchModeLabActivity extends KeyouActivity {
 
     private TextView tvInstance;
 

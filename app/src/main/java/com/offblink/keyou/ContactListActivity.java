@@ -27,7 +27,7 @@ import java.util.List;
  * - 底部「新增」→ 编辑页空表单；
  * - 首次进入空库时用事务批量导入种子数据（importBatch 真事务）。
  */
-public class ContactListActivity extends AppCompatActivity {
+public class ContactListActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/ContactList";
 

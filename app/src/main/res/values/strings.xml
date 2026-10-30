@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">课友</string>
+    <string name="back">返回</string>
 
     <!-- m3 胶囊导航 -->
     <string name="nav_home">首页</string>
@@ -64,7 +65,9 @@
     <string name="mate_delete_title">删除成员</string>
     <string name="mate_delete_message">确定删除 %1$s 吗？</string>
     <string name="mate_parse_error">响应解析失败</string>
-    <string name="mate_network_error">网络异常：%1$s</string>
+    <string name="mate_error_title">加载失败</string>
+    <string name="mate_retry">重试</string>
+    <string name="mate_network_error">网络异常：%1$s\n\n请确认服务端已启动：双击 scripts\\start-server.cmd（端口 8081）</string>
 
     <!-- 任务 8：服务 / 定位 / 多媒体 -->
     <string name="download_title">下载中心（前台服务）</string>

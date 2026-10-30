@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * 任务 2：编辑昵称并回传 —— setResult + finish，由 MainActivity 的
  * registerForActivityResult 接收（对应指导书 SecondActivity 回传样例）。
  */
-public class EditNicknameActivity extends AppCompatActivity {
+public class EditNicknameActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/EditNickname";
 

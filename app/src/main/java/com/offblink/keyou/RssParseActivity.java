@@ -18,7 +18,7 @@ import java.io.StringReader;
  * 要点：pull 解析是"拉模式"——nextToken()/next() 逐事件推进，
  * 只在需要时读取，内存占用与文档大小无关（对比 SAX 推模式的事件回调）。
  */
-public class RssParseActivity extends AppCompatActivity {
+public class RssParseActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/RssParse";
 

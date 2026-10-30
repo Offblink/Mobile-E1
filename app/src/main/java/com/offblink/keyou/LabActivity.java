@@ -19,7 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * 任务 4 验收点：自定义广播（静态 vs 动态对比）、有序广播 priority 与 abortBroadcast 截断。
  * 任务 7 的演示入口后续在此追加（JSON 双解析等）。
  */
-public class LabActivity extends AppCompatActivity {
+public class LabActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/Lab";
 

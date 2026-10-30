@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  统一返回栏：← 返回箭头（wrap_content，可单独一行，也可与标题并排）。
+  由 KeyouActivity 基类在 onContentChanged() 里自动接 finish()，
+  各页面无需写任何 Java 代码。
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/back"
+        android:padding="10dp"
+        android:src="@drawable/ic_arrow_back" />
+
+</FrameLayout>
