@@ -3,10 +3,17 @@ package com.offblink.keyou;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.io.File;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -183,6 +190,8 @@ public class ContactGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         h.name.setText(name);
         h.phone.setText(subtitle(contact));
         h.letter.setText(name.isEmpty() ? "?" : name.substring(0, 1));
+        bindAvatar(h, contact);
+        bindSource(h, contact);
 
         // 组与组之间留 10dp；同组行紧贴，圆角卡片由 ContactGroupDecoration 画
         RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) h.itemView.getLayoutParams();
@@ -191,6 +200,33 @@ public class ContactGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             lp.topMargin = topMargin;
             h.itemView.setLayoutParams(lp);
         }
+    }
+
+    /** 有头像文件就圆裁显示并盖住首字，没有就露出首字 */
+    private void bindAvatar(ContactHolder h, Contact contact) {
+        String path = ContactStyle.emptyIfNull(contact.getAvatar());
+        if (path.isEmpty() || !new File(path).exists()) {
+            Glide.with(h.itemView).clear(h.avatar);
+            h.avatar.setVisibility(View.GONE);
+            h.letter.setVisibility(View.VISIBLE);
+            return;
+        }
+        h.avatar.setVisibility(View.VISIBLE);
+        h.letter.setVisibility(View.VISIBLE);   // 图片盖在上面，加载失败时仍有首字兜底
+        Glide.with(h.itemView)
+                .load(new File(path))
+                .apply(RequestOptions.bitmapTransform(new CircleCrop()))
+                .into(h.avatar);
+    }
+
+    /** 来源角标：班级走主色容器，本地走中性色 */
+    private void bindSource(ContactHolder h, Contact contact) {
+        boolean fromClass = contact.isFromClass();
+        h.source.setText(fromClass ? R.string.contacts_source_class : R.string.contacts_source_local);
+        h.source.setBackgroundResource(fromClass
+                ? R.drawable.bg_badge_class : R.drawable.bg_badge_local);
+        h.source.setTextColor(context.getColor(fromClass
+                ? R.color.md_on_primary_container : R.color.md_on_surface_variant));
     }
 
     /** 副标题：优先电话，没电话退到邮箱，都没有显示占位符 */
@@ -220,12 +256,16 @@ public class ContactGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         final TextView name;
         final TextView phone;
         final TextView letter;
+        final TextView source;
+        final ImageView avatar;
 
         ContactHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tv_name);
             phone = itemView.findViewById(R.id.tv_phone);
             letter = itemView.findViewById(R.id.tv_letter);
+            source = itemView.findViewById(R.id.tv_source);
+            avatar = itemView.findViewById(R.id.iv_avatar);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();

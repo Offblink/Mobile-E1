@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -50,13 +49,13 @@ public class DownloadService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate");
+        AppLog.d(TAG, "onCreate");
         createChannel();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "onStartCommand");
+        AppLog.i(TAG, "onStartCommand");
         // 8.0+ 关键：先 startForeground 占位，再做耗时下载
         startForeground(NOTIFICATION_ID, buildNotification(0, false));
         if (!running && intent != null) {
@@ -84,16 +83,16 @@ public class DownloadService extends Service {
             try {
                 long bytes = downloadOnce(base + path, fileName);
                 ServerConfig.remember(this, base);
-                Log.i(TAG, "下载完成: " + fileName + " (" + bytes + "B) from " + base);
+                AppLog.i(TAG, "下载完成: " + fileName + " (" + bytes + "B) from " + base);
                 updateDone("已保存到 files/" + fileName + "（" + bytes + " 字节）");
                 finishDownload();
                 return;
             } catch (Exception e) {
                 last = e;
-                Log.w(TAG, "从 " + base + " 下载失败: " + e.getMessage());
+                AppLog.w(TAG, "从 " + base + " 下载失败: " + e.getMessage());
             }
         }
-        Log.e(TAG, "下载失败", last);
+        AppLog.e(TAG, "下载失败", last);
         updateDone("下载失败: " + (last != null ? last.getMessage() : "未知错误"));
         finishDownload();
     }
@@ -199,6 +198,6 @@ public class DownloadService extends Service {
     public void onDestroy() {
         super.onDestroy();
         executor.shutdownNow();
-        Log.d(TAG, "onDestroy");
+        AppLog.d(TAG, "onDestroy");
     }
 }

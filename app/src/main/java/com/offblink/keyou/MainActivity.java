@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -53,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     /** 登录页写「记住密码」用的 SP（退出登录时清掉） */
     private static final String LOGIN_SP = "login";
 
-    private TextView tvWelcome;
     private TextView tvNetBanner;
     private TextView tvNickname;
     private TextView tvAvatarLetter;
@@ -62,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     private String account = "同学";
     private String nickname = "同学";
 
-    private HomeMembers homeMembers;
     private ChatPanel chatPanel;
 
     private final Handler bannerHandler = new Handler(Looper.getMainLooper());
@@ -88,33 +85,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.v(TAG, "onCreate: verbose 日志");
-        Log.d(TAG, "onCreate: debug 日志");
-        Log.i(TAG, "onCreate: info 日志");
-        Log.w(TAG, "onCreate: warn 日志");
-        Log.e(TAG, "onCreate: error 日志（演示用，非真实错误）");
+        AppLog.v(TAG, "onCreate: verbose 日志");
+        AppLog.d(TAG, "onCreate: debug 日志");
+        AppLog.i(TAG, "onCreate: info 日志");
+        AppLog.w(TAG, "onCreate: warn 日志");
+        AppLog.e(TAG, "onCreate: error 日志（演示用，非真实错误）");
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("username")) {
             account = intent.getStringExtra("username");
-            Log.i(TAG, "收到 Bundle: username=" + account
+            AppLog.i(TAG, "收到 Bundle: username=" + account
                     + ", age=" + intent.getIntExtra("age", -1)
                     + ", isVip=" + intent.getBooleanExtra("isVip", false)
                     + ", score=" + intent.getDoubleExtra("score", 0));
         }
         nickname = ProfileStore.nickname(this, account);
 
-        tvWelcome = findViewById(R.id.tv_welcome);
         tvNetBanner = findViewById(R.id.tv_net_banner);
         tvNickname = findViewById(R.id.tv_nickname);
         tvAvatarLetter = findViewById(R.id.tv_avatar_letter);
         ivAvatar = findViewById(R.id.iv_avatar);
-        tvWelcome.setText(getString(R.string.home_welcome, nickname));
         tvNickname.setText(nickname);
 
         setupNav();
         bindPages();
-        loadStats();
         renderAvatar();
 
         // 系统返回键：非首页 tab 时先回首页，首页再按才退出
@@ -136,20 +130,6 @@ public class MainActivity extends AppCompatActivity {
     // ---------- 页面装配 ----------
 
     private void bindPages() {
-        homeMembers = new HomeMembers(this, findViewById(R.id.page_home), new HomeMembers.Listener() {
-            @Override
-            public void onTotal(long total) {
-                ((TextView) findViewById(R.id.tv_stat_mates)).setText(String.valueOf(total));
-            }
-
-            @Override
-            public void onError(String message) {
-                ((TextView) findViewById(R.id.tv_stat_mates)).setText("—");
-                Log.w(TAG, "班级成员加载失败: " + message);
-            }
-        });
-        homeMembers.attach();
-
         ContactsPage.attach(this, findViewById(R.id.page_contacts));
 
         chatPanel = new ChatPanel();
@@ -166,8 +146,8 @@ public class MainActivity extends AppCompatActivity {
         tvNickname.setOnClickListener(v -> showNicknameDialog());
         findViewById(R.id.btn_tools).setOnClickListener(v ->
                 startActivity(new Intent(this, ToolsActivity.class)));
-        findViewById(R.id.btn_about).setOnClickListener(v ->
-                startActivity(new Intent(this, AboutActivity.class)));
+        findViewById(R.id.btn_logs).setOnClickListener(v ->
+                startActivity(new Intent(this, LogActivity.class)));
         findViewById(R.id.btn_logout).setOnClickListener(v -> confirmLogout());
     }
 
@@ -201,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
             nickname = value;
             ProfileStore.setNickname(this, value);
             tvNickname.setText(value);
-            tvWelcome.setText(getString(R.string.home_welcome, value));
             updateAvatarLetter();
             Toast.makeText(this, R.string.nickname_saved, Toast.LENGTH_SHORT).show();
             dialog.dismiss();
@@ -250,7 +229,9 @@ public class MainActivity extends AppCompatActivity {
 
     /** 相册选图 → 缩到 512px 存私有目录 → 记路径 */
     private void saveAvatar(Uri uri) {
-        File target = ProfileStore.avatarFile(this);
+        // 文件名带时间戳：Glide 按文件路径做缓存 key，覆盖同名文件会一直显示旧图
+        File target = new File(getFilesDir(), "avatar_" + System.currentTimeMillis() + ".jpg");
+        String previous = ProfileStore.avatarPath(this);
         try (InputStream in = getContentResolver().openInputStream(uri)) {
             if (in == null) {
                 throw new IllegalStateException("openInputStream 返回 null");
@@ -274,10 +255,16 @@ public class MainActivity extends AppCompatActivity {
             }
             bitmap.recycle();
             ProfileStore.setAvatarPath(this, target.getAbsolutePath());
+            if (previous != null && !previous.equals(target.getAbsolutePath())) {
+                File old = new File(previous);
+                if (old.exists() && !old.delete()) {
+                    AppLog.w(TAG, "旧头像删除失败: " + previous);
+                }
+            }
             renderAvatar();
             Toast.makeText(this, R.string.avatar_saved, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Log.e(TAG, "头像保存失败", e);
+            AppLog.e(TAG, "头像保存失败", e);
             Toast.makeText(this, R.string.avatar_pick_failed, Toast.LENGTH_SHORT).show();
         }
     }
@@ -288,13 +275,11 @@ public class MainActivity extends AppCompatActivity {
         navBar = findViewById(R.id.nav_bar);
         navPill = findViewById(R.id.nav_pill);
         pages = new View[]{
-                findViewById(R.id.page_home),
                 findViewById(R.id.page_contacts),
                 findViewById(R.id.page_chat),
                 findViewById(R.id.page_mine)
         };
         labels = new TextView[]{
-                findViewById(R.id.nav_label_home),
                 findViewById(R.id.nav_label_contacts),
                 findViewById(R.id.nav_label_chat),
                 findViewById(R.id.nav_label_mine)
@@ -308,8 +293,7 @@ public class MainActivity extends AppCompatActivity {
             pages[i].setVisibility(View.GONE);
         }
 
-        int[] tabIds = {R.id.nav_tab_home, R.id.nav_tab_contacts,
-                R.id.nav_tab_chat, R.id.nav_tab_mine};
+        int[] tabIds = {R.id.nav_tab_contacts, R.id.nav_tab_chat, R.id.nav_tab_mine};
         for (int i = 0; i < tabIds.length; i++) {
             final int target = i;
             findViewById(tabIds[i]).setOnClickListener(v -> switchTo(target));
@@ -383,26 +367,16 @@ public class MainActivity extends AppCompatActivity {
                 .start();
 
         currentTab = target;
-        Log.d(TAG, "切到 tab " + target);
+        AppLog.d(TAG, "切到 tab " + target);
 
         if (target == 0) {
-            loadStats();
-            if (homeMembers.isLoadedOnce()) {
-                homeMembers.reload();
-            }
+            // 同学录页在 onResume 时自行刷新（本地 + 服务端两路数据）
+            AppLog.d(TAG, "回到同学录");
         }
     }
 
     private int dp(int v) {
         return Math.round(v * getResources().getDisplayMetrics().density);
-    }
-
-    /** 本地联系人数（SQLite）—— 服务端成员数由 HomeMembers 回调写入 */
-    private void loadStats() {
-        TextView tvContacts = findViewById(R.id.tv_stat_contacts);
-        ContactDao dao = new ContactDao(this);
-        tvContacts.setText(String.valueOf(dao.query("").size()));
-        dao.close();
     }
 
     // ---------- 网络变化横幅 ----------
@@ -412,14 +386,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean connected = isCurrentlyConnected();
-                Log.i(TAG, "收到网络变化广播, connected=" + connected);
+                AppLog.i(TAG, "收到网络变化广播, connected=" + connected);
                 showBanner(getString(connected
                         ? R.string.banner_net_on : R.string.banner_net_off));
             }
         };
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(networkReceiver, filter);
-        Log.d(TAG, "已动态注册网络变化接收器");
+        AppLog.d(TAG, "已动态注册网络变化接收器");
     }
 
     private boolean isCurrentlyConnected() {
@@ -445,37 +419,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart");
+        AppLog.d(TAG, "onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
-        // 工具箱里可能改了草稿/下载数据，回来刷新本地统计
-        loadStats();
+        AppLog.d(TAG, "onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
+        AppLog.d(TAG, "onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop");
+        AppLog.d(TAG, "onStop");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy");
+        AppLog.d(TAG, "onDestroy");
         if (networkReceiver != null) {
             unregisterReceiver(networkReceiver);
             networkReceiver = null;
-            Log.d(TAG, "已注销网络变化接收器");
+            AppLog.d(TAG, "已注销网络变化接收器");
         }
         bannerHandler.removeCallbacksAndMessages(null);
     }
@@ -483,6 +455,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d(TAG, "onRestart");
+        AppLog.d(TAG, "onRestart");
     }
 }

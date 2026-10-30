@@ -3,7 +3,6 @@ package com.offblink.keyou;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -84,20 +83,20 @@ public final class HttpUtil {
                 result = execute(method, base + path, body);
             } catch (Exception e) {
                 lastError = e;
-                Log.w(TAG, method + " " + base + path + " 失败: " + e.getMessage());
+                AppLog.w(TAG, method + " " + base + path + " 失败: " + e.getMessage());
             }
 
             // 连接类失败 → 换备用地址再试一次
             if (result == null && allowFallback) {
                 String fallback = ServerConfig.fallback(ctx);
                 if (fallback != null && !fallback.equals(base)) {
-                    Log.i(TAG, method + " 回退到 " + fallback + path);
+                    AppLog.i(TAG, method + " 回退到 " + fallback + path);
                     try {
                         result = execute(method, fallback + path, body);
                         ServerConfig.remember(ctx, fallback);
                     } catch (Exception e) {
                         lastError = e;
-                        Log.w(TAG, method + " " + fallback + path + " 也失败: " + e.getMessage());
+                        AppLog.w(TAG, method + " " + fallback + path + " 也失败: " + e.getMessage());
                     }
                 }
             }
@@ -133,7 +132,7 @@ public final class HttpUtil {
             int code = conn.getResponseCode();
             if (code >= 200 && code < 300) {
                 String resp = readAll(conn.getInputStream());
-                Log.i(TAG, method + " " + url + " -> " + code + " (" + resp.length() + "B)");
+                AppLog.i(TAG, method + " " + url + " -> " + code + " (" + resp.length() + "B)");
                 return resp;
             }
             throw new IllegalStateException("HTTP " + code);

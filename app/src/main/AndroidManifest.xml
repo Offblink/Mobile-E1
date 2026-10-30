@@ -42,12 +42,14 @@
 
         <activity android:name=".MainActivity" android:exported="false" />
         <activity android:name=".ContactDetailActivity" android:exported="false" />
-        <activity android:name=".AboutActivity" android:exported="false" />
+        <activity android:name=".LogActivity" android:exported="false" />
         <activity android:name=".DraftActivity" android:exported="false" />
         <activity android:name=".JsonCompareActivity" android:exported="false" />
         <activity android:name=".RssParseActivity" android:exported="false" />
         <activity android:name=".DownloadActivity" android:exported="false" />
         <activity android:name=".ToolsActivity" android:exported="false" />
+        <activity android:name=".DeviceActivity" android:exported="false" />
+        <activity android:name=".ServiceActivity" android:exported="false" />
         <activity android:name=".DiagnosticsActivity" android:exported="false" />
 
         <!-- 前台服务下载（dataSync 类型）+ 绑定式便签服务 -->

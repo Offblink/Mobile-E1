@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -23,7 +22,7 @@ public class DiagnosticsActivity extends KeyouActivity {
     private final BroadcastReceiver dynamicSyncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("Keyou/Broadcast/Dynamic",
+            AppLog.i("Keyou/Broadcast/Dynamic",
                     "动态注册接收器收到自定义广播: " + intent.getStringExtra("detail"));
         }
     };
@@ -32,7 +31,7 @@ public class DiagnosticsActivity extends KeyouActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diagnostics);
-        Log.d(TAG, "onCreate");
+        AppLog.d(TAG, "onCreate");
 
         // 动态注册同一 action，对比静态/动态两个接收器都收到
         IntentFilter syncFilter = new IntentFilter(BroadcastActions.SYNC_DONE);
@@ -59,7 +58,7 @@ public class DiagnosticsActivity extends KeyouActivity {
             try {
                 startActivity(intent);
             } catch (Exception e) {
-                Log.e(TAG, "没有可处理 https 的应用", e);
+                AppLog.e(TAG, "没有可处理 https 的应用", e);
             }
         });
 
@@ -76,7 +75,7 @@ public class DiagnosticsActivity extends KeyouActivity {
             intent.setPackage(getPackageName());   // 8.0+ 适配关键：显式广播
             intent.putExtra("detail", "同学录同步完成（共 8 条）");
             sendBroadcast(intent);
-            Log.i(TAG, "已发送自定义广播（静态+动态接收器各应有 1 条日志）");
+            AppLog.i(TAG, "已发送自定义广播（静态+动态接收器各应有 1 条日志）");
             Toast.makeText(this, R.string.broadcast_custom_sent, Toast.LENGTH_SHORT).show();
         });
 
@@ -87,7 +86,7 @@ public class DiagnosticsActivity extends KeyouActivity {
             intent.setPackage(getPackageName());
             intent.putExtra("abort", false);
             sendOrderedBroadcast(intent, null);
-            Log.i(TAG, "已发送有序广播（不截断）：Logcat 应先 OrderedHigh 后 OrderedLow");
+            AppLog.i(TAG, "已发送有序广播（不截断）：Logcat 应先 OrderedHigh 后 OrderedLow");
             Toast.makeText(this, R.string.broadcast_ordered_sent, Toast.LENGTH_SHORT).show();
         });
 
@@ -98,13 +97,13 @@ public class DiagnosticsActivity extends KeyouActivity {
             intent.setPackage(getPackageName());
             intent.putExtra("abort", true);
             sendOrderedBroadcast(intent, null);
-            Log.i(TAG, "已发送有序广播（截断）：Logcat 应只有 OrderedHigh，无 OrderedLow");
+            AppLog.i(TAG, "已发送有序广播（截断）：Logcat 应只有 OrderedHigh，无 OrderedLow");
             Toast.makeText(this, R.string.broadcast_abort_sent, Toast.LENGTH_SHORT).show();
         });
     }
 
     private void launch(String mode, Class<?> target) {
-        Log.i(TAG, "启动模式演示: " + mode + " -> " + target.getSimpleName());
+        AppLog.i(TAG, "启动模式演示: " + mode + " -> " + target.getSimpleName());
         startActivity(new Intent(this, target));
     }
 
@@ -113,6 +112,6 @@ public class DiagnosticsActivity extends KeyouActivity {
         super.onDestroy();
         // 动态接收器成对注销
         unregisterReceiver(dynamicSyncReceiver);
-        Log.d(TAG, "已注销动态广播接收器");
+        AppLog.d(TAG, "已注销动态广播接收器");
     }
 }

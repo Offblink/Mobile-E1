@@ -1,10 +1,12 @@
 package com.offblink.keyou;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,16 +14,29 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,8 +54,17 @@ import java.util.Map;
  */
 public class ContactDetailActivity extends KeyouActivity {
 
-    /** -1 = 新增；> 0 = 编辑指定 id */
+    /** -1 = 新增；> 0 = 编辑指定 id（本地联系人） */
     public static final String EXTRA_ID = "contact_id";
+    /** 来源：0 = 本地 SQLite，1 = 服务端班级成员 */
+    public static final String EXTRA_SOURCE = "contact_source";
+    /** 班级成员的服务端 id 与字段（列表页直接带过来，省一次请求） */
+    public static final String EXTRA_REMOTE_ID = "contact_remote_id";
+    public static final String EXTRA_NAME = "contact_name";
+    public static final String EXTRA_PHONE = "contact_phone";
+    public static final String EXTRA_EMAIL = "contact_email";
+    public static final String EXTRA_GENDER = "contact_gender";
+    public static final String EXTRA_REMARK = "contact_remark";
 
     private static final String TAG = "Keyou/ContactDetail";
 
@@ -65,6 +89,14 @@ public class ContactDetailActivity extends KeyouActivity {
     private TextView genderCell;
     private String genderValue = GENDER_SECRET;
 
+    private int source = Contact.SOURCE_LOCAL;
+    private long remoteId = -1;
+    private String remark;
+    private String avatarPath;
+    private ImageView avatarImage;
+    private TextView sourceBadge;
+    private final Gson gson = new Gson();
+
     private TextView topTitle;
     private TextView saveButton;
     private View deleteButton;
@@ -72,15 +104,25 @@ public class ContactDetailActivity extends KeyouActivity {
     private TextView subView;
     private TextView avatarLetter;
 
+    /** 相册选头像（Photo Picker，无需存储权限） */
+    private final ActivityResultLauncher<PickVisualMediaRequest> avatarPicker =
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                if (uri != null) {
+                    saveAvatar(uri);
+                }
+            });
+
     @Override
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_detail);
-        Log.d(TAG, "onCreate");
+        AppLog.d(TAG, "onCreate");
 
         dao = new ContactDao(this);
         contactId = getIntent().getLongExtra(EXTRA_ID, -1);
-        isNew = contactId <= 0;
+        source = getIntent().getIntExtra(EXTRA_SOURCE, Contact.SOURCE_LOCAL);
+        remoteId = getIntent().getLongExtra(EXTRA_REMOTE_ID, -1);
+        isNew = source == Contact.SOURCE_LOCAL && contactId <= 0;
 
         topTitle = findViewById(R.id.tv_top_title);
         saveButton = findViewById(R.id.btn_save);
@@ -88,6 +130,12 @@ public class ContactDetailActivity extends KeyouActivity {
         nameView = findViewById(R.id.tv_name);
         subView = findViewById(R.id.tv_sub);
         avatarLetter = findViewById(R.id.tv_avatar_letter);
+        avatarImage = findViewById(R.id.iv_avatar);
+        sourceBadge = findViewById(R.id.tv_source);
+        findViewById(R.id.fl_contact_avatar).setOnClickListener(v -> avatarPicker.launch(
+                new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build()));
 
         buildTable(findViewById(R.id.tl_info));
 
@@ -260,6 +308,23 @@ public class ContactDetailActivity extends KeyouActivity {
         deleteButton.setVisibility(View.VISIBLE);
         deleteButton.setOnClickListener(v -> confirmDelete());
 
+        if (source == Contact.SOURCE_CLASS) {
+            // 班级成员：字段由列表页带过来，改动直接 PUT 回服务端
+            Contact remote = new Contact();
+            remote.setName(getIntent().getStringExtra(EXTRA_NAME));
+            remote.setPhone(getIntent().getStringExtra(EXTRA_PHONE));
+            remote.setEmail(getIntent().getStringExtra(EXTRA_EMAIL));
+            remote.setGender(getIntent().getStringExtra(EXTRA_GENDER));
+            remote.setRemark(getIntent().getStringExtra(EXTRA_REMARK));
+            remote.setSource(Contact.SOURCE_CLASS);
+            remote.setRemoteId(remoteId);
+            remark = remote.getRemark();
+            avatarPath = ContactAvatarStore.get(this, remoteId);
+            remote.setAvatar(avatarPath);
+            render(remote);
+            return;
+        }
+
         Contact found = null;
         // 数据层没有按 id 取单条的接口（ContactDao 未改动），整表查一次再匹配
         for (Contact contact : dao.query("")) {
@@ -308,7 +373,34 @@ public class ContactDetailActivity extends KeyouActivity {
 
         saved.clear();
         saved.putAll(values());
+        remark = contact.getRemark();
+        avatarPath = contact.getAvatar();
+        renderAvatar(contact.getName());
+        renderSource();
         updateHeader(contact.getName(), contact.getPhone(), contact.getEmail());
+    }
+
+    /** 有头像就圆裁显示（盖住首字），没有就露首字 */
+    private void renderAvatar(String name) {
+        String text = ContactStyle.emptyIfNull(name);
+        avatarLetter.setText(text.isEmpty() ? "?" : new String(Character.toChars(text.codePointAt(0))));
+        if (avatarPath == null || !new File(avatarPath).exists()) {
+            avatarImage.setVisibility(View.GONE);
+            return;
+        }
+        avatarImage.setVisibility(View.VISIBLE);
+        Glide.with(this)
+                .load(new File(avatarPath))
+                .apply(RequestOptions.bitmapTransform(new CircleCrop()))
+                .into(avatarImage);
+    }
+
+    private void renderSource() {
+        boolean fromClass = source == Contact.SOURCE_CLASS;
+        sourceBadge.setText(fromClass
+                ? R.string.contacts_source_class : R.string.contacts_source_local);
+        sourceBadge.setBackgroundResource(fromClass
+                ? R.drawable.bg_badge_class : R.drawable.bg_badge_local);
     }
 
     private Map<String, String> values() {
@@ -356,24 +448,30 @@ public class ContactDetailActivity extends KeyouActivity {
             return;
         }
 
+        if (source == Contact.SOURCE_CLASS) {
+            commitRemote(values);
+            return;
+        }
+
         Contact contact = new Contact();
         contact.setId(contactId);
         contact.setName(values.get(KEY_NAME));
         contact.setPhone(values.get(KEY_PHONE));
         contact.setEmail(values.get(KEY_EMAIL));
         contact.setGender(values.get(KEY_GENDER));
+        contact.setAvatar(avatarPath);
 
         int rows = dao.update(contact);
         if (rows <= 0) {
             revert();
             Toast.makeText(this, R.string.contacts_save_failed, Toast.LENGTH_SHORT).show();
-            Log.w(TAG, "update 影响 0 行，id=" + contactId);
+            AppLog.w(TAG, "update 影响 0 行，id=" + contactId);
             return;
         }
         render(contact);   // 用刚写入的值回填（去空白后的），并记为新的已保存快照
         setResult(RESULT_OK);
         Toast.makeText(this, R.string.contacts_saved, Toast.LENGTH_SHORT).show();
-        Log.i(TAG, "已回写 id=" + contactId + "，影响 " + rows + " 行");
+        AppLog.i(TAG, "已回写 id=" + contactId + "，影响 " + rows + " 行");
     }
 
     /** 新增模式：校验姓名非空 → insert → 回传 RESULT_OK */
@@ -392,18 +490,145 @@ public class ContactDetailActivity extends KeyouActivity {
         contact.setPhone(values.get(KEY_PHONE));
         contact.setEmail(values.get(KEY_EMAIL));
         contact.setGender(values.get(KEY_GENDER));
+        contact.setAvatar(avatarPath);
 
         long id = dao.insert(contact);
         if (id <= 0) {
             Toast.makeText(this, R.string.contacts_save_failed, Toast.LENGTH_SHORT).show();
-            Log.w(TAG, "insert 失败，返回 id=" + id);
+            AppLog.w(TAG, "insert 失败，返回 id=" + id);
             return;
         }
         closing = true;
         setResult(RESULT_OK);
         Toast.makeText(this, R.string.contacts_saved, Toast.LENGTH_SHORT).show();
-        Log.i(TAG, "新增成功 id=" + id);
+        AppLog.i(TAG, "新增成功 id=" + id);
         finish();
+    }
+
+    /** 班级成员：PUT /api/mate（Gson 序列化，改完用新值回填） */
+    private void commitRemote(Map<String, String> values) {
+        Mate mate = new Mate();
+        mate.setId(remoteId);
+        mate.setName(values.get(KEY_NAME));
+        mate.setPhone(values.get(KEY_PHONE));
+        mate.setEmail(values.get(KEY_EMAIL));
+        mate.setGender(values.get(KEY_GENDER));
+        mate.setRemark(remark);
+        HttpUtil.putJson(this, "/api/mate", gson.toJson(mate), new HttpUtil.Callback() {
+            @Override
+            public void onSuccess(String body) {
+                try {
+                    if (new JSONObject(body).getInt("code") != 0) {
+                        revert();
+                        Toast.makeText(ContactDetailActivity.this,
+                                new JSONObject(body).getString("message"),
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                } catch (Exception e) {
+                    AppLog.w(TAG, "PUT 响应解析失败", e);
+                }
+                Contact updated = new Contact();
+                updated.setName(values.get(KEY_NAME));
+                updated.setPhone(values.get(KEY_PHONE));
+                updated.setEmail(values.get(KEY_EMAIL));
+                updated.setGender(values.get(KEY_GENDER));
+                updated.setRemark(remark);
+                updated.setSource(Contact.SOURCE_CLASS);
+                updated.setRemoteId(remoteId);
+                updated.setAvatar(avatarPath);
+                render(updated);
+                setResult(RESULT_OK);
+                Toast.makeText(ContactDetailActivity.this, R.string.contacts_saved,
+                        Toast.LENGTH_SHORT).show();
+                AppLog.i(TAG, "班级成员已回写 id=" + remoteId);
+            }
+
+            @Override
+            public void onError(String message, Exception e) {
+                revert();
+                Toast.makeText(ContactDetailActivity.this,
+                        getString(R.string.mate_network_error, message), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /** 班级成员删除：DELETE /api/mate/{id} */
+    private void deleteRemote() {
+        HttpUtil.delete(this, "/api/mate/" + remoteId, new HttpUtil.Callback() {
+            @Override
+            public void onSuccess(String body) {
+                ContactAvatarStore.remove(ContactDetailActivity.this, remoteId);
+                setResult(RESULT_OK);
+                Toast.makeText(ContactDetailActivity.this, R.string.mate_deleted,
+                        Toast.LENGTH_SHORT).show();
+                AppLog.i(TAG, "删除班级成员 id=" + remoteId);
+                finish();
+            }
+
+            @Override
+            public void onError(String message, Exception e) {
+                closing = false;
+                Toast.makeText(ContactDetailActivity.this,
+                        getString(R.string.mate_network_error, message), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /** 相册选图 → 缩到 512px → 本地联系人写库 / 班级成员记在 ContactAvatarStore */
+    private void saveAvatar(Uri uri) {
+        File target = ContactAvatarStore.newAvatarFile(this);
+        try (InputStream in = getContentResolver().openInputStream(uri)) {
+            if (in == null) {
+                throw new IllegalStateException("openInputStream 返回 null");
+            }
+            byte[] raw = in.readAllBytes();
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(raw, 0, raw.length, bounds);
+            int sample = 1;
+            while (bounds.outWidth / (sample * 2) >= 512) {
+                sample *= 2;
+            }
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inSampleSize = sample;
+            Bitmap bitmap = BitmapFactory.decodeByteArray(raw, 0, raw.length, opts);
+            if (bitmap == null) {
+                throw new IllegalStateException("图片解码失败");
+            }
+            try (FileOutputStream out = new FileOutputStream(target)) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            }
+            bitmap.recycle();
+
+            String previous = avatarPath;
+            avatarPath = target.getAbsolutePath();
+            if (source == Contact.SOURCE_CLASS) {
+                ContactAvatarStore.put(this, remoteId, avatarPath);
+            } else if (!isNew) {
+                Contact contact = new Contact();
+                contact.setId(contactId);
+                contact.setName(textOf(KEY_NAME));
+                contact.setPhone(textOf(KEY_PHONE));
+                contact.setEmail(textOf(KEY_EMAIL));
+                contact.setGender(genderValue);
+                contact.setAvatar(avatarPath);
+                dao.update(contact);
+                setResult(RESULT_OK);
+            }
+            if (previous != null && !previous.equals(avatarPath)) {
+                File old = new File(previous);
+                if (old.exists() && !old.delete()) {
+                    AppLog.w(TAG, "旧头像删除失败: " + previous);
+                }
+            }
+            renderAvatar(textOf(KEY_NAME));
+            Toast.makeText(this, R.string.avatar_saved, Toast.LENGTH_SHORT).show();
+            AppLog.i(TAG, "头像已更新: " + avatarPath);
+        } catch (Exception e) {
+            AppLog.e(TAG, "头像保存失败", e);
+            Toast.makeText(this, R.string.avatar_pick_failed, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void pickGender() {
@@ -437,12 +662,22 @@ public class ContactDetailActivity extends KeyouActivity {
                 .setNegativeButton(R.string.common_cancel, null)
                 .setPositiveButton(R.string.contact_delete_ok, (dialog, which) -> {
                     closing = true;   // 先挡住失焦回写，再删
+                    if (source == Contact.SOURCE_CLASS) {
+                        deleteRemote();
+                        return;
+                    }
                     int rows = dao.delete(contactId);
+                    if (avatarPath != null) {
+                        File old = new File(avatarPath);
+                        if (old.exists() && !old.delete()) {
+                            AppLog.w(TAG, "头像删除失败: " + avatarPath);
+                        }
+                    }
                     setResult(RESULT_OK);
                     Toast.makeText(this,
                             rows > 0 ? R.string.contact_deleted : R.string.contacts_delete_failed,
                             Toast.LENGTH_SHORT).show();
-                    Log.i(TAG, "删除 id=" + contactId + "，影响 " + rows + " 行");
+                    AppLog.i(TAG, "删除 id=" + contactId + "，影响 " + rows + " 行");
                     finish();
                 })
                 .show();
@@ -453,7 +688,7 @@ public class ContactDetailActivity extends KeyouActivity {
     private void updateHeader(String name, String phone, String email) {
         String n = ContactStyle.emptyIfNull(name);
         nameView.setText(n.isEmpty() ? getString(R.string.contacts_name_placeholder) : n);
-        avatarLetter.setText(n.isEmpty() ? "?" : n.substring(0, 1));
+        renderAvatar(n);
 
         String p = ContactStyle.emptyIfNull(phone);
         String e = ContactStyle.emptyIfNull(email);
@@ -503,6 +738,6 @@ public class ContactDetailActivity extends KeyouActivity {
     protected void onDestroy() {
         super.onDestroy();
         dao.close();
-        Log.d(TAG, "onDestroy");
+        AppLog.d(TAG, "onDestroy");
     }
 }

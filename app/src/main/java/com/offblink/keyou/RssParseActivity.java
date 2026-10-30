@@ -1,7 +1,6 @@
 package com.offblink.keyou;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Xml;
 import android.widget.Button;
 import android.widget.TextView;
@@ -28,7 +27,7 @@ public class RssParseActivity extends KeyouActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_parse);
-        Log.d(TAG, "onCreate");
+        AppLog.d(TAG, "onCreate");
 
         tvRssResult = findViewById(R.id.tv_rss_result);
 
@@ -90,7 +89,7 @@ public class RssParseActivity extends KeyouActivity {
                 event = parser.next();
             }
         } catch (Exception e) {
-            Log.e(TAG, "RSS 解析失败", e);
+            AppLog.e(TAG, "RSS 解析失败", e);
             return "解析失败: " + e.getMessage();
         }
         String result = sb.toString().trim();

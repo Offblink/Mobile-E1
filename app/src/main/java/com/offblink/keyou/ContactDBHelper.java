@@ -3,7 +3,6 @@ package com.offblink.keyou;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
  * SQLiteOpenHelper —— contact.db 与 contact 表。
@@ -21,7 +20,7 @@ public class ContactDBHelper extends SQLiteOpenHelper {
     private static final String TAG = "Keyou/ContactDB";
 
     public static final String DB_NAME = "contact.db";
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
 
     public ContactDBHelper(Context ctx) {
         super(ctx, DB_NAME, null, VERSION);
@@ -35,8 +34,9 @@ public class ContactDBHelper extends SQLiteOpenHelper {
                 "name TEXT NOT NULL," +
                 "phone TEXT," +
                 "email TEXT," +
-                "gender TEXT)");
-        Log.i(TAG, "onCreate: 建表 contact（v2 schema，含 gender）");
+                "gender TEXT," +
+                "avatar TEXT)");
+        AppLog.i(TAG, "onCreate: 建表 contact（v3 schema，含 gender / avatar）");
     }
 
     @Override
@@ -44,7 +44,11 @@ public class ContactDBHelper extends SQLiteOpenHelper {
         // 参数化版本号升级路径：未来 VERSION=3 加列时接在 oldV<3 分支
         if (oldV < 2) {
             db.execSQL("ALTER TABLE contact ADD COLUMN gender TEXT");
-            Log.i(TAG, "onUpgrade: " + oldV + " -> " + newV + "，新增 gender 列");
+            AppLog.i(TAG, "onUpgrade: " + oldV + " -> " + newV + "，新增 gender 列");
+        }
+        if (oldV < 3) {
+            db.execSQL("ALTER TABLE contact ADD COLUMN avatar TEXT");
+            AppLog.i(TAG, "onUpgrade: " + oldV + " -> " + newV + "，新增 avatar 列");
         }
     }
 }

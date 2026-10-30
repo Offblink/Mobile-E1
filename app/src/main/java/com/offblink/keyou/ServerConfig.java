@@ -1,7 +1,6 @@
 package com.offblink.keyou;
 
 import android.content.Context;
-import android.util.Log;
 
 /**
  * 服务端地址解析。
@@ -61,7 +60,7 @@ public final class ServerConfig {
         cachedBase = baseUrl;
         ctx.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE)
                 .edit().putString(SP_KEY, baseUrl).apply();
-        Log.i(TAG, "服务端地址切换为 " + baseUrl);
+        AppLog.i(TAG, "服务端地址切换为 " + baseUrl);
     }
 
     /** 手动设置（真机换局域网 IP 用） */

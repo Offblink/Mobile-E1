@@ -3,7 +3,6 @@ package com.offblink.keyou;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -36,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Log.d(TAG, "onCreate");
+        AppLog.d(TAG, "onCreate");
 
         EditText etUsername = findViewById(R.id.et_username);
         EditText etPassword = findViewById(R.id.et_password);
@@ -48,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             etUsername.setText(sp.getString(SP_KEY_USERNAME, ""));
             etPassword.setText(sp.getString(SP_KEY_PASSWORD, ""));
             swRemember.setChecked(true);
-            Log.i(TAG, "SP 命中：已预填上次保存的账号");
+            AppLog.i(TAG, "SP 命中：已预填上次保存的账号");
         }
 
         Button btnLogin = findViewById(R.id.btn_login);
@@ -100,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
             bundle.putBoolean("isVip", true);
             bundle.putDouble("score", 99.5);
             intent.putExtras(bundle);
-            Log.i(TAG, "登录: username=" + username + ", role=" + role);
+            AppLog.i(TAG, "登录: username=" + username + ", role=" + role);
             startActivity(intent);
         });
 
@@ -149,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
             // 回填登录框：注册完直接能点登录（演示动线少一步手输）
             etUsername.setText(name);
             etPassword.setText(pwd);
-            Log.i(TAG, "注册成功: " + name);
+            AppLog.i(TAG, "注册成功: " + name);
             toast(R.string.register_success);
             dialog.dismiss();
         });
@@ -162,36 +161,36 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart");
+        AppLog.d(TAG, "onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+        AppLog.d(TAG, "onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
+        AppLog.d(TAG, "onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop");
+        AppLog.d(TAG, "onStop");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy");
+        AppLog.d(TAG, "onDestroy");
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d(TAG, "onRestart");
+        AppLog.d(TAG, "onRestart");
     }
 }

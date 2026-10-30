@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,31 +31,31 @@ public class BoundNoteService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate");
+        AppLog.d(TAG, "onCreate");
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind: 客户端绑定");
+        AppLog.d(TAG, "onBind: 客户端绑定");
         return binder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.d(TAG, "onUnbind: 客户端解绑");
+        AppLog.d(TAG, "onUnbind: 客户端解绑");
         return super.onUnbind(intent);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy");
+        AppLog.d(TAG, "onDestroy");
     }
 
     /** 客户端直接调用的方法：生成一条带时间戳的班级便签 */
     public String makeNote(String text) {
         String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM-dd HH:mm"));
-        Log.i(TAG, "makeNote: " + text);
+        AppLog.i(TAG, "makeNote: " + text);
         return "[" + time + "] " + text;
     }
 }

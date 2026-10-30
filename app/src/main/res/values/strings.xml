@@ -4,16 +4,12 @@
     <string name="back">返回</string>
 
     <!-- m3 胶囊导航 -->
-    <string name="nav_home">首页</string>
-    <string name="nav_home_sub">统计</string>
     <string name="nav_contacts">同学录</string>
     <string name="nav_contacts_sub">分组</string>
     <string name="nav_chat">课友圈</string>
     <string name="nav_chat_sub">聊天</string>
     <string name="nav_mine">我的</string>
     <string name="nav_mine_sub">设置</string>
-    <string name="stats_local_contacts">本地联系人</string>
-    <string name="stats_server_members">班级成员（在线）</string>
 
     <!-- 登录 → 主页 -->
     <string name="login_username_hint">姓名</string>
@@ -41,7 +37,6 @@
     <string name="register_exists">该账号已注册</string>
     <string name="register_pwd_mismatch">两次密码不一致</string>
     <string name="register_pwd_short">密码至少 6 位</string>
-    <string name="main_subtitle">班级同学录 · 课友</string>
 
     <!-- 结果回传 -->
     <string name="edit_nickname_title">编辑昵称</string>
@@ -65,10 +60,7 @@
     <string name="mate_remark_hint">备注</string>
     <string name="mate_saved">已保存</string>
     <string name="mate_deleted">已删除</string>
-    <string name="mate_delete_title">删除成员</string>
-    <string name="mate_delete_message">确定删除 %1$s 吗？</string>
     <string name="mate_parse_error">响应解析失败</string>
-    <string name="mate_error_title">加载失败</string>
     <string name="mate_network_error">网络异常：%1$s\n\n请确认服务端已启动：双击 scripts\\start-server.cmd（端口 8081）</string>
 
     <!-- 服务 / 定位 / 多媒体 -->
@@ -150,11 +142,7 @@
     <string name="chat_empty_tip">消息不能为空</string>
 
     <!-- 关于 / Log 自检 -->
-    <string name="about_title">关于</string>
-    <string name="about_log_check">输出 v/d/i/w/e 五级日志</string>
-    <string name="about_log_idle">点上面的按钮后，这里会回显五条日志摘要</string>
-    <string name="about_log_emitted">已输出 5 条日志（Logcat 过滤 Keyou/About）</string>
-    <string name="about_log_guide">Logcat 过滤框输入 Keyou 看全部页面日志；输入 Keyou/About 只看本页。\nTAG 约定：Keyou/页面名，如 Keyou/Login、Keyou/Main。\n\n项目结构：\n• app/src/main/java —— 源码\n• app/src/main/res/layout —— 布局\n• app/src/main/res/values —— 字符串、颜色、主题\n• AndroidManifest.xml —— 清单（Activity 注册、启动模式、权限）</string>
+    <string name="log_title">日志</string>
 
     <!-- 我的：头像 / 昵称 / 退出登录 -->
     <string name="mine_avatar_hint">点击头像更换</string>
@@ -169,10 +157,6 @@
     <string name="nickname_empty">昵称不能为空</string>
 
     <!-- 主页：班级成员内联列表 -->
-    <string name="home_welcome">欢迎回来，%1$s</string>
-    <string name="home_members_title">班级成员</string>
-    <string name="home_members_empty">还没有班级成员</string>
-    <string name="home_member_add">添加</string>
 
     <!-- 工具箱分区 -->
     <string name="tools_section_content">内容</string>
@@ -182,4 +166,24 @@
     <string name="tools_entry_draft">草稿箱</string>
     <string name="tools_entry_download">下载中心</string>
     <string name="tools_entry_diag">调试面板</string>
+
+    <!-- 日志页 -->
+    <string name="log_clear">清空</string>
+    <string name="log_filter_all">全部</string>
+    <string name="log_empty">暂无日志</string>
+    <string name="log_count">%1$d 条</string>
+
+    <!-- 工具箱条目 -->
+    <string name="tools_entry_draft_sub">文件存储：写一段文本，退出后仍在</string>
+    <string name="tools_entry_download_sub">前台服务下载 + 进度通知</string>
+    <string name="tools_entry_device">定位与音频</string>
+    <string name="tools_entry_device_sub">一次定位、播放内置音频</string>
+    <string name="tools_entry_service">服务演示</string>
+    <string name="tools_entry_service_sub">绑定式 Service，拿 IBinder 直接调用</string>
+    <string name="tools_entry_json_sub">org.json 与 Gson 解析同一接口</string>
+    <string name="tools_entry_rss_sub">XmlPullParser 解析 RSS</string>
+    <string name="tools_entry_diag_sub">启动模式、广播收发、隐式 Intent</string>
+    <string name="device_title">定位与音频</string>
+    <string name="audio_section">音频</string>
+    <string name="service_title">绑定式服务</string>
 </resources>

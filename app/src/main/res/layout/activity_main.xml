@@ -12,10 +12,6 @@
         android:layout_height="match_parent">
 
         <include
-            layout="@layout/page_home"
-            android:id="@+id/page_home" />
-
-        <include
             layout="@layout/page_contacts"
             android:id="@+id/page_contacts" />
 
@@ -64,31 +60,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/nav_tab_home"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="?attr/selectableItemBackgroundBorderless">
-
-                <TextView
-                    android:id="@+id/nav_label_home"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nav_home"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/nav_sub_home"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nav_home_sub"
-                    android:textSize="10sp"
-                    android:alpha="0.6" />
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/nav_tab_contacts"

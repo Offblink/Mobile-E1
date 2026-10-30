@@ -106,12 +106,12 @@
             android:text="@string/tools_title" />
 
         <Button
-            android:id="@+id/btn_about"
+            android:id="@+id/btn_logs"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/about_title" />
+            android:text="@string/log_title" />
 
         <Button
             android:id="@+id/btn_logout"

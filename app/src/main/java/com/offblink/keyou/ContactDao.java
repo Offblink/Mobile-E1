@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +34,9 @@ public class ContactDao {
         cv.put("phone", c.getPhone());
         cv.put("email", c.getEmail());
         cv.put("gender", c.getGender());
+        cv.put("avatar", c.getAvatar());
         long id = db.insert("contact", null, cv);
-        Log.i(TAG, "insert: " + c.getName() + " -> id=" + id);
+        AppLog.i(TAG, "insert: " + c.getName() + " -> id=" + id);
         return id;
     }
 
@@ -48,9 +48,10 @@ public class ContactDao {
         cv.put("phone", c.getPhone());
         cv.put("email", c.getEmail());
         cv.put("gender", c.getGender());
+        cv.put("avatar", c.getAvatar());
         int rows = db.update("contact", cv, "id = ?",
                 new String[]{String.valueOf(c.getId())});
-        Log.i(TAG, "update: id=" + c.getId() + " 影响 " + rows + " 行");
+        AppLog.i(TAG, "update: id=" + c.getId() + " 影响 " + rows + " 行");
         return rows;
     }
 
@@ -58,7 +59,7 @@ public class ContactDao {
     public int delete(long id) {
         SQLiteDatabase db = helper.getWritableDatabase();
         int rows = db.delete("contact", "id = ?", new String[]{String.valueOf(id)});
-        Log.i(TAG, "delete: id=" + id + " 影响 " + rows + " 行");
+        AppLog.i(TAG, "delete: id=" + id + " 影响 " + rows + " 行");
         return rows;
     }
 
@@ -82,10 +83,14 @@ public class ContactDao {
                 c.setPhone(cursor.getString(cursor.getColumnIndexOrThrow("phone")));
                 c.setEmail(cursor.getString(cursor.getColumnIndexOrThrow("email")));
                 c.setGender(cursor.getString(cursor.getColumnIndexOrThrow("gender")));
+                int avatarIndex = cursor.getColumnIndex("avatar");
+                if (avatarIndex >= 0 && !cursor.isNull(avatarIndex)) {
+                    c.setAvatar(cursor.getString(avatarIndex));
+                }
                 list.add(c);
             }
         }
-        Log.i(TAG, "query(kw=" + kw + "): " + list.size() + " 条");
+        AppLog.i(TAG, "query(kw=" + kw + "): " + list.size() + " 条");
         return list;
     }
 
@@ -104,10 +109,11 @@ public class ContactDao {
                 cv.put("phone", c.getPhone());
                 cv.put("email", c.getEmail());
                 cv.put("gender", c.getGender());
+                cv.put("avatar", c.getAvatar());
                 db.insert("contact", null, cv);
             }
             db.setTransactionSuccessful();  // 没有这行 → endTransaction 时全部回滚
-            Log.i(TAG, "importBatch: 事务提交，导入 " + contacts.size() + " 条");
+            AppLog.i(TAG, "importBatch: 事务提交，导入 " + contacts.size() + " 条");
         } finally {
             db.endTransaction();
         }

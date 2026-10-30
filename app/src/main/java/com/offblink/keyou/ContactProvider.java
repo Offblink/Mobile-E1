@@ -8,7 +8,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.util.Log;
 
 /**
  * 自定义 ContentProvider —— 把 的 contact.db 对外共享。
@@ -45,7 +44,7 @@ public class ContactProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         dbHelper = new ContactDBHelper(getContext());
-        Log.i(TAG, "onCreate: Provider 就绪, authority=" + AUTHORITY);
+        AppLog.i(TAG, "onCreate: Provider 就绪, authority=" + AUTHORITY);
         return true;
     }
 
@@ -86,7 +85,7 @@ public class ContactProvider extends ContentProvider {
         }
         long id = dbHelper.getWritableDatabase().insert("contact", null, values);
         Uri newUri = ContentUris.withAppendedId(CONTENT_URI, id);
-        Log.i(TAG, "insert: id=" + id);
+        AppLog.i(TAG, "insert: id=" + id);
         // 通知内容观察者，reader 端 registerContentChangeListener 可感知变化
         Context ctx = getContext();
         if (ctx != null) {
@@ -110,7 +109,7 @@ public class ContactProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("未知 URI: " + uri);
         }
-        Log.i(TAG, "delete: " + uri + " 影响 " + rows + " 行");
+        AppLog.i(TAG, "delete: " + uri + " 影响 " + rows + " 行");
         return rows;
     }
 
@@ -130,7 +129,7 @@ public class ContactProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("未知 URI: " + uri);
         }
-        Log.i(TAG, "update: " + uri + " 影响 " + rows + " 行");
+        AppLog.i(TAG, "update: " + uri + " 影响 " + rows + " 行");
         return rows;
     }
 }

@@ -1,7 +1,6 @@
 package com.offblink.keyou;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -40,7 +39,7 @@ public class JsonCompareActivity extends KeyouActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_json_compare);
-        Log.d(TAG, "onCreate");
+        AppLog.d(TAG, "onCreate");
 
         tvOrgJson = findViewById(R.id.tv_orgjson_result);
         tvGson = findViewById(R.id.tv_gson_result);
@@ -63,7 +62,7 @@ public class JsonCompareActivity extends KeyouActivity {
 
                 tvOrgJson.setText(orgResult + "\n\n耗时 " + (t1 - t0) / 1000 + " μs");
                 tvGson.setText(gsonResult + "\n\n耗时 " + (t2 - t1) / 1000 + " μs");
-                Log.i(TAG, "org.json " + (t1 - t0) / 1000 + "μs, Gson " + (t2 - t1) / 1000 + "μs");
+                AppLog.i(TAG, "org.json " + (t1 - t0) / 1000 + "μs, Gson " + (t2 - t1) / 1000 + "μs");
             }
 
             @Override
@@ -90,7 +89,7 @@ public class JsonCompareActivity extends KeyouActivity {
             }
             return sb.toString().trim();
         } catch (Exception e) {
-            Log.e(TAG, "org.json 解析失败", e);
+            AppLog.e(TAG, "org.json 解析失败", e);
             return "解析失败: " + e.getMessage();
         }
     }
@@ -108,7 +107,7 @@ public class JsonCompareActivity extends KeyouActivity {
             }
             return sb.toString().trim();
         } catch (Exception e) {
-            Log.e(TAG, "Gson 解析失败", e);
+            AppLog.e(TAG, "Gson 解析失败", e);
             return "解析失败: " + e.getMessage();
         }
     }

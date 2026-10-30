@@ -3,7 +3,6 @@ package com.offblink.keyou;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 /**
  * 自定义广播接收器（静态注册，AndroidManifest.xml）。
@@ -20,7 +19,7 @@ public class SyncDoneReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (BroadcastActions.SYNC_DONE.equals(intent.getAction())) {
             String detail = intent.getStringExtra("detail");
-            Log.i(TAG, "静态注册接收器收到自定义广播: " + detail);
+            AppLog.i(TAG, "静态注册接收器收到自定义广播: " + detail);
         }
     }
 }

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -65,7 +64,7 @@ public class DownloadActivity extends KeyouActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
-        Log.d(TAG, "onCreate");
+        AppLog.d(TAG, "onCreate");
 
         progressBar = findViewById(R.id.progress_download);
         tvStatus = findViewById(R.id.tv_download_status);
@@ -94,13 +93,13 @@ public class DownloadActivity extends KeyouActivity {
         intent.putExtra("fileName", "demo-note.txt");
         // ContextCompat.startForegroundService：8.0+ 要求 5s 内 startForeground
         ContextCompat.startForegroundService(this, intent);
-        Log.i(TAG, "已启动下载服务");
+        AppLog.i(TAG, "已启动下载服务");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(progressReceiver);
-        Log.d(TAG, "onDestroy");
+        AppLog.d(TAG, "onDestroy");
     }
 }

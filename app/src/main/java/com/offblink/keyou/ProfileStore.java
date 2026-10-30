@@ -15,7 +15,6 @@ public final class ProfileStore {
     private static final String SP_NAME = "profile";
     private static final String KEY_NICKNAME = "nickname";
     private static final String KEY_AVATAR = "avatar";
-    private static final String AVATAR_FILE = "avatar.jpg";
 
     private ProfileStore() {
     }
@@ -34,11 +33,6 @@ public final class ProfileStore {
         sp(ctx).edit().putString(KEY_NICKNAME, nickname).apply();
     }
 
-    /** 头像文件（可能不存在） */
-    public static File avatarFile(Context ctx) {
-        return new File(ctx.getFilesDir(), AVATAR_FILE);
-    }
-
     /** 当前头像路径；文件不在磁盘上就当没有 */
     public static String avatarPath(Context ctx) {
         String path = sp(ctx).getString(KEY_AVATAR, null);
@@ -53,10 +47,13 @@ public final class ProfileStore {
     }
 
     public static void clearAvatar(Context ctx) {
+        String path = sp(ctx).getString(KEY_AVATAR, null);
         sp(ctx).edit().remove(KEY_AVATAR).apply();
-        File f = avatarFile(ctx);
-        if (f.exists() && !f.delete()) {
-            android.util.Log.w("Keyou/Profile", "旧头像删除失败: " + f);
+        if (path != null) {
+            File f = new File(path);
+            if (f.exists() && !f.delete()) {
+                AppLog.w("Keyou/Profile", "旧头像删除失败: " + f);
+            }
         }
     }
 }

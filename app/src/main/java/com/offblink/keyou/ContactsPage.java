@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.Settings;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +24,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,6 +66,8 @@ public final class ContactsPage {
     private LetterIndexBar indexBar;
     private TextView subtitle;
     private TextView emptyView;
+
+    private final Gson gson = new Gson();
 
     private boolean firstLoad = true;
     private boolean firstResume = true;
@@ -98,12 +106,12 @@ public final class ContactsPage {
      */
     public static void attach(AppCompatActivity host, View pageRoot) {
         if (host == null || pageRoot == null) {
-            Log.w(TAG, "attach 参数为空，忽略");
+            AppLog.w(TAG, "attach 参数为空，忽略");
             return;
         }
         RecyclerView rv = pageRoot.findViewById(R.id.rv_contacts);
         if (rv == null) {
-            Log.e(TAG, "page_contacts 里找不到 rv_contacts，装配失败");
+            AppLog.e(TAG, "page_contacts 里找不到 rv_contacts，装配失败");
             return;
         }
         if (rv.getAdapter() != null) {
@@ -124,7 +132,7 @@ public final class ContactsPage {
         adapter.setListener(new ContactGroupAdapter.Listener() {
             @Override
             public void onContactClick(Contact contact) {
-                openDetail(contact.getId());
+                openDetail(contact);
             }
 
             @Override
@@ -153,7 +161,7 @@ public final class ContactsPage {
 
         View fab = pageRoot.findViewById(R.id.fab_add);
         if (fab != null) {
-            fab.setOnClickListener(v -> openDetail(-1));
+            fab.setOnClickListener(v -> chooseNewSource());
         }
 
         View importButton = pageRoot.findViewById(R.id.btn_import);
@@ -164,7 +172,7 @@ public final class ContactsPage {
         seedIfEmpty();
         reload();
         observeLifecycle();
-        Log.i(TAG, "同学录已接入 tab");
+        AppLog.i(TAG, "同学录已接入 tab");
     }
 
     private void observeLifecycle() {
@@ -189,20 +197,123 @@ public final class ContactsPage {
 
     // ================= 数据 =================
 
-    /** 整表重刷（不用 liveData，本地小表同步查可接受；主线程只做读 + 绑定） */
+    /** 整表重刷：本地 SQLite + 服务端班级成员两路合并（本地查询同步，服务端异步回调） */
     private void reload() {
         if (recyclerView == null) {
             return;
         }
-        List<Contact> data = dao.query("");
+        List<Contact> local = dao.query("");
+        applyList(local, null);
+        fetchClassmates(local);
+    }
+
+    /** 拉取班级成员并与人本地列表合并后刷新界面 */
+    private void fetchClassmates(final List<Contact> local) {
+        HttpUtil.get(host, "/api/mates?page=1&size=200", new HttpUtil.Callback() {
+            @Override
+            public void onSuccess(String body) {
+                List<Contact> all = new ArrayList<>();
+                int classCount = 0;
+                try {
+                    JSONObject root = new JSONObject(body);
+                    if (root.getInt("code") == 0) {
+                        Type type = new TypeToken<List<Mate>>() {
+                        }.getType();
+                        List<Mate> mates = gson.fromJson(
+                                root.getJSONObject("data").getJSONArray("list").toString(), type);
+                        java.util.Set<String> keys = new java.util.HashSet<>();
+                        for (Mate mate : mates) {
+                            Contact c = fromMate(mate);
+                            all.add(c);
+                            keys.add(dedupeKey(c));
+                            classCount++;
+                        }
+                        // 本地联系人：同号/同名的班级成员优先，避免一个人出现两次；
+                        // 重复时不丢数据 —— 把本地补上的头像/邮箱并进那条班级记录
+                        java.util.Map<String, Contact> byKey = new java.util.HashMap<>();
+                        for (Contact c : all) {
+                            byKey.put(dedupeKey(c), c);
+                        }
+                        for (Contact c : local) {
+                            String key = dedupeKey(c);
+                            Contact existing = byKey.get(key);
+                            if (existing != null) {
+                                if (TextUtils.isEmpty(existing.getAvatar())
+                                        && !TextUtils.isEmpty(c.getAvatar())) {
+                                    existing.setAvatar(c.getAvatar());
+                                }
+                                if (TextUtils.isEmpty(existing.getEmail())) {
+                                    existing.setEmail(c.getEmail());
+                                }
+                                if (TextUtils.isEmpty(existing.getGender())) {
+                                    existing.setGender(c.getGender());
+                                }
+                            } else if (keys.add(key)) {
+                                all.add(c);
+                                byKey.put(key, c);
+                            }
+                        }
+                    } else {
+                        all.addAll(local);
+                    }
+                } catch (Exception e) {
+                    AppLog.w(TAG, "班级成员解析失败，只显示本地联系人", e);
+                    all.addAll(local);
+                }
+                applyList(all, classCount);
+            }
+
+            @Override
+            public void onError(String message, Exception e) {
+                AppLog.w(TAG, "班级成员拉取失败，只显示本地联系人: " + message);
+                applyList(local, null);
+            }
+        });
+    }
+
+    /** 去重键：优先手机号，其次姓名 */
+    private static String dedupeKey(Contact c) {
+        String phone = normalizePhone(c.getPhone());
+        if (!phone.isEmpty()) {
+            return "p:" + phone;
+        }
+        return "n:" + ContactStyle.emptyIfNull(c.getName());
+    }
+
+    private Contact fromMate(Mate mate) {
+        Contact c = new Contact();
+        c.setRemoteId(mate.getId() == null ? -1 : mate.getId());
+        c.setName(mate.getName());
+        c.setPhone(mate.getPhone());
+        c.setEmail(mate.getEmail());
+        c.setGender(mate.getGender());
+        c.setRemark(mate.getRemark());
+        c.setSource(Contact.SOURCE_CLASS);
+        c.setAvatar(ContactAvatarStore.get(host, c.getRemoteId()));
+        return c;
+    }
+
+    private void applyList(List<Contact> data, Integer classCount) {
         adapter.setData(data);
         decoration.resetSection();
         indexBar.setAvailableLetters(adapter.availableLetters());
         recyclerView.invalidate();
 
+        int total = data.size();
+        int classes = classCount == null ? 0 : classCount;
+        if (classCount == null) {
+            for (Contact c : data) {
+                if (c.isFromClass()) {
+                    classes++;
+                }
+            }
+        }
+        int localCount = total - classes;
+
         boolean empty = data.isEmpty();
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
-        subtitle.setText(host.getString(R.string.contacts_count, data.size(), adapter.letterCount()));
+        subtitle.setText(host.getString(R.string.contacts_count_mixed,
+                total, localCount, classes));
 
         if (empty) {
             indexBar.setActiveLetter((char) 0);
@@ -214,11 +325,12 @@ public final class ContactsPage {
             }
             indexBar.setActiveLetter(first);
             if (firstLoad) {
-                recyclerView.scrollToPosition(0);   // 只有首次加载回顶；返回列表时保留滚动位置
+                recyclerView.scrollToPosition(0);
             }
         }
         firstLoad = false;
-        Log.i(TAG, "列表已刷新：" + data.size() + " 位同学 / " + adapter.letterCount() + " 个分组");
+        AppLog.i(TAG, "列表已刷新：共 " + total + " 人（本地 " + localCount
+                + " / 班级 " + classes + "）");
     }
 
     /**
@@ -240,19 +352,82 @@ public final class ContactsPage {
         seeds.add(new Contact(0, "张三", "13800000008", "zhangsan@example.com", "男"));
         seeds.add(new Contact(0, "2019 级班长", "13800000009", null, "保密"));
         dao.importBatch(seeds);
-        Log.i(TAG, "空库，事务导入种子数据 " + seeds.size() + " 条");
+        AppLog.i(TAG, "空库，事务导入种子数据 " + seeds.size() + " 条");
     }
 
     // ================= 跳转 / 删除 =================
 
-    /** id = -1 进新增模式，> 0 进编辑模式 */
-    private void openDetail(long id) {
+    /** 本地联系人进本地详情；班级成员把字段一起带过去，保存走服务端 */
+    private void openDetail(Contact contact) {
         Intent intent = new Intent(host, ContactDetailActivity.class);
-        intent.putExtra(ContactDetailActivity.EXTRA_ID, id);
+        if (contact.isFromClass()) {
+            intent.putExtra(ContactDetailActivity.EXTRA_SOURCE, Contact.SOURCE_CLASS);
+            intent.putExtra(ContactDetailActivity.EXTRA_REMOTE_ID, contact.getRemoteId());
+            intent.putExtra(ContactDetailActivity.EXTRA_NAME, contact.getName());
+            intent.putExtra(ContactDetailActivity.EXTRA_PHONE, contact.getPhone());
+            intent.putExtra(ContactDetailActivity.EXTRA_EMAIL, contact.getEmail());
+            intent.putExtra(ContactDetailActivity.EXTRA_GENDER, contact.getGender());
+            intent.putExtra(ContactDetailActivity.EXTRA_REMARK, contact.getRemark());
+        } else {
+            intent.putExtra(ContactDetailActivity.EXTRA_SOURCE, Contact.SOURCE_LOCAL);
+            intent.putExtra(ContactDetailActivity.EXTRA_ID, contact.getId());
+        }
         detailLauncher.launch(intent);
     }
 
+    /** FAB：先选新建的是本地同学还是班级成员 */
+    private void chooseNewSource() {
+        String[] options = {
+                host.getString(R.string.contacts_new_local),
+                host.getString(R.string.contacts_new_class)};
+        new MaterialAlertDialogBuilder(host)
+                .setTitle(R.string.contacts_new_choose)
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        Intent intent = new Intent(host, ContactDetailActivity.class);
+                        intent.putExtra(ContactDetailActivity.EXTRA_SOURCE, Contact.SOURCE_LOCAL);
+                        intent.putExtra(ContactDetailActivity.EXTRA_ID, -1L);
+                        detailLauncher.launch(intent);
+                    } else {
+                        MateFormDialog.show(host, null, saved -> {
+                            String json = gson.toJson(saved);
+                            HttpUtil.postJson(host, "/api/mate", json, new HttpUtil.Callback() {
+                                @Override
+                                public void onSuccess(String body) {
+                                    try {
+                                        if (new JSONObject(body).getInt("code") == 0) {
+                                            Toast.makeText(host, R.string.mate_saved,
+                                                    Toast.LENGTH_SHORT).show();
+                                            reload();
+                                        } else {
+                                            Toast.makeText(host, new JSONObject(body)
+                                                    .getString("message"), Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (Exception e) {
+                                        Toast.makeText(host, R.string.mate_parse_error,
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onError(String message, Exception e) {
+                                    Toast.makeText(host, host.getString(
+                                            R.string.mate_network_error, message),
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        });
+                    }
+                })
+                .show();
+    }
+
+    /** 长按删除：本地走 SQLite，班级成员走 DELETE /api/mate/{id} */
     private void confirmDelete(final Contact contact) {
+        if (contact.isFromClass()) {
+            confirmDeleteRemote(contact);
+            return;
+        }
         new MaterialAlertDialogBuilder(host)
                 .setTitle(R.string.contact_delete_title)
                 .setMessage(host.getString(R.string.contact_delete_message,
@@ -260,11 +435,50 @@ public final class ContactsPage {
                 .setNegativeButton(R.string.common_cancel, null)
                 .setPositiveButton(R.string.contact_delete_ok, (dialog, which) -> {
                     int rows = dao.delete(contact.getId());
+                    deleteAvatarFile(contact.getAvatar());
                     reload();
                     Toast.makeText(host,
                             rows > 0 ? R.string.contact_deleted : R.string.contacts_delete_failed,
                             Toast.LENGTH_SHORT).show();
                 })
+                .show();
+    }
+
+    /** 删联系人时顺手删掉它的头像文件，别在私有目录里留孤儿 */
+    private static void deleteAvatarFile(String path) {
+        if (TextUtils.isEmpty(path)) {
+            return;
+        }
+        java.io.File file = new java.io.File(path);
+        if (file.exists() && !file.delete()) {
+            AppLog.w(TAG, "头像删除失败: " + path);
+        }
+    }
+
+    private void confirmDeleteRemote(final Contact contact) {
+        new MaterialAlertDialogBuilder(host)
+                .setTitle(R.string.contact_delete_title)
+                .setMessage(host.getString(R.string.contact_delete_message,
+                        ContactStyle.emptyIfNull(contact.getName())))
+                .setNegativeButton(R.string.common_cancel, null)
+                .setPositiveButton(R.string.contact_delete_ok, (dialog, which) ->
+                        HttpUtil.delete(host, "/api/mate/" + contact.getRemoteId(),
+                                new HttpUtil.Callback() {
+                                    @Override
+                                    public void onSuccess(String body) {
+                                        ContactAvatarStore.remove(host, contact.getRemoteId());
+                                        Toast.makeText(host, R.string.mate_deleted,
+                                                Toast.LENGTH_SHORT).show();
+                                        reload();
+                                    }
+
+                                    @Override
+                                    public void onError(String message, Exception e) {
+                                        Toast.makeText(host, host.getString(
+                                                R.string.mate_network_error, message),
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                }))
                 .show();
     }
 
@@ -289,7 +503,7 @@ public final class ContactsPage {
                 host.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                         Uri.fromParts("package", host.getPackageName(), null)));
             } catch (Exception e) {
-                Log.w(TAG, "打开应用设置页失败", e);
+                AppLog.w(TAG, "打开应用设置页失败", e);
             }
         }
     }
@@ -347,7 +561,7 @@ public final class ContactsPage {
                 }
                 imported = fresh.size();
             } catch (Throwable t) {
-                Log.w(TAG, "导入系统联系人失败", t);
+                AppLog.w(TAG, "导入系统联系人失败", t);
             } finally {
                 importing = false;
             }
@@ -360,7 +574,7 @@ public final class ContactsPage {
                 reload();
                 Toast.makeText(host, host.getString(R.string.import_result, count),
                         Toast.LENGTH_SHORT).show();
-                Log.i(TAG, "导入系统联系人 " + count + " 条");
+                AppLog.i(TAG, "导入系统联系人 " + count + " 条");
             });
         }, "contacts-import").start();
     }

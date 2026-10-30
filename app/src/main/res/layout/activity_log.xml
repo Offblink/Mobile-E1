@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 日志页：实时追加 + 按级别过滤 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="?attr/colorSurfaceContainer"
+        android:paddingEnd="16dp">
+
+        <include layout="@layout/view_back_bar" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/log_title"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingVertical="20dp" />
+
+        <TextView
+            android:id="@+id/btn_log_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:text="@string/log_clear"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/chip_all"
+                style="@style/Widget.Keyou.FilterChip"
+                android:text="@string/log_filter_all" />
+
+            <TextView
+                android:id="@+id/chip_v"
+                style="@style/Widget.Keyou.FilterChip"
+                android:text="V" />
+
+            <TextView
+                android:id="@+id/chip_d"
+                style="@style/Widget.Keyou.FilterChip"
+                android:text="D" />
+
+            <TextView
+                android:id="@+id/chip_i"
+                style="@style/Widget.Keyou.FilterChip"
+                android:text="I" />
+
+            <TextView
+                android:id="@+id/chip_w"
+                style="@style/Widget.Keyou.FilterChip"
+                android:text="W" />
+
+            <TextView
+                android:id="@+id/chip_e"
+                style="@style/Widget.Keyou.FilterChip"
+                android:text="E" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/tv_log_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="6dp"
+        android:alpha="0.7"
+        android:textSize="12sp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_logs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp" />
+
+        <TextView
+            android:id="@+id/tv_log_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/log_empty"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</LinearLayout>

@@ -33,4 +33,11 @@
     <string name="contacts_label_phone">电话</string>
     <string name="contacts_label_email">邮箱</string>
     <string name="contacts_label_gender">性别</string>
+    <string name="contacts_count_mixed">共 %1$d 人 · 本地 %2$d · 班级 %3$d</string>
+    <string name="contacts_new_choose">新建联系人</string>
+    <string name="contacts_new_local">本地同学</string>
+    <string name="contacts_new_class">班级成员</string>
+    <string name="contacts_source_local">本地</string>
+    <string name="contacts_source_class">班级</string>
+    <string name="contacts_avatar_hint">点击更换头像</string>
 </resources>

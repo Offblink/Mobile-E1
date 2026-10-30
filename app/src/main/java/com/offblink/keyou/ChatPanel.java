@@ -1,7 +1,6 @@
 package com.offblink.keyou;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,7 +47,7 @@ public final class ChatPanel {
             adapter.notifyItemInserted(messages.size() - 1);
             rv.scrollToPosition(messages.size() - 1);
             etInput.setText("");
-            Log.d(TAG, "发送: " + text);
+            AppLog.d(TAG, "发送: " + text);
         };
         btnSend.setOnClickListener(v -> send.run());
         // 键盘上的「发送」键也能直接发（回车不换行）

@@ -2,7 +2,6 @@ package com.offblink.keyou;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -24,7 +23,7 @@ public abstract class LaunchModeLabActivity extends KeyouActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch_mode);
-        Log.d(modeTag(), "onCreate 实例=" + System.identityHashCode(this));
+        AppLog.d(modeTag(), "onCreate 实例=" + System.identityHashCode(this));
 
         tvInstance = findViewById(R.id.tv_instance);
         render();
@@ -32,7 +31,7 @@ public abstract class LaunchModeLabActivity extends KeyouActivity {
         // 再次启动自己：standard 每次新建实例；singleTop 复用并走 onNewIntent；
         // singleTask/singleInstance 清掉上方页面后复用
         findViewById(R.id.btn_relaunch_self).setOnClickListener(v -> {
-            Log.i(modeTag(), "再次启动自己，当前栈内实例=" + System.identityHashCode(this));
+            AppLog.i(modeTag(), "再次启动自己，当前栈内实例=" + System.identityHashCode(this));
             startActivity(new Intent(this, getClass()));
         });
 
@@ -49,7 +48,7 @@ public abstract class LaunchModeLabActivity extends KeyouActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         // singleTop / singleTask / singleInstance 复用已有实例时走这里，而不是 onCreate
-        Log.i(modeTag(), "onNewIntent 复用实例=" + System.identityHashCode(this));
+        AppLog.i(modeTag(), "onNewIntent 复用实例=" + System.identityHashCode(this));
         setIntent(intent);
         render();
     }
@@ -63,6 +62,6 @@ public abstract class LaunchModeLabActivity extends KeyouActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(modeTag(), "onDestroy 实例=" + System.identityHashCode(this));
+        AppLog.d(modeTag(), "onDestroy 实例=" + System.identityHashCode(this));
     }
 }

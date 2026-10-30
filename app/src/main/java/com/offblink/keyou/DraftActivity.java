@@ -1,7 +1,6 @@
 package com.offblink.keyou;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,7 +31,7 @@ public class DraftActivity extends KeyouActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draft);
-        Log.d(TAG, "onCreate");
+        AppLog.d(TAG, "onCreate");
 
         etDraft = findViewById(R.id.et_draft);
 
@@ -51,9 +50,9 @@ public class DraftActivity extends KeyouActivity {
         try (FileOutputStream fos = openFileOutput(FILE_NAME, MODE_PRIVATE)) {
             fos.write(content.getBytes(StandardCharsets.UTF_8));
             Toast.makeText(this, R.string.draft_saved, Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "草稿已写入 files/" + FILE_NAME + " (" + content.length() + " 字)");
+            AppLog.i(TAG, "草稿已写入 files/" + FILE_NAME + " (" + content.length() + " 字)");
         } catch (IOException e) {
-            Log.e(TAG, "写草稿失败", e);
+            AppLog.e(TAG, "写草稿失败", e);
             Toast.makeText(this, R.string.draft_save_failed, Toast.LENGTH_SHORT).show();
         }
     }
@@ -65,12 +64,12 @@ public class DraftActivity extends KeyouActivity {
             fis.read(buf);
             String text = new String(buf, StandardCharsets.UTF_8);
             etDraft.setText(text);
-            Log.i(TAG, "草稿已读回 (" + text.length() + " 字)");
+            AppLog.i(TAG, "草稿已读回 (" + text.length() + " 字)");
         } catch (FileNotFoundException e) {
             // 首次进入的正常路径，不是错误
-            Log.i(TAG, "还没有草稿（files/" + FILE_NAME + " 不存在）");
+            AppLog.i(TAG, "还没有草稿（files/" + FILE_NAME + " 不存在）");
         } catch (IOException e) {
-            Log.e(TAG, "读草稿失败", e);
+            AppLog.e(TAG, "读草稿失败", e);
         }
     }
 }
