@@ -31,8 +31,7 @@ public class JsonCompareActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/JsonCompare";
 
-    /** 模拟器访问本机 Tomcat 用 10.0.2.2；真机换成电脑局域网 IP */
-    public static final String BASE_URL = "http://10.0.2.2:8081";
+    /** 服务端地址由 ServerConfig 统一管理（10.0.2.2 优先，失败回退 127.0.0.1） */
 
     private TextView tvOrgJson;
     private TextView tvGson;
@@ -53,7 +52,7 @@ public class JsonCompareActivity extends KeyouActivity {
     private void fetchAndParse() {
         tvOrgJson.setText(R.string.json_parsing);
         tvGson.setText(R.string.json_parsing);
-        HttpUtil.get(BASE_URL + "/api/mates", new HttpUtil.Callback() {
+        HttpUtil.get(this, "/api/mates", new HttpUtil.Callback() {
             @Override
             public void onSuccess(String body) {
                 long t0 = System.nanoTime();

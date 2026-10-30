@@ -116,9 +116,8 @@ public class MateActivity extends KeyouActivity {
             progressDialog.show();
         }
         String kw = etKeyword.getText().toString().trim();
-        String url = JsonCompareActivity.BASE_URL + "/api/mates?page=" + page
-                + "&size=" + PAGE_SIZE + "&kw=" + kw;
-        HttpUtil.get(url, new HttpUtil.Callback() {
+        String path = "/api/mates?page=" + page + "&size=" + PAGE_SIZE + "&kw=" + kw;
+        HttpUtil.get(this, path, new HttpUtil.Callback() {
             @Override
             public void onSuccess(String body) {
                 dismissLoading();
@@ -189,9 +188,9 @@ public class MateActivity extends KeyouActivity {
                 }
             };
             if (saved.getId() != null) {
-                HttpUtil.putJson(JsonCompareActivity.BASE_URL + "/api/mate", json, callback);
+                HttpUtil.putJson(this, "/api/mate", json, callback);
             } else {
-                HttpUtil.postJson(JsonCompareActivity.BASE_URL + "/api/mate", json, callback);
+                HttpUtil.postJson(this, "/api/mate", json, callback);
             }
         });
     }
@@ -202,8 +201,7 @@ public class MateActivity extends KeyouActivity {
                 .setTitle(R.string.mate_delete_title)
                 .setMessage(getString(R.string.mate_delete_message, mate.getName()))
                 .setPositiveButton(R.string.contact_delete_ok, (d, w) ->
-                        HttpUtil.delete(JsonCompareActivity.BASE_URL + "/api/mate/"
-                                + mate.getId(), new HttpUtil.Callback() {
+                        HttpUtil.delete(this, "/api/mate/" + mate.getId(), new HttpUtil.Callback() {
                             @Override
                             public void onSuccess(String body) {
                                 Toast.makeText(MateActivity.this, R.string.mate_deleted,

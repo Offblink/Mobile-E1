@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
         tvContacts.setText(String.valueOf(dao.query("").size()));
         dao.close();
         // 服务端总数走网络
-        HttpUtil.get(JsonCompareActivity.BASE_URL + "/api/mates?page=1&size=1",
+        HttpUtil.get(this, "/api/mates?page=1&size=1",
                 new HttpUtil.Callback() {
                     @Override
                     public void onSuccess(String body) {

@@ -46,7 +46,9 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb install -r reader/build/outputs/apk/debug/reader-debug.apk
 ```
 
-- 后端基址：模拟器内 `http://10.0.2.2:8081`（见 `JsonCompareActivity.BASE_URL`），宿主机 `http://127.0.0.1:8081`
+- 后端基址：模拟器内 `http://10.0.2.2:8081`（首选），**失败自动回退 `http://127.0.0.1:8081`**
+  （需 `adb reverse tcp:8081 tcp:8081`，`scripts/start-server.cmd` 会在有设备时自动执行，
+  重连/重启模拟器后跑一次 `scripts/connect-device.cmd`）
 - 接口约定：统一 `{code, message, data}`；`GET /api/mates`、`POST/PUT /api/mate`、`DELETE /api/mate/{id}`、`GET /api/rss`、`GET /files/demo-note.txt`
 - 一键接口冒烟（server 起着时）：
 
@@ -69,6 +71,7 @@ curl -X POST -H "Content-Type: application/json" \
 
 | 现象 | 原因与处理 |
 |---|---|
-| App 报「网络异常：failed to connect to /10.0.2.2」但宿主机 `curl 127.0.0.1:8081/api/ping` 正常 | ① 服务端没起：双击 `scripts\start-server.cmd`；② **模拟器网络栈坏**（App 的 UID 拿不到默认网络，`adb shell` 里的 nc/curl 却正常，属假阳性）：冷重启模拟器（`adb emu kill` 后重开） |
+| App 报「网络异常：failed to connect to /10.0.2.2」 | ① 服务端没起：双击 `scripts\start-server.cmd`；② 该 AVD 的 App 侧网络栈异常（`adb shell` 里 nc/curl 正常、App 却超时，属假阳性）：已内置**地址自动回退**到 `127.0.0.1`，只需保证 `adb reverse tcp:8081 tcp:8081` 生效（`scripts/connect-device.cmd`） |
+| 回退后仍报 `Cleartext HTTP traffic to 127.0.0.1 not permitted` | `network_security_config.xml` 的 domain 列表要含 `127.0.0.1`；注意 **不能写 CIDR**（如 `192.168.0.0/16`），非法条目会让整份配置失效 |
 | 模拟器 Wi-Fi 显示开启但一直 Disconnected | 该 AVD 没有虚拟 Wi-Fi 硬件（只有 eth0），保持 Wi-Fi 关闭、走以太网即可 |
 | 端口 8080 被占用 | 课堂08 的旧 Tomcat 还开着；本项目固定用 **8081**，两者互不影响 |

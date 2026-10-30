@@ -60,18 +60,46 @@ public class DownloadService extends Service {
         // 8.0+ 关键：先 startForeground 占位，再做耗时下载
         startForeground(NOTIFICATION_ID, buildNotification(0, false));
         if (!running && intent != null) {
-            String url = intent.getStringExtra("url");
+            String path = intent.getStringExtra("path");
             String fileName = intent.getStringExtra("fileName");
-            if (url != null && fileName != null) {
+            if (path != null && fileName != null) {
                 running = true;
-                executor.execute(() -> doDownload(url, fileName));
+                executor.execute(() -> doDownload(path, fileName));
             }
         }
         // START_NOT_STICKY：被杀后不自动重建（下载任务语义）
         return START_NOT_STICKY;
     }
 
-    private void doDownload(String url, String fileName) {
+    /** 依次尝试当前地址与备用地址（AVD 的 App 侧网络栈异常时靠回退保底） */
+    private void doDownload(String path, String fileName) {
+        java.util.List<String> bases = new java.util.ArrayList<>();
+        bases.add(ServerConfig.base(this));
+        String alt = ServerConfig.fallback(this);
+        if (alt != null) {
+            bases.add(alt);
+        }
+        Exception last = null;
+        for (String base : bases) {
+            try {
+                long bytes = downloadOnce(base + path, fileName);
+                ServerConfig.remember(this, base);
+                Log.i(TAG, "下载完成: " + fileName + " (" + bytes + "B) from " + base);
+                updateDone("已保存到 files/" + fileName + "（" + bytes + " 字节）");
+                finishDownload();
+                return;
+            } catch (Exception e) {
+                last = e;
+                Log.w(TAG, "从 " + base + " 下载失败: " + e.getMessage());
+            }
+        }
+        Log.e(TAG, "下载失败", last);
+        updateDone("下载失败: " + (last != null ? last.getMessage() : "未知错误"));
+        finishDownload();
+    }
+
+    /** 单次下载，返回写入字节数 */
+    private long downloadOnce(String url, String fileName) throws Exception {
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) new URL(url).openConnection();
@@ -79,9 +107,8 @@ public class DownloadService extends Service {
             conn.setReadTimeout(10000);
             int total = conn.getContentLength();
             byte[] buf = new byte[8192];
-            int downloaded = 0;
+            long downloaded = 0;
             int lastPercent = 0;
-            // 存应用私有目录 files/
             try (InputStream is = conn.getInputStream();
                  FileOutputStream fos = openFileOutput(fileName, MODE_PRIVATE)) {
                 int len;
@@ -89,7 +116,7 @@ public class DownloadService extends Service {
                     fos.write(buf, 0, len);
                     downloaded += len;
                     if (total > 0) {
-                        int percent = downloaded * 100 / total;
+                        int percent = (int) (downloaded * 100 / total);
                         if (percent != lastPercent && percent % 5 == 0) {
                             lastPercent = percent;
                             updateProgress(percent);
@@ -97,19 +124,18 @@ public class DownloadService extends Service {
                     }
                 }
             }
-            Log.i(TAG, "下载完成: " + fileName + " (" + downloaded + "B)");
-            updateDone("已保存到 files/" + fileName + "（" + downloaded + " 字节）");
-        } catch (Exception e) {
-            Log.e(TAG, "下载失败", e);
-            updateDone("下载失败: " + e.getMessage());
+            return downloaded;
         } finally {
             if (conn != null) {
                 conn.disconnect();
             }
-            running = false;
-            stopForeground(STOP_FOREGROUND_REMOVE);
-            stopSelf();
         }
+    }
+
+    private void finishDownload() {
+        running = false;
+        stopForeground(STOP_FOREGROUND_REMOVE);
+        stopSelf();
     }
 
     /** 更新通知进度 + 广播给 Activity（本地显式广播） */

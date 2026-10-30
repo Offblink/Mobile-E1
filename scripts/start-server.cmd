@@ -40,6 +40,15 @@ curl -s -m 3 http://127.0.0.1:8081/api/ping >nul 2>&1
 if %errorlevel%==0 (
     echo.
     echo server ready: http://127.0.0.1:8081/api/ping
+    rem if a device is connected, reverse host 8081 to device 8081 (fallback path)
+    if exist "%ANDROID_HOME%\platform-tools\adb.exe" (
+        "%ANDROID_HOME%\platform-tools\adb.exe" reverse tcp:8081 tcp:8081 >nul 2>&1
+        if errorlevel 1 (
+            echo [hint] no device connected, skip adb reverse
+        ) else (
+            echo [ok] adb reverse tcp:8081 -^> device 8081
+        )
+    )
     curl -s -m 3 http://127.0.0.1:8081/api/ping
     echo.
     pause

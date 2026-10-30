@@ -90,7 +90,7 @@ public class DownloadActivity extends KeyouActivity {
         progressBar.setProgress(0);
         tvStatus.setText(R.string.download_starting);
         Intent intent = new Intent(this, DownloadService.class);
-        intent.putExtra("url", JsonCompareActivity.BASE_URL + "/files/demo-note.txt");
+        intent.putExtra("path", "/files/demo-note.txt");
         intent.putExtra("fileName", "demo-note.txt");
         // ContextCompat.startForegroundService：8.0+ 要求 5s 内 startForeground
         ContextCompat.startForegroundService(this, intent);

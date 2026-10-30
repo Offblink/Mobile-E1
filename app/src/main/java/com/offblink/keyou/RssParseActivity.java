@@ -38,7 +38,7 @@ public class RssParseActivity extends KeyouActivity {
 
     private void fetchAndParse() {
         tvRssResult.setText(R.string.json_parsing);
-        HttpUtil.get(JsonCompareActivity.BASE_URL + "/api/rss", new HttpUtil.Callback() {
+        HttpUtil.get(this, "/api/rss", new HttpUtil.Callback() {
             @Override
             public void onSuccess(String body) {
                 tvRssResult.setText(parseRss(body));
