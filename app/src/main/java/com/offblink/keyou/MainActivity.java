@@ -48,10 +48,10 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 主界面：四个 Tab（首页 / 同学录 / 课友圈 / 我的）共用一套胶囊导航。
+ * 主界面：三个 Tab（同学录 / 课友圈 / 我的）共用一套胶囊导航。
  *
- * 首页直接展示班级成员列表（服务端），课友圈直接是聊天界面，
- * 我的页放个人信息、工具箱、关于与退出登录。
+ * 同学录是本地 + 班级合并列表，课友圈直接是聊天界面（含公告/群文件/草稿入口），
+ * 我的页放个人信息、自动定位的省份、日志与退出登录。
  *
  * 动效双轨（mobile-design 约定）：位移走 spring（OvershootInterpolator 0.7 / 350ms），
  * 颜色/透明度直切不回弹 —— 绝不共用一个动画对象。
@@ -181,8 +181,6 @@ public class MainActivity extends AppCompatActivity {
         tvLocationDetail = findViewById(R.id.tv_location_detail);
         renderPlace();
 
-        findViewById(R.id.btn_tools).setOnClickListener(v ->
-                startActivity(new Intent(this, ToolsActivity.class)));
         findViewById(R.id.btn_logs).setOnClickListener(v ->
                 startActivity(new Intent(this, LogActivity.class)));
         findViewById(R.id.btn_logout).setOnClickListener(v -> confirmLogout());
@@ -622,12 +620,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         AppLog.d(TAG, "onResume");
+        if (chatPanel != null) {
+            chatPanel.onHostResume();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         AppLog.d(TAG, "onPause");
+        if (chatPanel != null) {
+            chatPanel.onHostPause();
+        }
     }
 
     @Override

@@ -50,6 +50,20 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/btn_contacts_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:paddingStart="10dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="8dp"
+                android:text="@string/contacts_entry_check"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
                 android:id="@+id/btn_import"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

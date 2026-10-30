@@ -12,7 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
- * 调试面板：启动模式、广播收发与网络解析的自检入口（工具箱 → 调试）。
+ * 调试面板：启动模式、广播收发与网络解析的自检入口（日志 → 调试面板）。
  */
 public class DiagnosticsActivity extends KeyouActivity {
 

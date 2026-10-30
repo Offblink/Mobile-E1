@@ -47,7 +47,6 @@
         <activity android:name=".JsonCompareActivity" android:exported="false" />
         <activity android:name=".RssParseActivity" android:exported="false" />
         <activity android:name=".DownloadActivity" android:exported="false" />
-        <activity android:name=".ToolsActivity" android:exported="false" />
         <activity android:name=".ServiceActivity" android:exported="false" />
         <activity android:name=".DiagnosticsActivity" android:exported="false" />
 

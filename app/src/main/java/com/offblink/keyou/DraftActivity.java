@@ -17,13 +17,14 @@ import java.nio.charset.StandardCharsets;
  * 文件存储 —— 草稿箱。
  *
  * 验收点：openFileOutput / openFileInput 与 MODE_PRIVATE。
- * 文件落位 /data/data/com.offblink.keyou/files/draft.txt（应用私有目录，卸载即删）。
+ * 文件落位 /data/data/com.offblink.keyou/files/chat_draft.txt（应用私有目录，卸载即删）；
+ * 课友圈输入框自动保存的就是这个文件。
  * 首次进入必然触发 FileNotFoundException —— 按"还没有草稿"处理，不是错误。
  */
 public class DraftActivity extends KeyouActivity {
 
     private static final String TAG = "Keyou/Draft";
-    private static final String FILE_NAME = "draft.txt";
+    private static final String FILE_NAME = "chat_draft.txt";
 
     private EditText etDraft;
 

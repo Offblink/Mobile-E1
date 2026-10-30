@@ -169,6 +169,12 @@ public final class ContactsPage {
             importButton.setOnClickListener(v -> requestContactsPermission());
         }
 
+        View checkButton = pageRoot.findViewById(R.id.btn_contacts_check);
+        if (checkButton != null) {
+            checkButton.setOnClickListener(v ->
+                    host.startActivity(new Intent(host, JsonCompareActivity.class)));
+        }
+
         seedIfEmpty();
         reload();
         observeLifecycle();

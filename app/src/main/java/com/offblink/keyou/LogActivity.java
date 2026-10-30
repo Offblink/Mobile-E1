@@ -1,5 +1,6 @@
 package com.offblink.keyou;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +63,11 @@ public class LogActivity extends KeyouActivity implements AppLog.Listener {
             // 清空本身也留一条：顺便验证「新日志会实时出现在列表里」
             AppLog.i(TAG, "日志已清空");
         });
+
+        findViewById(R.id.btn_log_diag).setOnClickListener(v ->
+                startActivity(new Intent(this, DiagnosticsActivity.class)));
+        findViewById(R.id.btn_log_service).setOnClickListener(v ->
+                startActivity(new Intent(this, ServiceActivity.class)));
 
         shown.addAll(AppLog.snapshot());
         adapter.notifyDataSetChanged();
