@@ -35,6 +35,17 @@
     <string name="launch_relaunch_self">再次启动自己（观察实例数）</string>
     <string name="launch_goto_login">跳回登录页（观察清栈）</string>
 
+    <!-- 任务 4：广播演示 -->
+    <string name="lab_broadcast_hint">广播演示：自定义广播看 Logcat 的 Keyou/Broadcast 三组 TAG（Static/Dynamic/Ordered）；有序广播先点不截断再点截断，对比 OrderedLow 有无日志</string>
+    <string name="broadcast_custom">自定义广播（静态+动态接收器对比）</string>
+    <string name="broadcast_ordered">有序广播：高→低 全部送达</string>
+    <string name="broadcast_abort">有序广播：高优先级截断</string>
+    <string name="broadcast_custom_sent">已发送，看 Logcat Keyou/Broadcast</string>
+    <string name="broadcast_ordered_sent">已发送（不截断），应有 High+Low 两条日志</string>
+    <string name="broadcast_abort_sent">已发送（截断），应只有 High 一条日志</string>
+    <string name="banner_net_on">📶 网络已恢复连接</string>
+    <string name="banner_net_off">📡 网络已断开</string>
+
     <!-- 任务 3：同学录列表 + 聊天室 -->
     <string name="contact_list_title">同学录（模拟数据）</string>
     <string name="contact_click_toast">点击了 %1$s</string>

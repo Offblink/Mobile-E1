@@ -6,6 +6,18 @@
     android:gravity="center"
     android:padding="24dp">
 
+    <!-- 任务 4：网络变化横幅（动态广播接收器收到后显示 3 秒） -->
+    <TextView
+        android:id="@+id/tv_net_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:gravity="center"
+        android:background="@color/md_secondary_container"
+        android:textColor="@color/md_on_secondary_container"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp" />
+
     <TextView
         android:id="@+id/tv_welcome"
         android:layout_width="wrap_content"

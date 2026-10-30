@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -43,6 +45,30 @@
             android:name=".SingleInstanceLabActivity"
             android:exported="false"
             android:launchMode="singleInstance" />
+        <!-- 任务 4：静态注册的自定义广播接收器（8.0+ 只收 setPackage 显式广播） -->
+        <receiver
+            android:name=".SyncDoneReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.offblink.keyou.SYNC_DONE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 任务 4：有序广播接收器对（priority 决定顺序，高者可 abortBroadcast 截断） -->
+        <receiver
+            android:name=".OrderedHighReceiver"
+            android:exported="false">
+            <intent-filter android:priority="100">
+                <action android:name="com.offblink.keyou.ORDERED_DEMO" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".OrderedLowReceiver"
+            android:exported="false">
+            <intent-filter android:priority="0">
+                <action android:name="com.offblink.keyou.ORDERED_DEMO" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

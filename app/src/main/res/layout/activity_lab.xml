@@ -50,6 +50,39 @@
         android:layout_marginVertical="16dp"
         android:background="?attr/colorOutlineVariant" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lab_broadcast_hint"
+        android:textSize="13sp"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_send_custom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/broadcast_custom" />
+
+    <Button
+        android:id="@+id/btn_send_ordered"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/broadcast_ordered" />
+
+    <Button
+        android:id="@+id/btn_send_abort"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/broadcast_abort"
+        android:layout_marginTop="8dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="16dp"
+        android:background="?attr/colorOutlineVariant" />
+
     <Button
         android:id="@+id/btn_implicit_intent"
         style="@style/Widget.Material3.Button.OutlinedButton"
