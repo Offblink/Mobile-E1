@@ -25,7 +25,7 @@ tools/      本地 Tomcat 副本（不进 git）
 | 2 | 全生命周期日志 / Bundle 多类型传参 / registerForActivityResult 回传 / 四种启动模式 / 隐式 Intent | 登录→主页观察 Logcat；我的 → 编辑昵称；主页 → 实验室 |
 | 3 | 四大布局 + 七控件登录页 / RecyclerView / 左右气泡聊天室 | 登录页；同学录 tab；课友圈 tab |
 | 4 | 网络变化动态广播横幅 / 自定义广播（静态+动态对比）/ 有序广播截断 | 切 Wi-Fi 看主页横幅；实验室 → 广播三按钮 |
-| 5 | 文件草稿箱 / SP 记住密码 / SQLite 通讯录（版本升级/事务/模糊查询/CRUD） | 同学录 tab → 草稿箱；登录勾记住密码；同学录列表 |
+| 5 | 文件草稿箱 / SP 记住密码 + 注册账号库（SHA-256 摘要） / SQLite 通讯录（版本升级/事务/模糊查询/CRUD） | 同学录 tab → 草稿箱；登录页「注册」→ 自动回填 → 登录（错误密码被拦、未注册按游客放行）；同学录列表 |
 | 6 | READ_CONTACTS 运行时权限三态流程 / 自定义 Provider / 跨 App 读取 | 同学录 → 「导入系统联系人」；装 reader App 点读取 |
 | 7 | HttpUtil 封装 / org.json vs Gson 双解析 / XmlPullParser RSS | 实验室 → JSON 双解析对比 / RSS 解析 |
 | 8 | 前台服务下载+通知 / 绑定式 Service / 定位 / MediaPlayer / 相机缩略图 | 我的 → 下载中心 / 工具箱 |
