@@ -35,6 +35,16 @@
     <string name="launch_relaunch_self">再次启动自己（观察实例数）</string>
     <string name="launch_goto_login">跳回登录页（观察清栈）</string>
 
+    <!-- 任务 7：网络与 JSON/RSS -->
+    <string name="json_compare_title">JSON 双解析对比</string>
+    <string name="json_fetch_btn">拉取 /api/mates 并双解析</string>
+    <string name="json_orgjson_label">org.json（系统自带）</string>
+    <string name="json_gson_label">Gson（三方库）</string>
+    <string name="json_parsing">解析中…</string>
+    <string name="json_fetch_failed">请求失败：%1$s</string>
+    <string name="rss_title">RSS 解析（XmlPullParser）</string>
+    <string name="rss_fetch_btn">拉取 /api/rss 并解析</string>
+
     <!-- 任务 6：权限与跨 App -->
     <string name="contact_import_system">导入系统联系人（READ_CONTACTS）</string>
     <string name="permission_denied">权限被拒绝，无法读取系统通讯录</string>
@@ -66,6 +76,7 @@
     <string name="contact_deleted">已删除</string>
 
     <!-- 任务 4：广播演示 -->
+    <string name="lab_network_hint">网络演示：需先启动 server（scripts/deploy.sh），模拟器经 10.0.2.2:8081 访问本机</string>
     <string name="lab_broadcast_hint">广播演示：自定义广播看 Logcat 的 Keyou/Broadcast 三组 TAG（Static/Dynamic/Ordered）；有序广播先点不截断再点截断，对比 OrderedLow 有无日志</string>
     <string name="broadcast_custom">自定义广播（静态+动态接收器对比）</string>
     <string name="broadcast_ordered">有序广播：高→低 全部送达</string>

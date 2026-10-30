@@ -66,6 +66,12 @@ public class LabActivity extends AppCompatActivity {
             }
         });
 
+        // 任务 7：JSON 双解析对比 + RSS 解析
+        findViewById(R.id.btn_json_compare).setOnClickListener(v ->
+                startActivity(new Intent(this, JsonCompareActivity.class)));
+        findViewById(R.id.btn_rss_parse).setOnClickListener(v ->
+                startActivity(new Intent(this, RssParseActivity.class)));
+
         // 任务 4：发送自定义广播 —— setPackage 显式指定（8.0+ 静态接收器只收显式广播）
         Button btnCustom = findViewById(R.id.btn_send_custom);
         btnCustom.setOnClickListener(v -> {

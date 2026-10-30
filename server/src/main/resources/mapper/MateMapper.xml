@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 任务 7/9：参数化 SQL（#{} 预编译占位，防注入）；LIKE 拼接在 Java 侧组装参数 -->
+<mapper namespace="com.offblink.keyou.server.mapper.MateMapper">
+
+    <resultMap id="mateMap" type="Mate">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="gender" column="gender"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectPage" resultMap="mateMap">
+        SELECT id, name, phone, email, gender, remark
+        FROM mate
+        <where>
+            <if test="kw != null and kw != ''">
+                name LIKE CONCAT('%', #{kw}, '%')
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countByKw" resultType="long">
+        SELECT COUNT(*) FROM mate
+        <where>
+            <if test="kw != null and kw != ''">
+                name LIKE CONCAT('%', #{kw}, '%')
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO mate(name, phone, email, gender, remark)
+        VALUES (#{name}, #{phone}, #{email}, #{gender}, #{remark})
+    </insert>
+
+    <update id="update">
+        UPDATE mate
+        SET name = #{name}, phone = #{phone}, email = #{email},
+            gender = #{gender}, remark = #{remark}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM mate WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="mateMap">
+        SELECT id, name, phone, email, gender, remark FROM mate WHERE id = #{id}
+    </select>
+
+</mapper>

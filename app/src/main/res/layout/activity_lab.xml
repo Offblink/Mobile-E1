@@ -83,6 +83,31 @@
         android:layout_marginVertical="16dp"
         android:background="?attr/colorOutlineVariant" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lab_network_hint"
+        android:textSize="13sp"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_json_compare"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/json_compare_title" />
+
+    <Button
+        android:id="@+id/btn_rss_parse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/rss_title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="16dp"
+        android:background="?attr/colorOutlineVariant" />
+
     <Button
         android:id="@+id/btn_implicit_intent"
         style="@style/Widget.Material3.Button.OutlinedButton"
