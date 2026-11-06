@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FileProvider 只暴露 files/chat/（群文件的上传原件与下载副本），别把整个私有目录放出去 -->
+<paths>
+    <files-path
+        name="chat_files"
+        path="chat/" />
+</paths>

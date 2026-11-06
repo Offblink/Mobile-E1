@@ -104,7 +104,6 @@ private fun App() {
 
     var notices by remember { mutableStateOf<List<Api.Notice>>(emptyList()) }
     var messages by remember { mutableStateOf<List<Api.Message>>(emptyList()) }
-    var files by remember { mutableStateOf<List<Api.FileInfo>>(emptyList()) }
     var lastMessageId by remember { mutableStateOf(0L) }
 
     val scope = rememberCoroutineScope()
@@ -114,7 +113,6 @@ private fun App() {
             notices = io { api.notices(50) }
             messages = io { api.messages(lastMessageId, 100) }
             if (messages.isNotEmpty()) lastMessageId = messages.maxOf { it.id }
-            files = io { api.files() }
             statusOk = true
         } catch (e: Exception) {
             statusOk = false
@@ -152,7 +150,6 @@ private fun App() {
                     lastMessageId = fresh.maxOf { it.id }
                 }
                 notices = io { current.notices(50) }
-                files = io { current.files() }
                 statusOk = true
             } catch (e: Exception) {
                 statusOk = false
@@ -209,7 +206,6 @@ private fun App() {
             else -> GroupTab(
                 api = api,
                 messages = messages,
-                files = files,
                 onSent = { m ->
                     messages = messages + m
                     lastMessageId = maxOf(lastMessageId, m.id)
@@ -217,9 +213,8 @@ private fun App() {
                     status = "已发送"
                 },
                 onUploaded = { f ->
-                    files = listOf(f) + files
                     statusOk = true
-                    status = "已上传 " + f.name
+                    status = "已上传 " + f.name + "（手机端班级群可看到这张文件卡片）"
                 },
                 onError = { msg ->
                     statusOk = false
@@ -328,7 +323,6 @@ private fun NoticeTab(
 private fun GroupTab(
     api: Api?,
     messages: List<Api.Message>,
-    files: List<Api.FileInfo>,
     onSent: (Api.Message) -> Unit,
     onUploaded: (Api.FileInfo) -> Unit,
     onError: (String) -> Unit
@@ -438,27 +432,14 @@ private fun GroupTab(
 
         Spacer(Modifier.height(6.dp))
 
-        Text("群文件 · ${files.size} 个", fontSize = 12.sp)
-        LazyColumn(modifier = Modifier.height(140.dp).fillMaxWidth()) {
-            items(files) { f ->
-                Text(
-                    "${f.name()}  ·  ${humanSize(f.size())}  ·  ${f.uploader()}  ·  ${f.uploadedAt()}",
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
-                )
-            }
-        }
+        Text(
+            "上传的文件会以卡片形式出现在手机端班级群里",
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
 // ---------------------------------------------------------------- 工具
 
 private suspend fun <T> io(block: () -> T): T = withContext(Dispatchers.IO) { block() }
-
-private fun humanSize(size: Long): String = when {
-    size < 1024 -> "$size B"
-    size < 1024 * 1024 -> String.format("%.1f KB", size / 1024.0)
-    else -> String.format("%.1f MB", size / (1024.0 * 1024.0))
-}

@@ -141,6 +141,20 @@
     <string name="chat_upload_done">已上传：%1$s</string>
     <string name="chat_upload_failed">上传失败：%1$s</string>
     <string name="chat_upload_parse_failed">上传结果解析失败</string>
+    <!-- 群文件卡片：时间线里的一张卡，本机有副本就打开，没有就下载 -->
+    <string name="chat_file_open">点击打开</string>
+    <string name="chat_file_download">点击下载</string>
+    <string name="chat_file_downloading">正在下载…</string>
+    <string name="chat_file_download_start">开始下载：%1$s</string>
+    <string name="chat_file_downloaded">已下载，点击卡片即可打开</string>
+    <string name="chat_file_download_failed">下载失败：%1$s</string>
+    <string name="chat_file_no_app">没有能打开这个文件的应用</string>
+    <!-- 班级公告：班级群左下 FAB + 列表 -->
+    <string name="notice_fab_desc">班级公告</string>
+    <string name="notice_unread">未读</string>
+    <string name="notice_loading">正在加载公告…</string>
+    <string name="notice_load_failed">公告加载失败：%1$s</string>
+    <string name="notice_parse_failed">公告解析失败</string>
     <string name="chat_placeholder_demo">大家好，我是班长张三</string>
 
     <!-- 关于 / Log 自检 -->

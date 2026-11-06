@@ -50,6 +50,7 @@
         <activity android:name="com.offblink.keyou.download.DownloadActivity" android:exported="false" />
         <activity android:name="com.offblink.keyou.debug.ServiceActivity" android:exported="false" />
         <activity android:name="com.offblink.keyou.debug.DiagnosticsActivity" android:exported="false" />
+        <activity android:name="com.offblink.keyou.notice.NoticeListActivity" android:exported="false" />
 
         <!-- 前台服务下载（dataSync 类型）+ 绑定式便签服务 -->
         <service
@@ -77,6 +78,17 @@
             android:name="com.offblink.keyou.lab.SingleInstanceLabActivity"
             android:exported="false"
             android:launchMode="singleInstance" />
+        <!-- 群文件卡片「点击打开」：把 files/chat/ 下的私有文件以 content:// 交给外部应用 -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.offblink.keyou.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <!-- 自定义 ContentProvider 共享 contact.db（读写权限拆分，signature 级） -->
         <provider
             android:name="com.offblink.keyou.provider.ContactProvider"

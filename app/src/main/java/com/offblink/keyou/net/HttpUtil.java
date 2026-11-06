@@ -2,11 +2,15 @@ package com.offblink.keyou.net;
 
 import com.offblink.keyou.log.AppLog;
 
+import com.offblink.keyou.util.Streams;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -86,6 +90,14 @@ public final class HttpUtil {
         request(ctx, "POST", path,
                 url -> executeMultipart(url, boundary, fileName, file, uploader),
                 callback, true);
+    }
+
+    /**
+     * 下载二进制到本地文件（流式写盘，不整包进内存）。
+     * 成功回调收到目标文件绝对路径；失败时目标文件可能只写了一半，调用方自行删除。
+     */
+    public static void download(Context ctx, String path, File target, Callback callback) {
+        request(ctx, "GET", path, url -> executeDownload(url, target), callback, true);
     }
 
     // ---------- 实现 ----------
@@ -191,6 +203,36 @@ public final class HttpUtil {
                 return resp;
             }
             throw new IllegalStateException("HTTP " + code);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
+    /** 发一次 GET，把响应体流式写进 target；返回目标绝对路径 */
+    private static String executeDownload(String url, File target) throws Exception {
+        HttpURLConnection conn = null;
+        try {
+            conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
+            conn.setReadTimeout(UPLOAD_READ_TIMEOUT_MS);
+            int code = conn.getResponseCode();
+            if (code < 200 || code >= 300) {
+                throw new IllegalStateException("HTTP " + code);
+            }
+            File dir = target.getParentFile();
+            if (dir != null && !dir.exists() && !dir.mkdirs()) {
+                throw new IllegalStateException("创建下载目录失败: " + dir);
+            }
+            long total;
+            try (InputStream in = conn.getInputStream();
+                 OutputStream out = new FileOutputStream(target)) {
+                total = Streams.copy(in, out);
+            }
+            AppLog.i(TAG, "GET " + url + " -> " + code + " (" + total + "B -> " + target + ")");
+            return target.getAbsolutePath();
         } finally {
             if (conn != null) {
                 conn.disconnect();

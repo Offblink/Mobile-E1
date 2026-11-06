@@ -27,6 +27,10 @@ compose.desktop {
             targetFormats(TargetFormat.Exe, TargetFormat.Msi)
             packageName = "KeyouClassGroup"
             packageVersion = "1.0.0"
+            // 与手机端 launcher 同一套「双气泡」图形；多尺寸 .ico 由 tools/make-desktop-icon.py 生成
+            windows {
+                iconFile.set(project.file("icon.ico"))
+            }
         }
     }
 }

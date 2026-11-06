@@ -4,6 +4,7 @@ import com.offblink.keyou.R;
 import com.offblink.keyou.log.AppLog;
 import com.offblink.keyou.net.HttpUtil;
 import com.offblink.keyou.ui.KeyouActivity;
+import com.offblink.keyou.util.Sizes;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -129,7 +130,7 @@ public class DownloadActivity extends KeyouActivity {
                 String uploader = item.optString("uploader", "");
                 String time = item.optString("uploadedAt", "");
                 long size = item.optLong("size", 0);
-                fileList.addView(buildRow(name, uploader + " · " + time + " · " + humanSize(size), name));
+                fileList.addView(buildRow(name, uploader + " · " + time + " · " + Sizes.human(size), name));
             }
         } catch (Exception e) {
             tvStatus.setText(R.string.download_parse_error);
@@ -159,16 +160,6 @@ public class DownloadActivity extends KeyouActivity {
 
         row.setOnClickListener(v -> requestDownload(fileName));
         return row;
-    }
-
-    private static String humanSize(long size) {
-        if (size < 1024) {
-            return size + " B";
-        }
-        if (size < 1024 * 1024) {
-            return String.format(java.util.Locale.US, "%.1f KB", size / 1024.0);
-        }
-        return String.format(java.util.Locale.US, "%.1f MB", size / (1024.0 * 1024.0));
     }
 
     // ---------- 下载 ----------

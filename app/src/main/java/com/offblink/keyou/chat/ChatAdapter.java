@@ -16,57 +16,115 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 /**
- * 聊天室适配器 —— 区分左右气泡。
- * 同一 item 布局，按 isSelf 切换外层 gravity（左=对方 / 右=自己）与气泡背景。
+ * 聊天时间线适配器：文本气泡 + 文件卡片两种行。
+ *
+ * - 文本：同一 item_chat 布局，按 isSelf 切左右与气泡底色；
+ * - 文件：item_chat_file 卡片，第二行是「大小 · 上传人 · 时间」，第三行是动作提示
+ *   （本机有副本 → 点击打开；没有 → 点击下载）。点击整卡回调 ChatPanel。
  */
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.VH> {
+public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final List<ChatMessage> data;
+    private static final int TYPE_TEXT = 0;
+    private static final int TYPE_FILE = 1;
 
-    public ChatAdapter(List<ChatMessage> data) {
-        this.data = data;
+    public interface OnFileClick {
+        void onFile(ChatFile file);
     }
 
-    public static class VH extends RecyclerView.ViewHolder {
+    private final List<ChatMessage> data;
+    private final OnFileClick onFileClick;
+
+    public ChatAdapter(List<ChatMessage> data, OnFileClick onFileClick) {
+        this.data = data;
+        this.onFileClick = onFileClick;
+    }
+
+    static class TextVH extends RecyclerView.ViewHolder {
         final LinearLayout bubbleRow;
         final TextView tvContent;
 
-        public VH(@NonNull View itemView) {
+        TextVH(@NonNull View itemView) {
             super(itemView);
             bubbleRow = itemView.findViewById(R.id.bubble_row);
             tvContent = itemView.findViewById(R.id.tv_content);
         }
     }
 
+    static class FileVH extends RecyclerView.ViewHolder {
+        final LinearLayout fileRow;
+        final LinearLayout card;
+        final TextView tvName;
+        final TextView tvMeta;
+        final TextView tvAction;
+
+        FileVH(@NonNull View itemView) {
+            super(itemView);
+            fileRow = itemView.findViewById(R.id.file_row);
+            card = itemView.findViewById(R.id.file_card);
+            tvName = itemView.findViewById(R.id.tv_file_name);
+            tvMeta = itemView.findViewById(R.id.tv_file_meta);
+            tvAction = itemView.findViewById(R.id.tv_file_action);
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return data.get(position).isFile() ? TYPE_FILE : TYPE_TEXT;
+    }
+
     @NonNull
     @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_chat, parent, false);
-        return new VH(v);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == TYPE_FILE) {
+            return new FileVH(inflater.inflate(R.layout.item_chat_file, parent, false));
+        }
+        return new TextVH(inflater.inflate(R.layout.item_chat, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH h, int pos) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
         ChatMessage msg = data.get(pos);
-        h.tvContent.setText(msg.getContent());
-
-        // 自己：气泡靠右、主题色底；对方：靠左、灰色底
-        // item 根是 FrameLayout，子项 gravity 用 FrameLayout.LayoutParams.gravity
-        ViewGroup.LayoutParams lp = h.bubbleRow.getLayoutParams();
-        if (lp instanceof FrameLayout.LayoutParams) {
-            ((FrameLayout.LayoutParams) lp).gravity =
-                    msg.isSelf() ? Gravity.END : Gravity.START;
-            h.bubbleRow.setLayoutParams(lp);
+        if (holder instanceof TextVH) {
+            bindText((TextVH) holder, msg);
+        } else {
+            bindFile((FileVH) holder, msg);
         }
-        h.tvContent.setBackgroundResource(msg.isSelf()
-                ? R.drawable.bubble_right : R.drawable.bubble_left);
-        h.tvContent.setTextColor(getContextColor(h, msg.isSelf()));
     }
 
-    private int getContextColor(VH h, boolean self) {
-        return h.itemView.getContext().getColor(
-                self ? R.color.md_on_primary_container : R.color.md_on_surface);
+    private void bindText(TextVH h, ChatMessage msg) {
+        h.tvContent.setText(msg.getContent());
+        align(h.bubbleRow, msg.isSelf());
+        h.tvContent.setBackgroundResource(msg.isSelf()
+                ? R.drawable.bubble_right : R.drawable.bubble_left);
+        h.tvContent.setTextColor(h.itemView.getContext().getColor(msg.isSelf()
+                ? R.color.md_on_primary_container : R.color.md_on_surface));
+    }
+
+    private void bindFile(FileVH h, ChatMessage msg) {
+        ChatFile file = msg.getFile();
+        h.tvName.setText(file.getName());
+        h.tvMeta.setText(file.meta());
+        h.tvAction.setText(file.hasLocalCopy()
+                ? R.string.chat_file_open : R.string.chat_file_download);
+
+        boolean self = msg.isSelf();
+        align(h.fileRow, self);
+        h.card.setBackgroundResource(self ? R.drawable.bubble_right : R.drawable.bubble_left);
+        h.tvName.setTextColor(h.itemView.getContext().getColor(
+                self ? R.color.md_on_primary_container : R.color.md_on_surface));
+        h.tvMeta.setTextColor(h.itemView.getContext().getColor(R.color.md_on_surface_variant));
+        h.tvAction.setTextColor(h.itemView.getContext().getColor(R.color.md_primary));
+        h.card.setOnClickListener(v -> onFileClick.onFile(file));
+    }
+
+    /** item 根是 FrameLayout，子项 gravity 用 FrameLayout.LayoutParams.gravity */
+    private static void align(View row, boolean self) {
+        ViewGroup.LayoutParams lp = row.getLayoutParams();
+        if (lp instanceof FrameLayout.LayoutParams) {
+            ((FrameLayout.LayoutParams) lp).gravity = self ? Gravity.END : Gravity.START;
+            row.setLayoutParams(lp);
+        }
     }
 
     @Override
