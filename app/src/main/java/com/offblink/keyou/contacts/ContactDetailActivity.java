@@ -5,6 +5,7 @@ import com.offblink.keyou.log.AppLog;
 import com.offblink.keyou.net.HttpUtil;
 import com.offblink.keyou.ui.KeyouActivity;
 
+import com.offblink.keyou.util.Streams;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -587,7 +588,7 @@ public class ContactDetailActivity extends KeyouActivity {
             if (in == null) {
                 throw new IllegalStateException("openInputStream 返回 null");
             }
-            byte[] raw = in.readAllBytes();
+            byte[] raw = Streams.readAll(in);
             BitmapFactory.Options bounds = new BitmapFactory.Options();
             bounds.inJustDecodeBounds = true;
             BitmapFactory.decodeByteArray(raw, 0, raw.length, bounds);

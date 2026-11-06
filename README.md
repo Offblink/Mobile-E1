@@ -52,6 +52,8 @@ lab/       任务 2/4 的实验：四种启动模式 Activity、广播接收器�
 
 ## 快速开始
 
+支持 Android 8.0（API 26）及以上；真机装包失败先看版本——低于 8.0 会直接报「解析包时出现问题」。
+
 ```bash
 # 1. 数据库（MySQL 8 系统服务；schema 与账号见 server/docs/schema.sql）
 #    专用 schema: keyou_e1，低权限账号 keyou（口令在 server/src/main/resources/db.properties，不进 git）

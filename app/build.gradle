@@ -10,7 +10,8 @@ android {
 
     defaultConfig {
         applicationId "com.offblink.keyou"
-        minSdk 34
+        // 26 与 SporeMobile 一致：真机（Android 8.0+）都能装；34 会把 Android 9~13 的机器挡在「解析包」外
+        minSdk 26
         targetSdk 37
         versionCode 1
         versionName "1.0"

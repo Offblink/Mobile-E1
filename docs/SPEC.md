@@ -20,7 +20,7 @@
 |---|---|---|
 | 客户端语言 | **Java**（强制），XML Views | 指导书样例全为 Java；现场提问要讲代码逻辑 |
 | Compose | **不使用** | 指导书口径为 Views；避免答辩额外解释 |
-| minSdk / targetSdk / compileSdk | 34 / 37 / 37 | 与本机 Andriod01 已验证组合一致（AGP 9.3.3 + Gradle 9.5.0）；指导书「SDK 34」为环境建议，功能口径不受影响，报告注明 |
+| minSdk / targetSdk / compileSdk | 26 / 37 / 37 | 与本机 Andriod01 已验证组合一致（AGP 9.3.3 + Gradle 9.5.0）；指导书「SDK 34」为环境建议，功能口径不受影响，报告注明。minSdk 取 26 与 SporeMobile 一致：真机（Android 8.0+）都能装上；原来写 34 会让 Android 9~13 的机器在安装阶段直接报「解析包时出现问题」 |
 | 构建 | Gradle wrapper 9.5.0 + AGP 9.3.3，`-I aliyun-init.gradle` 走阿里云镜像 | Andriod01 / 课堂08 实测 |
 | 后端 | **SSM**：Spring 5.3 + Spring MVC + MyBatis 3.5 + Jackson，Maven（mvnw 3.8.5）打包 WAR | 用户指定；骨架复用课堂08 HttpUrlServer 实测配方 |
 | 数据库 | **MySQL 8.0.43**（本机系统服务 `MySQL80`，127.0.0.1:3306，utf8mb4）；专用 schema **`keyou_e1`** + 低权限账号 `keyou`（口令只写本机 `server/src/main/resources/db.properties`，**不进 git**，仓库只放 `db.properties.example`） | 与指导书口径一致（MySQL 8）；root 口令不进仓库；可视化直接用 MySQL 生态（mysql CLI / 任意 GUI 客户端）截图进报告 |

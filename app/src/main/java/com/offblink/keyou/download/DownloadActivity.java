@@ -76,9 +76,10 @@ public class DownloadActivity extends KeyouActivity {
         Button btnStart = findViewById(R.id.btn_start_download);
         btnStart.setOnClickListener(v -> requestAndDownload());
 
+        // 33+ 需显式声明不导出；低版本传 0 走等价的两参重载
         registerReceiver(progressReceiver,
                 new IntentFilter(DownloadService.ACTION_PROGRESS),
-                Context.RECEIVER_NOT_EXPORTED);
+                Build.VERSION.SDK_INT >= 33 ? Context.RECEIVER_NOT_EXPORTED : 0);
     }
 
     private void requestAndDownload() {

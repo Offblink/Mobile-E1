@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
@@ -47,8 +48,10 @@ public class DiagnosticsActivity extends KeyouActivity {
 
         // 动态注册同一 action，对比静态/动态两个接收器都收到
         IntentFilter syncFilter = new IntentFilter(BroadcastActions.SYNC_DONE);
-        // Android 14+：非系统广播必须显式声明是否导出（本广播仅 App 内收发）
-        registerReceiver(dynamicSyncReceiver, syncFilter, Context.RECEIVER_NOT_EXPORTED);
+        // Android 14+：非系统广播必须显式声明是否导出（本广播仅 App 内收发）；
+        // 33 以下没有这个常量语义，传 0 等同两参重载
+        registerReceiver(dynamicSyncReceiver, syncFilter,
+                Build.VERSION.SDK_INT >= 33 ? Context.RECEIVER_NOT_EXPORTED : 0);
 
         // 四种启动模式：同一段启动代码，Manifest 里 launchMode 不同，观察任务栈实例数
         Button btnStandard = findViewById(R.id.btn_mode_standard);

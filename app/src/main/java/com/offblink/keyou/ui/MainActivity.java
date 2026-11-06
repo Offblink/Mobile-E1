@@ -10,6 +10,7 @@ import com.offblink.keyou.mine.ProfileStore;
 import com.offblink.keyou.mine.ProvinceLocator;
 import com.offblink.keyou.net.ServerConfig;
 
+import com.offblink.keyou.util.Streams;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,8 +25,9 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
-import android.os.CancellationSignal;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -286,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** 缓存点够新（5 分钟内）直接用；否则请求一次实时定位，超时再退回缓存点 */
-    @SuppressWarnings("MissingPermission")  // requestLocation 已校验授权
+    @SuppressWarnings({"MissingPermission", "deprecation"})  // 权限已校验；requestSingleUpdate 仅 API 26–29 走
     private void fetchLocation() {
         LocationManager lm = getSystemService(LocationManager.class);
         if (lm == null) {
@@ -336,20 +338,33 @@ public class MainActivity extends AppCompatActivity {
         };
         locationHandler.postDelayed(timeout, 8000);
         try {
-            lm.getCurrentLocation(providers.get(0), signal, getMainExecutor(), location -> {
-                if (locatingSignal != signal) {
-                    return;
-                }
-                locatingSignal = null;
-                locationHandler.removeCallbacks(timeout);
-                if (location != null) {
-                    onLocation(location);
-                } else if (last != null) {
-                    onLocation(last);
-                } else {
-                    tvLocationDetail.setText(R.string.mine_location_none);
-                }
-            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                lm.getCurrentLocation(providers.get(0), signal,
+                        ContextCompat.getMainExecutor(this),
+                        location -> deliverLocation(location, last, signal, timeout));
+            } else {
+                // API 26–29 没有 getCurrentLocation：单次请求，回调里立刻撤销
+                android.location.LocationListener once = new android.location.LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        lm.removeUpdates(this);
+                        deliverLocation(location, last, signal, timeout);
+                    }
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+                    }
+
+                    @Override
+                    public void onProviderEnabled(String provider) {
+                    }
+
+                    @Override
+                    public void onProviderDisabled(String provider) {
+                    }
+                };
+                lm.requestSingleUpdate(providers.get(0), once, Looper.getMainLooper());
+            }
         } catch (Exception e) {
             AppLog.e(TAG, "实时定位失败", e);
             locationHandler.removeCallbacks(timeout);
@@ -361,7 +376,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /** 各 provider 的缓存点里取时间最新的一条 */
+    /** 实时定位的回调收口：拿到点直接用，点为空时退回缓存点 */
+    private void deliverLocation(Location location, Location last,
+                                 CancellationSignal signal, Runnable timeout) {
+        if (locatingSignal != signal) {
+            return;   // 超时已经处理过这一次
+        }
+        locatingSignal = null;
+        locationHandler.removeCallbacks(timeout);
+        if (location != null) {
+            onLocation(location);
+        } else if (last != null) {
+            onLocation(last);
+        } else {
+            tvLocationDetail.setText(R.string.mine_location_none);
+        }
+    }
+
+    /** 各 provider 的缓存点里取时间最新的一条（调用方已校验定位权限） */
+    @SuppressWarnings("MissingPermission")
     private Location lastKnownLocation(LocationManager lm) {
         Location best = null;
         for (String provider : lm.getAllProviders()) {
@@ -498,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
             }
             BitmapFactory.Options bounds = new BitmapFactory.Options();
             bounds.inJustDecodeBounds = true;
-            byte[] raw = in.readAllBytes();
+            byte[] raw = Streams.readAll(in);
             BitmapFactory.decodeByteArray(raw, 0, raw.length, bounds);
             int sample = 1;
             while (bounds.outWidth / (sample * 2) >= 512) {

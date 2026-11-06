@@ -4,6 +4,7 @@ import com.offblink.keyou.R;
 import com.offblink.keyou.download.DownloadActivity;
 import com.offblink.keyou.log.AppLog;
 
+import com.offblink.keyou.util.Streams;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -124,7 +125,7 @@ public final class ChatPanel {
             return;
         }
         try (FileInputStream in = host.openFileInput(DRAFT_FILE)) {
-            String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            String text = new String(Streams.readAll(in), StandardCharsets.UTF_8);
             if (!text.equals(etInput.getText().toString())) {
                 etInput.setText(text);
                 etInput.setSelection(text.length());

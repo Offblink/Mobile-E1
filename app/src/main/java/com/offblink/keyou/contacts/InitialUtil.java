@@ -1,6 +1,7 @@
 package com.offblink.keyou.contacts;
 
 import android.icu.text.Transliterator;
+import android.os.Build;
 
 import java.text.Normalizer;
 
@@ -10,7 +11,8 @@ import java.text.Normalizer;
  * 规则（按顺序）：
  * 1. 首字符是拉丁字母 → 大写（"amy" → A）；
  * 2. 汉字 → 用系统 ICU 的 "Han-Latin" 音译拿拼音首字母（"张三" → zhāng → Z）；
- *    android.icu 是 API 24+ 的框架能力，音译失败时退到第 3 步；
+ *    Transliterator.getInstance / transliterate 要 API 29+，26–28 的机器上汉字统一落 '#' 组；
+ *    音译失败时退到第 3 步；
  * 3. 其余（数字/符号/空名）→ '#'。
  *
  * 只在「展示前派生分组」时用，不落库 —— contact 表结构不因为分组而改动。
@@ -47,6 +49,9 @@ public final class InitialUtil {
      * 必须先剥掉组合音标再取首字母。
      */
     private static char pinyinInitial(String han) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return 0;   // 29 以下没有可用的 Han-Latin 音译：该条落 '#' 组，不影响其它分组
+        }
         try {
             if (hanLatin == null) {
                 hanLatin = Transliterator.getInstance("Han-Latin");
