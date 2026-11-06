@@ -49,7 +49,7 @@ public final class ChatFile {
         return localPath != null;
     }
 
-    /** 卡片第二行：25.9 KB · 电脑端 · 2026-11-06 15:38 */
+    /** 卡片第二行：25.9 KB · 桌面端 · 2026-11-06 15:38 */
     public String meta() {
         return Sizes.human(size) + " · " + safe(uploader) + " · " + safe(uploadedAt);
     }

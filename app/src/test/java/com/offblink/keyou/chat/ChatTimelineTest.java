@@ -15,7 +15,7 @@ public class ChatTimelineTest {
 
     @Test
     public void fileAppearsAtItsUploadTime() {
-        ChatFile earlier = new ChatFile("早发的.txt", 10, "电脑端", "2026-11-06 09:00", null);
+        ChatFile earlier = new ChatFile("早发的.txt", 10, "桌面端", "2026-11-06 09:00", null);
         ChatFile later = new ChatFile("晚发的.txt", 20, "我", "2026-11-06 17:30", null);
         ChatMessage m1 = ChatMessage.text(1, "张三", "早上好", false, "2026-11-06 08:59");
         ChatMessage m2 = ChatMessage.text(2, "李四", "下午见", false, "2026-11-06 16:00");
@@ -45,7 +45,7 @@ public class ChatTimelineTest {
     @Test
     public void selfFlagComesFromUploader() {
         ChatFile mine = new ChatFile("mine.pdf", 1, "我", "2026-11-06 10:00", null);
-        ChatFile theirs = new ChatFile("theirs.pdf", 1, "电脑端", "2026-11-06 10:00", null);
+        ChatFile theirs = new ChatFile("theirs.pdf", 1, "桌面端", "2026-11-06 10:00", null);
 
         List<ChatMessage> merged = ChatTimeline.merge(Collections.emptyList(),
                 Arrays.asList(mine, theirs), "我");

@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * multipart/form-data 拼装（纯 java.io，单测可在 JVM 直接跑）。
  *
- * 与电脑端（desktop/…/Api.upload）同一条线格式：
+ * 与桌面端（desktop/…/Api.upload）同一条线格式：
  * file 段在前（Content-Type 固定 application/octet-stream），uploader 段在后，
  * 每段 CRLF 分隔、结尾 --boundary--；文件名按 UTF-8 原样写进 header
  * —— 服务端 FileController 就是这么解出来的中文名。

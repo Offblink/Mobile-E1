@@ -17,7 +17,7 @@ import org.json.JSONObject;
 /**
  * 班级公告列表：底部导航「班级群」左下 FAB 进来。
  *
- * 数据走 `GET /api/notices?size=50`（电脑端客户端发布）。未读判据是
+ * 数据走 `GET /api/notices?size=50`（桌面端客户端发布）。未读判据是
  * {@link NoticeStore#lastSeenId}：id 比它大的行首带红点；
  * 整页渲染完把游标推到当前最大 id —— 列表本身就展示了全部内容，看一次就算读完。
  * 班级群 FAB 上的红点同步由 ChatPanel 轮询 /api/notices?size=1 维护。

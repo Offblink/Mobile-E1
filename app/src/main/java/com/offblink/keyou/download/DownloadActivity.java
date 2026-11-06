@@ -28,7 +28,7 @@ import org.json.JSONObject;
 
 /**
  * 群文件页。
- * - 列表来自服务端 `GET /api/files`（电脑端客户端上传的文件就出现在这里）；
+ * - 列表来自服务端 `GET /api/files`（桌面端客户端上传的文件就出现在这里）；
  * - 点条目启动前台服务下载 `GET /api/file/{name}`，进度走广播刷新；
  * - POST_NOTIFICATIONS 运行时权限（Android 13+ 演示）。
  */

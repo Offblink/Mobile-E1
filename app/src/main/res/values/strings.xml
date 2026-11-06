@@ -70,7 +70,7 @@
     <string name="download_title">群文件</string>
     <string name="download_refresh">刷新</string>
     <string name="download_loading">正在加载群文件…</string>
-    <string name="download_empty">还没有文件，用电脑端客户端上传试试</string>
+    <string name="download_empty">还没有文件，用桌面端客户端上传试试</string>
     <string name="download_count">共 %1$d 个文件</string>
     <string name="download_parse_error">文件列表解析失败</string>
     <string name="download_idle">尚未开始</string>
@@ -98,7 +98,7 @@
     <string name="json_fetch_failed">请求失败：%1$s</string>
     <string name="rss_title">班级公告</string>
     <string name="rss_fetch_btn">刷新公告</string>
-    <string name="notice_empty">还没有公告，用电脑端客户端发一条试试</string>
+    <string name="notice_empty">还没有公告，用桌面端客户端发一条试试</string>
     <string name="notice_item">%1$s\n%2$s · %3$s\n%4$s</string>
 
     <!-- 跨 App -->
@@ -135,7 +135,7 @@
     <string name="chat_loading">正在加载群消息…</string>
     <string name="chat_empty">还没有消息，说点什么吧</string>
     <string name="chat_send_failed">发送失败：%1$s</string>
-    <!-- 群文件上传：与电脑端客户端同一接口 POST /api/file -->
+    <!-- 群文件上传：与桌面端客户端同一接口 POST /api/file -->
     <string name="chat_upload">上传</string>
     <string name="chat_uploading">上传中…</string>
     <string name="chat_upload_done">已上传：%1$s</string>

@@ -1,4 +1,4 @@
-"""生成电脑端 Windows 图标 desktop/icon.ico（与手机端 launcher 同一套「双气泡」图形）。
+"""生成桌面端 Windows 图标 desktop/icon.ico（与手机端 launcher 同一套「双气泡」图形）。
 
 手机端图标是 vector（108 视口、淡紫底 + 两个紫色气泡），这里按同一组坐标栅格化：
   python tools/make-icon.py        # 在 desktop/ 目录下执行，或任意目录传输出路径

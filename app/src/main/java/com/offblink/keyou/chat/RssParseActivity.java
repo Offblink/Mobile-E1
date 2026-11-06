@@ -13,10 +13,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * 班级公告页：数据来自服务端 `GET /api/notices`（电脑端客户端在这里发布公告）。
+ * 班级公告页：数据来自服务端 `GET /api/notices`（桌面端客户端在这里发布公告）。
  *
  * 任务 7 的 XML 解析演示仍然保留在服务端 `/api/rss`（由 notice 表生成），
- * 但页面主数据面走 JSON —— 手机端负责看，电脑端负责发。
+ * 但页面主数据面走 JSON —— 手机端负责看，桌面端负责发。
  */
 public class RssParseActivity extends KeyouActivity {
 

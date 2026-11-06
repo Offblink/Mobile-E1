@@ -81,7 +81,7 @@ public final class HttpUtil {
     }
 
     /**
-     * multipart/form-data 上传（与电脑端同一条线格式，见 {@link MultipartBody}）。
+     * multipart/form-data 上传（与桌面端同一条线格式，见 {@link MultipartBody}）。
      * file 得是本地临时文件：调用方先把 Uri 内容落到 cacheDir 再传进来。
      */
     public static void postMultipart(Context ctx, String path, String fileName,

@@ -12,7 +12,7 @@
 app/        主 App（com.offblink.keyou）—— 登录 / 同学录 / 班级群 / 我的
 reader/     第二个 App「读取器」（com.offblink.keyou.reader）：进入直接显示课友通讯录（跨 App ContentProvider）
 server/     SSM 后端（Maven WAR：Spring 5.3 + MyBatis + MySQL 8）—— 同学录 + 公告/群消息/群文件
-desktop/    电脑端班级群客户端（Kotlin + Compose Multiplatform）：发布公告、发消息、传文件
+desktop/    桌面端班级群客户端（Kotlin + Compose Multiplatform）：发布公告、发消息、传文件
 scripts/    deploy.sh（打包→ROOT 部署→8081 起停→探活）
 docs/       规格、要求对照、报告素材
 tools/      本地 Tomcat 副本（不进 git）
@@ -42,7 +42,7 @@ lab/       任务 2/4 的实验：四种启动模式 Activity、广播接收器�
 |---|---|---|
 | 登录与账号 | 账号密码校验、记住密码、注册（本地账号库，密码存 SHA-256 摘要） | 启动页；「注册」→ 独立的整页表单（不再是弹窗）→ 注册成功直接进主界面 |
 | 同学录 | 本地联系人与班级成员合并成一个分组列表（拼音分组 + 右侧字母索引 + 吸顶字母），每行带「本地 / 班级」来源角标与头像；点行按来源编辑（本地写 SQLite、班级 PUT 服务端），长按删除；FAB 直接进新增页（不再先弹来源选择框），「来源」是表单里可点的行：选本地同学写 SQLite、选班级成员走 `/api/mate` | 底部「同学录」tab |
-| 班级群 | 消息时间线**走后端**（`/api/messages` + `/api/files` 合并，进入全量拉一次、之后 4 秒增量轮询），电脑端发的消息与上传的文件都以**卡片**形式插在时间线上：本机有副本（自己上传/下载过）点卡片直接打开，没有就点击下载；标题行「上传」走 `POST /api/file`；左下角 FAB 进班级公告列表（有未读亮红点，列表里未读行带红点） | 底部「班级群」tab |
+| 班级群 | 消息时间线**走后端**（`/api/messages` + `/api/files` 合并，进入全量拉一次、之后 4 秒增量轮询），桌面端发的消息与上传的文件都以**卡片**形式插在时间线上：本机有副本（自己上传/下载过）点卡片直接打开，没有就点击下载；标题行「上传」走 `POST /api/file`；左下角 FAB 进班级公告列表（有未读亮红点，列表里未读行带红点） | 底部「班级群」tab |
 | 我的 | 头像（相册选择，无头像显示昵称首字）、昵称点击改名；**所在省份**（进入页面自动定位，显示在昵称右边）、启动音（固定开启）；**服务器地址**（真机连本机局域网用，见下）、日志、退出登录 | 底部「我的」tab |
 | 日志 | 应用内日志实时滚动（级别过滤 / 清空），数据来自 AppLog 环形缓冲；底部「调试面板」收着四种启动模式、广播、隐式 Intent、数据自检、服务自检 | 我的 → 日志 |
 
@@ -51,15 +51,16 @@ lab/       任务 2/4 的实验：四种启动模式 Activity、广播接收器�
 不联网、不接地图 SDK），结果连同经纬度、来源与时间存进 SP。启动音固定开启，
 每个 App 进程冷启动时响一次（登录页进入时播放），没有开关。
 
-## 电脑端班级群客户端（desktop/）
+## 桌面端班级群客户端（desktop/）
 
-手机端负责看，电脑端负责发：Kotlin + **Compose Multiplatform** 桌面程序，连同一个 SSM 后端。
+手机端负责看，桌面端负责发：Kotlin + **Compose Multiplatform** 桌面程序，连同一个 SSM 后端。
 
 - 构建 / 启动：`desktop\build.cmd`（`gradlew -p desktop compileKotlin`）、`desktop\打开班级群客户端.cmd`（`gradlew -p desktop run`）
 - 两个功能：**发布公告**（`/api/notice`）、**发消息 / 传文件**（`/api/message`、`/api/file`）
 - 无界面自检：`gradlew -p desktop checkApi -PbaseUrl=http://127.0.0.1:8081` 打印 `OK <db>`
-- 电脑端不再列「群文件」清单：文件以卡片形式出现在**手机端班级群**时间线里，两端看同一份数据
-- 手机端班级群头部也有「上传」（与电脑端共用 `POST /api/file`）；班级公告与群文件列表入口收在「我的 → 日志 → 调试面板」
+- **两端同一条时间线**：桌面端班级群也是消息 + 文件卡片混排（按 `yyyy-MM-dd HH:mm` 排序，自己发的靠右）；
+  本机有副本（自己传的原件 / 下过的）点卡片直接打开，没有就下到「下载」目录（`Api.download` 流式写盘），完成后变「点击打开」
+- 手机端班级群头部也有「上传」（与桌面端共用 `POST /api/file`）；班级公告与群文件列表入口收在「我的 → 日志 → 调试面板」
 - 图标：`desktop/icon.ico`（与手机端 launcher 同一套「双气泡」图形，`desktop/tools/make-icon.py` 用 Pillow 生成，多尺寸），
   由 `nativeDistributions.windows.iconFile` 嵌进 exe
 - `reader/` 那个 Android 第二 App 保留不动：任务 6 要求的是**跨 App ContentResolver 读取**，

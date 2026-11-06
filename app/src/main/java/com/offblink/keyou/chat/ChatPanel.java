@@ -55,7 +55,7 @@ public final class ChatPanel {
 
     private static final String TAG = "Keyou/Chat";
 
-    /** 增量拉取间隔：够电脑端发完消息基本"秒到"，又不至于把服务端打满 */
+    /** 增量拉取间隔：够桌面端发完消息基本"秒到"，又不至于把服务端打满 */
     private static final long POLL_INTERVAL_MS = 4000L;
 
     /** 必须与 AndroidManifest 里 FileProvider 的 authorities 一致 */
@@ -130,7 +130,7 @@ public final class ChatPanel {
             return false;
         });
 
-        // 上传群文件：SAF 选一个文件，拿 Uri 后先落到 cacheDir 再发（与电脑端客户端对齐）
+        // 上传群文件：SAF 选一个文件，拿 Uri 后先落到 cacheDir 再发（与桌面端客户端对齐）
         btnUpload = root.findViewById(R.id.btn_upload);
         if (btnUpload != null) {
             filePicker = host.registerForActivityResult(

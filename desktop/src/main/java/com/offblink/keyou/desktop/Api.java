@@ -179,6 +179,50 @@ final class Api {
         return toFile(m);
     }
 
+    /**
+     * 下载群文件到 target（响应体流式写盘，不整包进内存）。
+     * 非 2xx：删掉半截文件再抛；目标目录自动建。
+     * 读超时放宽到 60 秒 —— 文件大时比 JSON 请求慢得多。
+     */
+    void download(String name, Path target) throws ApiException {
+        String encoded = java.net.URLEncoder.encode(name, StandardCharsets.UTF_8)
+                .replace("+", "%20");
+        HttpRequest request = HttpRequest.newBuilder(URI.create(base + "/api/file/" + encoded))
+                .timeout(Duration.ofSeconds(60))
+                .header("Accept", "*/*")
+                .GET()
+                .build();
+
+        HttpResponse<Path> resp;
+        try {
+            Path parent = target.toAbsolutePath().getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            resp = http.send(request, HttpResponse.BodyHandlers.ofFile(target));
+        } catch (HttpTimeoutException e) {
+            throw new ApiException("下载超时（服务器 60 秒未响应）", true);
+        } catch (ConnectException e) {
+            throw new ApiException("无法连接服务器，请确认地址与端口", true);
+        } catch (UnknownHostException e) {
+            throw new ApiException("无法解析服务器地址", true);
+        } catch (IOException e) {
+            throw new ApiException("网络错误：" + e.getMessage(), true);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApiException("请求被中断", true);
+        }
+
+        if (resp.statusCode() != 200) {
+            try {
+                Files.deleteIfExists(target);
+            } catch (IOException ignored) {
+                // 删不掉就留着，下次点击会按文件大小重下
+            }
+            throw new ApiException("HTTP " + resp.statusCode() + "（下载失败）");
+        }
+    }
+
     // ------------------------------------------------------------- 内部
 
     private Object call(String method, String path, HttpRequest.BodyPublisher body, String contentType)
