@@ -49,7 +49,7 @@ Mobile-E1/
 | 包 | 内容 |
 |---|---|
 | `ui/` | `LoginActivity`（入口）、`MainActivity`（三页宿主）、`KeyouActivity`（二级页基类，自动绑返回栏） |
-| `contacts/` | `ContactsPage`、`ContactGroupAdapter`/`ContactGroupDecoration`/`LetterIndexBar`、`ContactDetailActivity`、`ContactDBHelper`/`ContactDao`/`Contact`、`Mate`/`MateAdapter`/`MateFormDialog`、`JsonCompareActivity` |
+| `contacts/` | `ContactsPage`、`ContactGroupAdapter`/`ContactGroupDecoration`/`LetterIndexBar`、`ContactDetailActivity`、`ContactDBHelper`/`ContactDao`/`Contact`、`Mate`/`MateFormDialog`、`JsonCompareActivity` |
 | `chat/` | `ChatPanel`、`ChatAdapter`/`ChatMessage`、`RssParseActivity`、`DraftActivity` |
 | `download/` | `DownloadActivity`、`DownloadService`（前台服务） |
 | `mine/` | `ProfileStore`、`UserStore`、`PlaceStore`、`ProvinceLocator`、`StartupSound` |
