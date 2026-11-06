@@ -17,6 +17,22 @@ docs/       规格、要求对照、报告素材
 tools/      本地 Tomcat 副本（不进 git）
 ```
 
+主 App 的 Java 按功能分包（`app/src/main/java/com/offblink/keyou/`）：
+
+```
+ui/        入口与主界面：LoginActivity、MainActivity（三页宿主）、KeyouActivity（二级页基类）
+contacts/  同学录：ContactsPage、分组适配器与字母索引条、ContactDetailActivity、
+           SQLite（ContactDBHelper/ContactDao/Contact）、班级成员（Mate*）、数据自检页
+chat/      课友圈：ChatPanel、ChatAdapter/ChatMessage、公告 RssParseActivity、草稿页
+download/  下载：DownloadActivity + 前台服务 DownloadService
+mine/      我的：ProfileStore/UserStore、PlaceStore + ProvinceLocator、StartupSound
+log/       AppLog 与日志页 LogActivity
+debug/     诊断页、服务自检页、绑定式 BoundNoteService
+net/       HttpUtil、ServerConfig（10.0.2.2 / 127.0.0.1:8081 与回退）
+provider/  ContactProvider（跨 App 供 reader 读取）
+lab/       任务 2/4 的实验：四种启动模式 Activity、广播接收器与 action 常量
+```
+
 ## 功能一览
 
 底部三页：**同学录 / 课友圈 / 我的**。

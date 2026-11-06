@@ -108,7 +108,7 @@
                 android:visibility="gone" />
 
             <!-- 右侧字母索引条：A-Z 与 # 共 27 槽（下半截让开 FAB 与底部导航） -->
-            <com.offblink.keyou.LetterIndexBar
+            <com.offblink.keyou.contacts.LetterIndexBar
                 android:id="@+id/index_bar"
                 android:layout_width="30dp"
                 android:layout_height="match_parent"

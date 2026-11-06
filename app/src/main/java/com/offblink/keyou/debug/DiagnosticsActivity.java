@@ -1,0 +1,129 @@
+package com.offblink.keyou.debug;
+
+import com.offblink.keyou.R;
+import com.offblink.keyou.chat.RssParseActivity;
+import com.offblink.keyou.contacts.JsonCompareActivity;
+import com.offblink.keyou.lab.BroadcastActions;
+import com.offblink.keyou.lab.SingleInstanceLabActivity;
+import com.offblink.keyou.lab.SingleTaskLabActivity;
+import com.offblink.keyou.lab.SingleTopLabActivity;
+import com.offblink.keyou.lab.StandardLabActivity;
+import com.offblink.keyou.lab.SyncDoneReceiver;
+import com.offblink.keyou.log.AppLog;
+import com.offblink.keyou.ui.KeyouActivity;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+/**
+ * 调试面板：启动模式、广播收发与网络解析的自检入口（日志 → 调试面板）。
+ */
+public class DiagnosticsActivity extends KeyouActivity {
+
+    private static final String TAG = "Keyou/Diag";
+
+    /** 动态接收器：与 Manifest 静态注册的 SyncDoneReceiver 收同一 action，用于对比 */
+    private final BroadcastReceiver dynamicSyncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            AppLog.i("Keyou/Broadcast/Dynamic",
+                    "动态注册接收器收到自定义广播: " + intent.getStringExtra("detail"));
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_diagnostics);
+        AppLog.d(TAG, "onCreate");
+
+        // 动态注册同一 action，对比静态/动态两个接收器都收到
+        IntentFilter syncFilter = new IntentFilter(BroadcastActions.SYNC_DONE);
+        // Android 14+：非系统广播必须显式声明是否导出（本广播仅 App 内收发）
+        registerReceiver(dynamicSyncReceiver, syncFilter, Context.RECEIVER_NOT_EXPORTED);
+
+        // 四种启动模式：同一段启动代码，Manifest 里 launchMode 不同，观察任务栈实例数
+        Button btnStandard = findViewById(R.id.btn_mode_standard);
+        btnStandard.setOnClickListener(v -> launch("standard", StandardLabActivity.class));
+
+        Button btnSingleTop = findViewById(R.id.btn_mode_single_top);
+        btnSingleTop.setOnClickListener(v -> launch("singleTop", SingleTopLabActivity.class));
+
+        Button btnSingleTask = findViewById(R.id.btn_mode_single_task);
+        btnSingleTask.setOnClickListener(v -> launch("singleTask", SingleTaskLabActivity.class));
+
+        Button btnSingleInstance = findViewById(R.id.btn_mode_single_instance);
+        btnSingleInstance.setOnClickListener(v -> launch("singleInstance", SingleInstanceLabActivity.class));
+
+        // 隐式 Intent：与显式 Intent 对比（不需要知道目标类名，按 Action/Category 匹配）
+        Button btnImplicit = findViewById(R.id.btn_implicit_intent);
+        btnImplicit.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://developer.android.com"));
+            try {
+                startActivity(intent);
+            } catch (Exception e) {
+                AppLog.e(TAG, "没有可处理 https 的应用", e);
+            }
+        });
+
+        // 网络解析
+        findViewById(R.id.btn_json_compare).setOnClickListener(v ->
+                startActivity(new Intent(this, JsonCompareActivity.class)));
+        findViewById(R.id.btn_rss_parse).setOnClickListener(v ->
+                startActivity(new Intent(this, RssParseActivity.class)));
+
+        // 发送自定义广播：setPackage 显式指定（8.0+ 静态接收器只收显式广播）
+        Button btnCustom = findViewById(R.id.btn_send_custom);
+        btnCustom.setOnClickListener(v -> {
+            Intent intent = new Intent(BroadcastActions.SYNC_DONE);
+            intent.setPackage(getPackageName());   // 8.0+ 适配关键：显式广播
+            intent.putExtra("detail", "同学录同步完成（共 8 条）");
+            sendBroadcast(intent);
+            AppLog.i(TAG, "已发送自定义广播（静态+动态接收器各应有 1 条日志）");
+            Toast.makeText(this, R.string.broadcast_custom_sent, Toast.LENGTH_SHORT).show();
+        });
+
+        // 有序广播不截断：高(priority=100) → 低(priority=0) 都收到
+        Button btnOrdered = findViewById(R.id.btn_send_ordered);
+        btnOrdered.setOnClickListener(v -> {
+            Intent intent = new Intent(BroadcastActions.ORDERED_DEMO);
+            intent.setPackage(getPackageName());
+            intent.putExtra("abort", false);
+            sendOrderedBroadcast(intent, null);
+            AppLog.i(TAG, "已发送有序广播（不截断）：Logcat 应先 OrderedHigh 后 OrderedLow");
+            Toast.makeText(this, R.string.broadcast_ordered_sent, Toast.LENGTH_SHORT).show();
+        });
+
+        // 有序广播 + 截断：高优先级 abortBroadcast 后低优先级收不到
+        Button btnAbort = findViewById(R.id.btn_send_abort);
+        btnAbort.setOnClickListener(v -> {
+            Intent intent = new Intent(BroadcastActions.ORDERED_DEMO);
+            intent.setPackage(getPackageName());
+            intent.putExtra("abort", true);
+            sendOrderedBroadcast(intent, null);
+            AppLog.i(TAG, "已发送有序广播（截断）：Logcat 应只有 OrderedHigh，无 OrderedLow");
+            Toast.makeText(this, R.string.broadcast_abort_sent, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void launch(String mode, Class<?> target) {
+        AppLog.i(TAG, "启动模式演示: " + mode + " -> " + target.getSimpleName());
+        startActivity(new Intent(this, target));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 动态接收器成对注销
+        unregisterReceiver(dynamicSyncReceiver);
+        AppLog.d(TAG, "已注销动态广播接收器");
+    }
+}
