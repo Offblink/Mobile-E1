@@ -52,12 +52,19 @@
             android:paddingEnd="16dp"
             android:paddingBottom="88dp" />
 
+        <!--
+          包一层并留 12dp padding：FAB 的投影画在自身 bounds 之外，而容器 wrap_content
+          默认 clipChildren=true —— 不留空的话投影会被容器的矩形边界硬切，角上就是一块
+          「没圆角的方阴影」。margin 4 + padding 12 = 与原来的 16dp 定位一致；
+          12dp 覆盖 M3 FAB 默认 elevation 6dp（按压/悬停再加 translationZ 也有余量）。
+        -->
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|bottom"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"
+            android:padding="12dp">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_notice"
