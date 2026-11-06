@@ -151,6 +151,15 @@
     <string name="nickname_saved">昵称已更新</string>
     <string name="nickname_empty">昵称不能为空</string>
 
+    <!-- 我的 → 服务器地址（真机连本机局域网的 SSM 服务端） -->
+    <string name="server_title">服务器地址</string>
+    <string name="server_hint">填电脑的局域网 IP，例如 192.168.1.5 或 http://192.168.1.5:8081</string>
+    <string name="server_invalid">地址格式不对，填 IP 或 IP:端口 即可</string>
+    <string name="server_saved">已保存 %1$s</string>
+    <string name="server_reset_done">已恢复默认地址</string>
+    <string name="server_reset_action">恢复默认</string>
+    <string name="server_current">当前：%1$s</string>
+
     <!-- 日志页 -->
     <string name="log_clear">清空</string>
     <string name="log_filter_all">全部</string>

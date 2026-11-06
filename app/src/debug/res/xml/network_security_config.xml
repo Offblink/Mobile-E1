@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  debug 源集覆盖 main 的同名资源：只有 debug 包放行全部明文 HTTP。
+  原因：真机通过 Wi-Fi 连本机 SSM 时地址是 192.168.x.x / 10.x.x.x，
+  而 domain 条目不能写 CIDR（192.168.0.0/16 会让整份配置失效），
+  又没法定死某台机器的 IP，所以 debug 包直接放开；release 仍走 main 的白名单。
+
+  放行范围仍受「我的 → 服务器地址」约束：只有用户填过的那一个 host 会被访问。
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

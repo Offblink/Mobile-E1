@@ -59,6 +59,9 @@ public final class ContactsPage {
 
     private static final String TAG = "Keyou/ContactsPage";
 
+    /** 当前挂着的实例：服务端地址变更后要靠它原地重拉（同一时刻只会有一个主界面） */
+    private static ContactsPage attached;
+
     private final AppCompatActivity host;
     private final View pageRoot;
     private final ContactDao dao;
@@ -121,7 +124,17 @@ public final class ContactsPage {
         if (rv.getAdapter() != null) {
             return;   // 已经接过一次（配置变更重入/重复调用），别装两套
         }
-        new ContactsPage(host, pageRoot).bind();
+        ContactsPage page = new ContactsPage(host, pageRoot);
+        attached = page;
+        page.bind();
+    }
+
+    /** 服务端地址变更后调用：按新地址重拉班级成员（没挂上就什么都不做） */
+    public static void refresh() {
+        ContactsPage page = attached;
+        if (page != null) {
+            page.reload();
+        }
     }
 
     // ================= 装配 =================
@@ -200,6 +213,7 @@ public final class ContactsPage {
 
             @Override
             public void onDestroy(@NonNull LifecycleOwner owner) {
+                attached = null;
                 dao.close();
             }
         });

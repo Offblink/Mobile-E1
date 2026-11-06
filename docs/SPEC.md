@@ -55,7 +55,7 @@ Mobile-E1/
 | `mine/` | `ProfileStore`、`UserStore`、`PlaceStore`、`ProvinceLocator`、`StartupSound` |
 | `log/` | `AppLog`、`LogActivity` |
 | `debug/` | `DiagnosticsActivity`、`ServiceActivity`、`BoundNoteService` |
-| `net/` | `HttpUtil`、`ServerConfig` |
+| `net/` | `HttpUtil`、`ServerConfig`（三路地址：`10.0.2.2` → `127.0.0.1` 回退 → 自定义局域网 IP，后者在「我的 → 服务器地址」里填，`normalize()` 负责补协议/端口并拒绝带路径的输入） |
 | `provider/` | `ContactProvider`（authorities 仍是 `com.offblink.keyou.provider.contact`） |
 | `lab/` | `LaunchModeLabActivity` + 四种 `LaunchMode` 变体、`BroadcastActions`、三个接收器 |
 
@@ -71,7 +71,7 @@ Mobile-E1/
 | 4 广播 | 动态注册网络变化、静态注册自定义广播、有序广播 priority/abort、8.0+ 适配说明 | 全局网络变化监听（横幅提示）；同步完成自定义广播（显式 setPackage 过 8.0+ 限制）；「实验室 → 有序广播演示」 |
 | 5 持久化 | 文件读写、SP 记住密码、SQLite 通讯录（VERSION=2 升级加列、参数化 CRUD、事务、模糊查询、RecyclerView） | 登录记住密码（SP）；草稿箱（文件）；本地同学录（SQLite contact.db 全套） |
 | 6 Provider 与权限 | READ_CONTACTS 运行时读取、自定义 Provider + UriMatcher + exported/permissions、第二 App 跨 App 读取 | 「本地同学录 → 导入系统联系人」；ContactProvider；`reader` 模块跨 App 读取验证 |
-| 7 网络 | HttpURLConnection 子线程 GET/POST、org.json 与 Gson 双解析对比、通用网络工具类、XmlPullParser RSS、明文 HTTP 适配 | `HttpUtil` 工具类；「实验室 → JSON 双解析对比」；RSS 经 server `/api/rss`；network_security_config 放行 10.0.2.2 |
+| 7 网络 | HttpURLConnection 子线程 GET/POST、org.json 与 Gson 双解析对比、通用网络工具类、XmlPullParser RSS、明文 HTTP 适配 | `HttpUtil` 工具类；「实验室 → JSON 双解析对比」；RSS 经 server `/api/rss`；network_security_config 放行 10.0.2.2（debug 额外放开全部明文，供真机连局域网；release 仍走白名单） |
 | 8 服务与定位媒体 | startService/bindService 生命周期、后台下载（前台服务+进度通知+POST_NOTIFICATIONS）、一次定位显示、MediaPlayer、相机缩略图 | 「我的 → 下载中心」；「我的 → 位置」（定位+地图）；「我的 → 音乐盒」；「我的 → 拍照」 |
 | 9 SSM 整合 | REST 分页列表/新增/PUT 编辑/长按删除、POST JSON、加载中对话框、空态、异常统一提示、Postman 先行、≥3 联调问题记录 | 「班级成员」主页面（启动即加载）；server 提供全部接口 |
 

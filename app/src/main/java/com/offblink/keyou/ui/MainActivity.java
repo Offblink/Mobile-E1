@@ -8,6 +8,7 @@ import com.offblink.keyou.log.LogActivity;
 import com.offblink.keyou.mine.PlaceStore;
 import com.offblink.keyou.mine.ProfileStore;
 import com.offblink.keyou.mine.ProvinceLocator;
+import com.offblink.keyou.net.ServerConfig;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivAvatar;
     private TextView tvProvince;
     private TextView tvLocationDetail;
+    private TextView tvServer;
 
     private String account = "同学";
     private String nickname = "同学";
@@ -193,6 +195,63 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_logs).setOnClickListener(v ->
                 startActivity(new Intent(this, LogActivity.class)));
         findViewById(R.id.btn_logout).setOnClickListener(v -> confirmLogout());
+
+        tvServer = findViewById(R.id.tv_server);
+        renderServer();
+        findViewById(R.id.btn_server).setOnClickListener(v -> showServerDialog());
+    }
+
+    /** 我的页底部那行「当前：http://…」 */
+    private void renderServer() {
+        tvServer.setText(getString(R.string.server_current, ServerConfig.base(this)));
+    }
+
+    /** 「服务器地址」弹窗：填电脑的局域网 IP，真机就能走 Wi-Fi 直连本机 SSM */
+    private void showServerDialog() {
+        EditText input = new EditText(this);
+        input.setText(ServerConfig.base(this));
+        input.setSelection(input.getText().length());
+        input.setHint(R.string.server_hint);
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+
+        android.widget.FrameLayout box = new android.widget.FrameLayout(this);
+        int pad = dp(20);
+        box.setPadding(pad, dp(8), pad, 0);
+        box.addView(input, new android.widget.FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.server_title)
+                .setView(box)
+                .setPositiveButton(R.string.contact_save, null)
+                .setNeutralButton(R.string.server_reset_action, null)
+                .setNegativeButton(R.string.common_cancel, null)
+                .create();
+        dialog.show();
+        // 覆写确认键：地址非法时留在弹窗内提示，别把输入丢了
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if (!ServerConfig.set(this, input.getText().toString())) {
+                Toast.makeText(this, R.string.server_invalid, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            onServerChanged(R.string.server_saved);
+            dialog.dismiss();
+        });
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+            ServerConfig.reset(this);
+            onServerChanged(R.string.server_reset_done);
+            dialog.dismiss();
+        });
+    }
+
+    /** 地址变了：刷新「当前」行，并让同学录按新地址重拉一次服务端数据 */
+    private void onServerChanged(int toastRes) {
+        renderServer();
+        ContactsPage.refresh();
+        String base = ServerConfig.base(this);
+        Toast.makeText(this, getString(toastRes, base), Toast.LENGTH_SHORT).show();
     }
 
     // ---------- 定位 → 省份（离线枚举） ----------

@@ -125,6 +125,23 @@
             android:textSize="12sp" />
 
         <Button
+            android:id="@+id/btn_server"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/server_title" />
+
+        <!-- 当前服务端地址（真机换局域网 IP 后这里跟着变） -->
+        <TextView
+            android:id="@+id/tv_server"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp" />
+
+        <Button
             android:id="@+id/btn_logs"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"

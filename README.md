@@ -42,7 +42,7 @@ lab/       任务 2/4 的实验：四种启动模式 Activity、广播接收器�
 | 登录与账号 | 账号密码校验、记住密码、注册（本地账号库，密码存 SHA-256 摘要） | 启动页；「注册」→ 自动回填 → 登录 |
 | 同学录 | 本地联系人与班级成员合并成一个分组列表（拼音分组 + 右侧字母索引 + 吸顶字母），每行带「本地 / 班级」来源角标与头像；点行按来源编辑（本地写 SQLite、班级 PUT 服务端），长按删除，FAB 新建时选来源，导入系统联系人；右上「自检」用 org.json / Gson 双解析校验班级数据 | 底部「同学录」tab |
 | 课友圈 | 左右气泡聊天室（RecyclerView + 输入行，键盘发送键直接发）；会话头「班级公告 / 群文件 / 草稿」：分别接 RSS 公告、前台服务下载、输入草稿（自动落到 `files/chat_draft.txt`） | 底部「课友圈」tab |
-| 我的 | 头像（相册选择，无头像显示昵称首字）、昵称点击改名；**所在省份**（进入页面自动定位，显示在昵称右边）、启动音（固定开启）；日志、退出登录 | 底部「我的」tab |
+| 我的 | 头像（相册选择，无头像显示昵称首字）、昵称点击改名；**所在省份**（进入页面自动定位，显示在昵称右边）、启动音（固定开启）；**服务器地址**（真机连本机局域网用，见下）、日志、退出登录 | 底部「我的」tab |
 | 日志 | 应用内日志实时滚动（级别过滤 / 清空），数据来自 AppLog 环形缓冲；底部「调试面板 / 服务自检」接四种启动模式、广播、隐式 Intent 与绑定式 Service | 我的 → 日志 |
 
 进入「我的」自动定位（5 分钟内的结果直接复用），省份显示在昵称右边：坐标 → 省份是**本地枚举**
@@ -61,7 +61,7 @@ bash scripts/deploy.sh
 
 # 3. 客户端（双模块）
 gradlew.bat assembleDebug -I aliyun-init.gradle
-gradlew.bat testDebugUnitTest -I aliyun-init.gradle   # 省份枚举回归（5 条）
+gradlew.bat testDebugUnitTest -I aliyun-init.gradle   # 省份枚举 5 + 地址规范化 6
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb install -r reader/build/outputs/apk/debug/reader-debug.apk
 ```
@@ -69,6 +69,15 @@ adb install -r reader/build/outputs/apk/debug/reader-debug.apk
 - 后端基址：模拟器内 `http://10.0.2.2:8081`（首选），**失败自动回退 `http://127.0.0.1:8081`**
   （需 `adb reverse tcp:8081 tcp:8081`，`scripts/start-server.cmd` 会在有设备时自动执行，
   重连/重启模拟器后跑一次 `scripts/connect-device.cmd`）
+- **真机（Wi-Fi 直连）**：手机与电脑同一局域网 → 电脑上 `ipconfig` 查 WLAN 的 IPv4 →
+  手机「我的 → 服务器地址」填这个 IP（只填 `192.168.1.5` 也行，端口默认 8081）→ 保存即生效，
+  同学录会立刻按新地址重拉。debug 包已放开明文 HTTP（`app/src/debug/res/xml/network_security_config.xml`
+  覆盖 main 的同名白名单），release 包仍只放行 10.0.2.2 / 127.0.0.1 / localhost。
+  连不上先查三处：Tomcat 是否在跑（`curl http://127.0.0.1:8081/api/ping`）、
+  Windows 防火墙是否放行 java.exe 入站（当前机器已有「公用」配置文件的入站允许规则）、
+  路由是否开了 AP 隔离。
+- 真机也可以插 USB 走隧道（不改任何配置）：`adb reverse tcp:8081 tcp:8081`，
+  首次请求仍会先撞 10.0.2.2 等 4 秒再回退到 127.0.0.1，之后就直连。
 - 接口约定：统一 `{code, message, data}`；`GET /api/mates`、`POST/PUT /api/mate`、`DELETE /api/mate/{id}`、`GET /api/rss`、`GET /files/demo-note.txt`
 - 一键接口冒烟（server 起着时）：
 
