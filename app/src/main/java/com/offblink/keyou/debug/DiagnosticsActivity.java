@@ -76,6 +76,12 @@ public class DiagnosticsActivity extends KeyouActivity {
             }
         });
 
+        // 班级公告 / 群文件：手机端不再放进班级群，统一从这里进
+        findViewById(R.id.btn_notice).setOnClickListener(v ->
+                startActivity(new Intent(this, com.offblink.keyou.chat.RssParseActivity.class)));
+        findViewById(R.id.btn_group_files).setOnClickListener(v ->
+                startActivity(new Intent(this, com.offblink.keyou.download.DownloadActivity.class)));
+
         // 自检入口统一收在这里（同学录工具栏与日志页都不再重复放）
         findViewById(R.id.btn_json_compare).setOnClickListener(v ->
                 startActivity(new Intent(this, JsonCompareActivity.class)));

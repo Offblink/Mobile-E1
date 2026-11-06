@@ -36,7 +36,7 @@ Mobile-E1/
 ├── aliyun-init.gradle         # 镜像 init script
 ├── app/                       # 主 App：com.offblink.keyou
 ├── reader/                    # 任务6 第二 App：com.offblink.keyou.reader（保留，跨 App ContentResolver 演示）
-├── desktop/                   # 电脑端班级群客户端（Java Swing，零依赖）
+├── desktop/                   # 电脑端班级群客户端（Kotlin + Compose Multiplatform）
 ├── server/                    # SSM 后端（Maven WAR）
 │   ├── pom.xml
 │   └── src/main/{java,resources,webapp}

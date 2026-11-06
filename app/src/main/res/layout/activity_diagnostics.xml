@@ -109,6 +109,18 @@
                 android:background="?attr/colorOutlineVariant" />
 
             <Button
+                android:id="@+id/btn_notice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rss_title" />
+
+            <Button
+                android:id="@+id/btn_group_files"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/download_title" />
+
+            <Button
                 android:id="@+id/btn_json_compare"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

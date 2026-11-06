@@ -1,12 +1,10 @@
 package com.offblink.keyou.chat;
 
 import com.offblink.keyou.R;
-import com.offblink.keyou.download.DownloadActivity;
 import com.offblink.keyou.log.AppLog;
 import com.offblink.keyou.net.HttpUtil;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -24,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 「班级群」Tab 内嵌的聊天面板：消息列表 + 输入行 + 群公告/群文件入口。
+ * 「班级群」Tab 内嵌的聊天面板：消息列表 + 输入行（公告/群文件入口在调试面板里）。
  *
  * 消息后端起在 SSM（`/api/messages`）：
  * - 进入面板先拉一次全量（after=0&size=100），之后在宿主 onResume/onPause 之间
@@ -97,12 +95,6 @@ public final class ChatPanel {
             }
             return false;
         });
-
-        // 班级群的两个入口：公告 / 群文件
-        root.findViewById(R.id.btn_chat_notice).setOnClickListener(v ->
-                host.startActivity(new Intent(host, RssParseActivity.class)));
-        root.findViewById(R.id.btn_chat_files).setOnClickListener(v ->
-                host.startActivity(new Intent(host, DownloadActivity.class)));
 
         fetchNew(true);
     }
