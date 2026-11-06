@@ -13,8 +13,6 @@
     <string name="contacts_empty_tip">还没有同学\n点右下角 + 添加一位</string>
     <string name="contacts_add_desc">新增同学</string>
     <string name="contacts_value_empty">—</string>
-    <string name="contacts_import_entry">导入</string>
-    <string name="contacts_import_running">正在导入系统联系人…</string>
     <string name="contacts_delete_failed">删除失败，该记录可能已不存在</string>
 
     <!-- 详情 / 新增 -->

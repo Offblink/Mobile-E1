@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  调试面板：启动模式 ×4、广播 ×3、隐式 Intent。
+  返回栏固定，内容区可滚动（机型矮/字号大时按钮不会被裁掉）。
+  只放「别处进不去」的实验项：数据自检在同学录右上、班级公告/群文件在课友圈会话头、日志在「我的」。
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,114 +12,104 @@
 
     <include layout="@layout/view_back_bar" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lab_title"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lab_launch_mode_hint"
-        android:textSize="13sp"
-        android:layout_marginBottom="8dp" />
-
-    <Button
-        android:id="@+id/btn_mode_standard"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/mode_standard" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-    <Button
-        android:id="@+id/btn_mode_single_top"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/mode_single_top" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
 
-    <Button
-        android:id="@+id/btn_mode_single_task"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/mode_single_task" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lab_title"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
 
-    <Button
-        android:id="@+id/btn_mode_single_instance"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/mode_single_instance" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lab_launch_mode_hint"
+                android:textSize="13sp"
+                android:layout_marginBottom="8dp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="16dp"
-        android:background="?attr/colorOutlineVariant" />
+            <Button
+                android:id="@+id/btn_mode_standard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mode_standard" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lab_broadcast_hint"
-        android:textSize="13sp"
-        android:layout_marginBottom="8dp" />
+            <Button
+                android:id="@+id/btn_mode_single_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mode_single_top" />
 
-    <Button
-        android:id="@+id/btn_send_custom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/broadcast_custom" />
+            <Button
+                android:id="@+id/btn_mode_single_task"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mode_single_task" />
 
-    <Button
-        android:id="@+id/btn_send_ordered"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/broadcast_ordered" />
+            <Button
+                android:id="@+id/btn_mode_single_instance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mode_single_instance" />
 
-    <Button
-        android:id="@+id/btn_send_abort"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/broadcast_abort"
-        android:layout_marginTop="8dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="16dp"
+                android:background="?attr/colorOutlineVariant" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="16dp"
-        android:background="?attr/colorOutlineVariant" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lab_broadcast_hint"
+                android:textSize="13sp"
+                android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lab_network_hint"
-        android:textSize="13sp"
-        android:layout_marginBottom="8dp" />
+            <Button
+                android:id="@+id/btn_send_custom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/broadcast_custom" />
 
-    <Button
-        android:id="@+id/btn_json_compare"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/json_compare_title" />
+            <Button
+                android:id="@+id/btn_send_ordered"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/broadcast_ordered" />
 
-    <Button
-        android:id="@+id/btn_rss_parse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/rss_title" />
+            <Button
+                android:id="@+id/btn_send_abort"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/broadcast_abort"
+                android:layout_marginTop="8dp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="16dp"
-        android:background="?attr/colorOutlineVariant" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="16dp"
+                android:background="?attr/colorOutlineVariant" />
 
-    <Button
-        android:id="@+id/btn_implicit_intent"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/lab_implicit_intent" />
+            <Button
+                android:id="@+id/btn_implicit_intent"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lab_implicit_intent" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

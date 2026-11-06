@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -437,11 +436,11 @@ public class MainActivity extends AppCompatActivity {
         String time = place.time <= 0 ? "—"
                 : new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
                 .format(new Date(place.time));
-        String provider = TextUtils.isEmpty(place.provider) ? "—" : place.provider;
+        // 只留坐标 + 时间，时间单独一行（来源 gps/network 不展示）
         tvLocationDetail.setText(getString(R.string.mine_location_detail,
                 String.format(Locale.US, "%.4f", place.lat),
                 String.format(Locale.US, "%.4f", place.lon),
-                provider, time));
+                time));
     }
 
     /** 昵称修改：输入框校验非空后就地保存（不再跳页面） */

@@ -10,8 +10,6 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- 运行时申请：读系统通讯录 -->
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <!-- 跨 App 访问 ContactProvider 的 signature 权限（同签名自动授予） -->
     <uses-permission
         android:name="com.offblink.keyou.permission.READ_PROVIDER" />

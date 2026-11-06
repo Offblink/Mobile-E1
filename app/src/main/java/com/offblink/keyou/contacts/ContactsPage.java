@@ -4,14 +4,8 @@ import com.offblink.keyou.R;
 import com.offblink.keyou.log.AppLog;
 import com.offblink.keyou.net.HttpUtil;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.ContactsContract;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -21,7 +15,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -52,7 +45,6 @@ import java.util.Set;
  * - 数据：只走 ContactDao（本地 SQLite 的 contact 表），不新增表，也不碰服务端；
  * - 增：右下 FAB 进详情页的新增模式；
  * - 删：长按行弹确认框；
- * - 导入：READ_CONTACTS 三态权限 → 读系统通讯录（ContactsContract），按 phone 去重后入库；
  * - 种子：空库时用 dao.importBatch 真事务批量导入演示数据。
  */
 public final class ContactsPage {
@@ -78,13 +70,9 @@ public final class ContactsPage {
 
     private boolean firstLoad = true;
     private boolean firstResume = true;
-    private volatile boolean importing;
 
     /** 详情页回传：新增/编辑/删除过就整表重刷 */
     private final ActivityResultLauncher<Intent> detailLauncher;
-
-    /** READ_CONTACTS 的运行时申请（宿主是 AppCompatActivity，必须在 onCreate 内注册，attach 就干这个） */
-    private final ActivityResultLauncher<String> permissionLauncher;
 
     private ContactsPage(AppCompatActivity host, View pageRoot) {
         this.host = host;
@@ -95,14 +83,6 @@ public final class ContactsPage {
                 new ActivityResultContracts.StartActivityForResult(), result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         reload();
-                    }
-                });
-        this.permissionLauncher = host.registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(), granted -> {
-                    if (granted) {
-                        importSystemContacts();
-                    } else {
-                        onPermissionDenied();
                     }
                 });
     }
@@ -179,11 +159,6 @@ public final class ContactsPage {
         View fab = pageRoot.findViewById(R.id.fab_add);
         if (fab != null) {
             fab.setOnClickListener(v -> chooseNewSource());
-        }
-
-        View importButton = pageRoot.findViewById(R.id.btn_import);
-        if (importButton != null) {
-            importButton.setOnClickListener(v -> requestContactsPermission());
         }
 
         View checkButton = pageRoot.findViewById(R.id.btn_contacts_check);
@@ -511,103 +486,6 @@ public final class ContactsPage {
                                     }
                                 }))
                 .show();
-    }
-
-    // ================= 导入系统联系人（READ_CONTACTS 三态） =================
-
-    /** 一态：已授权直接干；否则发起运行时申请（二态：拒绝 / 三态：永久拒绝走回调） */
-    private void requestContactsPermission() {
-        if (ContextCompat.checkSelfPermission(host, Manifest.permission.READ_CONTACTS)
-                == PackageManager.PERMISSION_GRANTED) {
-            importSystemContacts();
-        } else {
-            permissionLauncher.launch(Manifest.permission.READ_CONTACTS);
-        }
-    }
-
-    /** 第二/三态：拒绝就说清楚；「不再询问」时引导去系统设置里开权限 */
-    private void onPermissionDenied() {
-        Toast.makeText(host, R.string.permission_denied, Toast.LENGTH_SHORT).show();
-        if (!host.shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
-            Toast.makeText(host, R.string.permission_permanent_denied, Toast.LENGTH_LONG).show();
-            try {
-                host.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.fromParts("package", host.getPackageName(), null)));
-            } catch (Exception e) {
-                AppLog.w(TAG, "打开应用设置页失败", e);
-            }
-        }
-    }
-
-    /**
-     * 读系统通讯录（ContactsContract 的 Phone 表）→ 按 phone 去重 → 事务入库。
-     *
-     * 全程在子线程：系统通讯录可能有几千条，Cursor 遍历 + 批量插入不能压在主线程上；
-     * 完成后 runOnUiThread 回主线程刷新列表。
-     */
-    private void importSystemContacts() {
-        if (importing) {
-            return;
-        }
-        importing = true;
-        Toast.makeText(host, R.string.contacts_import_running, Toast.LENGTH_SHORT).show();
-
-        new Thread(() -> {
-            int imported = 0;
-            try {
-                Set<String> knownPhones = new HashSet<>();
-                for (Contact contact : dao.query("")) {
-                    String key = normalizePhone(contact.getPhone());
-                    if (!key.isEmpty()) {
-                        knownPhones.add(key);
-                    }
-                }
-
-                List<Contact> fresh = new ArrayList<>();
-                try (Cursor cursor = host.getContentResolver().query(
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                        new String[]{
-                                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                                ContactsContract.CommonDataKinds.Phone.NUMBER},
-                        null, null, null)) {
-                    if (cursor != null) {
-                        while (cursor.moveToNext()) {
-                            String name = cursor.getString(0);
-                            String phone = cursor.getString(1);
-                            if (name == null || phone == null) {
-                                continue;
-                            }
-                            String key = normalizePhone(phone);
-                            // phone 是去重键：同号多条（座机/手机）只留一条
-                            if (key.isEmpty() || !knownPhones.add(key)) {
-                                continue;
-                            }
-                            fresh.add(new Contact(0, name.trim(), phone.trim(), null, "保密"));
-                        }
-                    }
-                }
-
-                if (!fresh.isEmpty()) {
-                    dao.importBatch(fresh);   // 真事务：任一条失败整体回滚
-                }
-                imported = fresh.size();
-            } catch (Throwable t) {
-                AppLog.w(TAG, "导入系统联系人失败", t);
-            } finally {
-                importing = false;
-            }
-
-            final int count = imported;
-            host.runOnUiThread(() -> {
-                if (host.isFinishing() || host.isDestroyed()) {
-                    return;
-                }
-                reload();
-                Toast.makeText(host, host.getString(R.string.import_result, count),
-                        Toast.LENGTH_SHORT).show();
-                AppLog.i(TAG, "导入系统联系人 " + count + " 条");
-            });
-        }, "contacts-import").start();
     }
 
     /** 去重键：只留数字（"+86 138-0000-0000" 与 "13800000000" 视为同一个号） */

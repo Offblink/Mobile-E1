@@ -74,7 +74,7 @@
     <string name="mine_location_denied">定位权限被拒绝，可在系统设置里开启</string>
     <string name="mine_location_none">没有拿到定位（模拟器可先 adb emu geo fix 经度 纬度）</string>
     <string name="mine_location_outside">境外</string>
-    <string name="mine_location_detail">%1$s, %2$s · %3$s · %4$s</string>
+    <string name="mine_location_detail">%1$s, %2$s\n%3$s</string>
     <string name="service_bind">绑定服务</string>
     <string name="service_unbind">解绑</string>
     <string name="service_make_note">调用 makeNote() 生成便签</string>
@@ -92,11 +92,7 @@
     <string name="rss_title">班级公告</string>
     <string name="rss_fetch_btn">刷新公告</string>
 
-    <!-- 权限与跨 App -->
-    <string name="permission_denied">权限被拒绝，无法读取系统通讯录</string>
-    <string name="permission_permanent_denied">权限被永久拒绝，请到系统设置里开启「通讯录」权限</string>
-    <string name="import_result">导入 %1$d 条系统联系人</string>
-
+    <!-- 跨 App -->
     <!-- 文件草稿箱 / SP / SQLite 通讯录 -->
     <string name="draft_title">聊天草稿</string>
     <string name="draft_hint">课友圈输入框的草稿会自动存在这里，改完点保存即可同步…</string>
@@ -119,7 +115,6 @@
     <string name="contact_deleted">已删除</string>
 
     <!-- 广播演示 -->
-    <string name="lab_network_hint">需先启动服务端（scripts/deploy.sh），模拟器经 10.0.2.2:8081 访问本机</string>
     <string name="lab_broadcast_hint">自定义广播看 Logcat 的 Keyou/Broadcast 三组 TAG（Static/Dynamic/Ordered）；有序广播先点不截断、再点截断，对比 OrderedLow 有无日志</string>
     <string name="broadcast_custom">自定义广播（静态+动态接收器对比）</string>
     <string name="broadcast_ordered">有序广播：高→低 全部送达</string>

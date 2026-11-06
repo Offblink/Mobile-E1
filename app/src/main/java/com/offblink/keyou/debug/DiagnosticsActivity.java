@@ -1,8 +1,6 @@
 package com.offblink.keyou.debug;
 
 import com.offblink.keyou.R;
-import com.offblink.keyou.chat.RssParseActivity;
-import com.offblink.keyou.contacts.JsonCompareActivity;
 import com.offblink.keyou.lab.BroadcastActions;
 import com.offblink.keyou.lab.SingleInstanceLabActivity;
 import com.offblink.keyou.lab.SingleTaskLabActivity;
@@ -22,7 +20,6 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * 调试面板：启动模式、广播收发与网络解析的自检入口（日志 → 调试面板）。
@@ -76,12 +73,6 @@ public class DiagnosticsActivity extends KeyouActivity {
                 AppLog.e(TAG, "没有可处理 https 的应用", e);
             }
         });
-
-        // 网络解析
-        findViewById(R.id.btn_json_compare).setOnClickListener(v ->
-                startActivity(new Intent(this, JsonCompareActivity.class)));
-        findViewById(R.id.btn_rss_parse).setOnClickListener(v ->
-                startActivity(new Intent(this, RssParseActivity.class)));
 
         // 发送自定义广播：setPackage 显式指定（8.0+ 静态接收器只收显式广播）
         Button btnCustom = findViewById(R.id.btn_send_custom);
