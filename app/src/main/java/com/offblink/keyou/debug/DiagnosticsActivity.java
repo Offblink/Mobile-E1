@@ -7,6 +7,8 @@ import com.offblink.keyou.lab.SingleTaskLabActivity;
 import com.offblink.keyou.lab.SingleTopLabActivity;
 import com.offblink.keyou.lab.StandardLabActivity;
 import com.offblink.keyou.lab.SyncDoneReceiver;
+import com.offblink.keyou.contacts.JsonCompareActivity;
+import com.offblink.keyou.debug.ServiceActivity;
 import com.offblink.keyou.log.AppLog;
 import com.offblink.keyou.ui.KeyouActivity;
 
@@ -73,6 +75,12 @@ public class DiagnosticsActivity extends KeyouActivity {
                 AppLog.e(TAG, "没有可处理 https 的应用", e);
             }
         });
+
+        // 自检入口统一收在这里（同学录工具栏与日志页都不再重复放）
+        findViewById(R.id.btn_json_compare).setOnClickListener(v ->
+                startActivity(new Intent(this, JsonCompareActivity.class)));
+        findViewById(R.id.btn_service_check).setOnClickListener(v ->
+                startActivity(new Intent(this, ServiceActivity.class)));
 
         // 发送自定义广播：setPackage 显式指定（8.0+ 静态接收器只收显式广播）
         Button btnCustom = findViewById(R.id.btn_send_custom);

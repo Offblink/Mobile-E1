@@ -9,7 +9,7 @@
 
 - 指导书任务 9 的「员工管理 REST CRUD」→ 平替为「班级成员管理」，接口语义、验收点完全等价；
 - 任务 5 的「SQLite 通讯录」→ App 内「本地同学录」，并被任务 6 的 ContentProvider 复用；
-- 任务 3 的「登录页 / 聊天室」→ App 的真实入口与「课友圈聊天室」；
+- 任务 3 的「登录页 / 聊天室」→ App 的真实入口与「班级群聊天室」；
 - 任务 1/2/4/7/8 的演示性内容 → App 内自然承载 + 一个「实验室」页收纳纯演示项。
 
 **原则：在老师要求范围内，每个任务的验收点一个不少；但呈现为一个产品，不出现「实验 1 页面 / 实验 2 页面」式的裸试剂页。**
@@ -35,7 +35,8 @@ Mobile-E1/
 ├── gradle/ + gradlew          # wrapper 9.5.0（从 Andriod01 拷，已缓存）
 ├── aliyun-init.gradle         # 镜像 init script
 ├── app/                       # 主 App：com.offblink.keyou
-├── reader/                    # 任务6 第二 App：com.offblink.keyou.reader
+├── reader/                    # 任务6 第二 App：com.offblink.keyou.reader（保留，跨 App ContentResolver 演示）
+├── desktop/                   # 电脑端班级群客户端（Java Swing，零依赖）
 ├── server/                    # SSM 后端（Maven WAR）
 │   ├── pom.xml
 │   └── src/main/{java,resources,webapp}
@@ -67,7 +68,7 @@ Mobile-E1/
 |---|---|---|
 | 1 环境与 Log | 环境验证、项目结构、Log 分级输出与 Logcat 过滤 | 全局 Log 约定（统一 TAG 前缀 `Keyou/`）；「我的 → 关于」页有 Log 自检按钮；结构说明进报告 |
 | 2 生命周期与 Intent | 全生命周期日志（正常/Home/旋转/finish）、Bundle 多类型传参、registerForActivityResult 回传、四种启动模式、隐式 Intent | 登录页→主页（显式 Intent + Bundle + 结果回传改昵称）；「实验室 → 启动模式演示」4 个 Manifest 变体 Activity；「实验室 → 隐式 Intent」开浏览器 |
-| 3 UI 与控件 | 四大布局登录页、7+ 控件、RecyclerView 列表、左右气泡聊天室 | 登录页（ConstraintLayout + 七控件）；本地同学录列表；「课友圈」聊天室（气泡 RecyclerView） |
+| 3 UI 与控件 | 四大布局登录页、7+ 控件、RecyclerView 列表、左右气泡聊天室 | 登录页（ConstraintLayout + 七控件）；本地同学录列表；「班级群」聊天室（气泡 RecyclerView，消息走后端） |
 | 4 广播 | 动态注册网络变化、静态注册自定义广播、有序广播 priority/abort、8.0+ 适配说明 | 全局网络变化监听（横幅提示）；同步完成自定义广播（显式 setPackage 过 8.0+ 限制）；「实验室 → 有序广播演示」 |
 | 5 持久化 | 文件读写、SP 记住密码、SQLite 通讯录（VERSION=2 升级加列、参数化 CRUD、事务、模糊查询、RecyclerView） | 登录记住密码（SP）；草稿箱（文件）；本地同学录（SQLite contact.db 全套） |
 | 6 Provider 与权限 | 自定义 Provider + UriMatcher + exported/permissions、第二 App 跨 App 读取（READ_CONTACTS 读系统通讯录按用户要求删除） | ContactProvider；`reader` 模块跨 App 读取验证；报告注明该子项被裁剪 |
@@ -101,7 +102,7 @@ Mobile-E1/
 
 | 组件 | 用途 |
 |---|---|
-| nav-pill-bar | 底部胶囊导航：首页 / 课友圈 / 同学录 / 我的（4 格，弹射 pill + OvershootInterpolator） |
+| nav-pill-bar | 底部胶囊导航：同学录 / 班级群 / 我的（3 格，弹射 pill + OvershootInterpolator） |
 | expressive-card | 首页统计卡（成员数/未读/今日）+ 关键信息卡 |
 | fab-menu | 同学录页右下 FAB 展开（新增/查询） |
 | spring-switch | 设置项开关（记住密码等），弹簧位移 + 轨道色直切 |

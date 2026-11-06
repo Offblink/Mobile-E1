@@ -161,12 +161,6 @@ public final class ContactsPage {
             fab.setOnClickListener(v -> chooseNewSource());
         }
 
-        View checkButton = pageRoot.findViewById(R.id.btn_contacts_check);
-        if (checkButton != null) {
-            checkButton.setOnClickListener(v ->
-                    host.startActivity(new Intent(host, JsonCompareActivity.class)));
-        }
-
         seedIfEmpty();
         reload();
         observeLifecycle();
@@ -389,41 +383,12 @@ public final class ContactsPage {
         new MaterialAlertDialogBuilder(host)
                 .setTitle(R.string.contacts_new_choose)
                 .setItems(options, (dialog, which) -> {
-                    if (which == 0) {
-                        Intent intent = new Intent(host, ContactDetailActivity.class);
-                        intent.putExtra(ContactDetailActivity.EXTRA_SOURCE, Contact.SOURCE_LOCAL);
-                        intent.putExtra(ContactDetailActivity.EXTRA_ID, -1L);
-                        detailLauncher.launch(intent);
-                    } else {
-                        MateFormDialog.show(host, null, saved -> {
-                            String json = gson.toJson(saved);
-                            HttpUtil.postJson(host, "/api/mate", json, new HttpUtil.Callback() {
-                                @Override
-                                public void onSuccess(String body) {
-                                    try {
-                                        if (new JSONObject(body).getInt("code") == 0) {
-                                            Toast.makeText(host, R.string.mate_saved,
-                                                    Toast.LENGTH_SHORT).show();
-                                            reload();
-                                        } else {
-                                            Toast.makeText(host, new JSONObject(body)
-                                                    .getString("message"), Toast.LENGTH_LONG).show();
-                                        }
-                                    } catch (Exception e) {
-                                        Toast.makeText(host, R.string.mate_parse_error,
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onError(String message, Exception e) {
-                                    Toast.makeText(host, host.getString(
-                                            R.string.mate_network_error, message),
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        });
-                    }
+                    // 本地 / 班级成员都进同一张整页表单，只是保存打到不同的地方
+                    int source = which == 0 ? Contact.SOURCE_LOCAL : Contact.SOURCE_CLASS;
+                    Intent intent = new Intent(host, ContactDetailActivity.class);
+                    intent.putExtra(ContactDetailActivity.EXTRA_SOURCE, source);
+                    intent.putExtra(ContactDetailActivity.EXTRA_ID, -1L);
+                    detailLauncher.launch(intent);
                 })
                 .show();
     }

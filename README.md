@@ -9,9 +9,10 @@
 ## 仓库结构
 
 ```
-app/        主 App（com.offblink.keyou）—— 登录 / 同学录 / 课友圈 / 我的
+app/        主 App（com.offblink.keyou）—— 登录 / 同学录 / 班级群 / 我的
 reader/     第二个 App「读取器」（com.offblink.keyou.reader）：进入直接显示课友通讯录（跨 App ContentProvider）
-server/     SSM 后端（Maven WAR：Spring 5.3 + MyBatis + MySQL 8）
+server/     SSM 后端（Maven WAR：Spring 5.3 + MyBatis + MySQL 8）—— 同学录 + 公告/群消息/群文件
+desktop/    电脑端班级群客户端（Java Swing，零依赖）：发布公告、发消息、传文件
 scripts/    deploy.sh（打包→ROOT 部署→8081 起停→探活）
 docs/       规格、要求对照、报告素材
 tools/      本地 Tomcat 副本（不进 git）
@@ -22,9 +23,9 @@ tools/      本地 Tomcat 副本（不进 git）
 ```
 ui/        入口与主界面：LoginActivity、MainActivity（三页宿主）、KeyouActivity（二级页基类）
 contacts/  同学录：ContactsPage、分组适配器与字母索引条、ContactDetailActivity、
-           SQLite（ContactDBHelper/ContactDao/Contact）、班级成员（Mate*）、数据自检页
-chat/      课友圈：ChatPanel、ChatAdapter/ChatMessage、公告 RssParseActivity、草稿页
-download/  下载：DownloadActivity + 前台服务 DownloadService
+           SQLite（ContactDBHelper/ContactDao/Contact）、班级成员（Mate）
+chat/      班级群：ChatPanel（服务端消息 + 4s 增量轮询）、ChatAdapter/ChatMessage、班级公告页
+download/  群文件：DownloadActivity（/api/files 列表）+ 前台服务 DownloadService
 mine/      我的：ProfileStore/UserStore、PlaceStore + ProvinceLocator、StartupSound
 log/       AppLog 与日志页 LogActivity
 debug/     诊断页、服务自检页、绑定式 BoundNoteService
@@ -35,20 +36,31 @@ lab/       任务 2/4 的实验：四种启动模式 Activity、广播接收器�
 
 ## 功能一览
 
-底部三页：**同学录 / 课友圈 / 我的**。
+底部三页：**同学录 / 班级群 / 我的**。
 
 | 模块 | 功能 | 入口 |
 |---|---|---|
 | 登录与账号 | 账号密码校验、记住密码、注册（本地账号库，密码存 SHA-256 摘要） | 启动页；「注册」→ 自动回填 → 登录 |
-| 同学录 | 本地联系人与班级成员合并成一个分组列表（拼音分组 + 右侧字母索引 + 吸顶字母），每行带「本地 / 班级」来源角标与头像；点行按来源编辑（本地写 SQLite、班级 PUT 服务端），长按删除，FAB 新建时选来源；右上「自检」用 org.json / Gson 双解析校验班级数据 | 底部「同学录」tab |
-| 课友圈 | 左右气泡聊天室（RecyclerView + 输入行，键盘发送键直接发）；会话头「班级公告 / 群文件 / 草稿」：分别接 RSS 公告、前台服务下载、输入草稿（自动落到 `files/chat_draft.txt`） | 底部「课友圈」tab |
+| 同学录 | 本地联系人与班级成员合并成一个分组列表（拼音分组 + 右侧字母索引 + 吸顶字母），每行带「本地 / 班级」来源角标与头像；点行按来源编辑（本地写 SQLite、班级 PUT 服务端），长按删除，FAB 新建时选来源（本地/班级成员都进同一张整页表单） | 底部「同学录」tab |
+| 班级群 | 左右气泡聊天室，消息**走后端**（`/api/messages`，进入全量拉一次、之后 4 秒增量轮询），电脑端客户端发的消息会自动出现；会话头「班级公告 / 群文件」：公告读 `/api/notices`、群文件读 `/api/files` 并前台服务下载 | 底部「班级群」tab |
 | 我的 | 头像（相册选择，无头像显示昵称首字）、昵称点击改名；**所在省份**（进入页面自动定位，显示在昵称右边）、启动音（固定开启）；**服务器地址**（真机连本机局域网用，见下）、日志、退出登录 | 底部「我的」tab |
-| 日志 | 应用内日志实时滚动（级别过滤 / 清空），数据来自 AppLog 环形缓冲；底部「调试面板 / 服务自检」接四种启动模式、广播、隐式 Intent 与绑定式 Service | 我的 → 日志 |
+| 日志 | 应用内日志实时滚动（级别过滤 / 清空），数据来自 AppLog 环形缓冲；底部「调试面板」收着四种启动模式、广播、隐式 Intent、数据自检、服务自检 | 我的 → 日志 |
 
 进入「我的」自动定位（5 分钟内的结果直接复用），省份显示在昵称右边：坐标 → 省份是**本地枚举**
 （34 个省级行政区的近似矩形，命中多块取面积最小的，港澳/直辖市就不会被广东/河北盖掉；
 不联网、不接地图 SDK），结果连同经纬度、来源与时间存进 SP。启动音固定开启，
 每个 App 进程冷启动时响一次（登录页进入时播放），没有开关。
+
+## 电脑端班级群客户端（desktop/）
+
+手机端负责看，电脑端负责发：一个零依赖的 Java Swing 程序，连同一个 SSM 后端。
+
+- 构建：`desktop\build.cmd`；启动：`desktop\打开班级群客户端.cmd`（或 `java -cp desktop\out com.offblink.keyou.desktop.ClassGroupClient`）
+- 两个功能：**发布公告**（写进 `/api/notice`，手机「班级群 → 班级公告」可见）、
+  **发消息 / 传文件**（`/api/message`、`/api/file`，手机班级群 4 秒内收到、群文件列表可下载）
+- 无界面自检：`java -cp desktop\out ... --check http://127.0.0.1:8081` 打印 `OK <db>`
+- `reader/` 那个 Android 第二 App 保留不动：任务 6 要求的是**跨 App ContentResolver 读取**，
+  桌面客户端替代不了这项验收，两者是并存的两条腿。
 
 ## 快速开始
 

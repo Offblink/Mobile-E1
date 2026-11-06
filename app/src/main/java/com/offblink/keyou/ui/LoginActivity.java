@@ -12,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -96,17 +98,10 @@ public class LoginActivity extends AppCompatActivity {
                 editor.clear().apply();
             }
 
-            // 显式 Intent + Bundle：多种类型数据一次传齐
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("username", username);
-            bundle.putString("role", role);
-            bundle.putInt("age", 20);
-            bundle.putBoolean("isVip", true);
-            bundle.putDouble("score", 99.5);
-            intent.putExtras(bundle);
             AppLog.i(TAG, "登录: username=" + username + ", role=" + role);
-            startActivity(intent);
+            btnLogin.setEnabled(false);
+            btnRegister.setEnabled(false);
+            enterMain(username, role);
         });
 
         // 注册 —— 弹窗表单 → 校验 → 写入 SharedPreferences 账号库（SHA-256 摘要）
@@ -162,6 +157,63 @@ public class LoginActivity extends AppCompatActivity {
 
     private void toast(int resId) {
         Toast.makeText(this, resId, Toast.LENGTH_SHORT).show();
+    }
+
+
+    /**
+     * 登录/注册通过后先给一个加载态再进主界面。
+     * 校验与 SharedPreferences 写入是同步的（毫秒级），所以这里先显示遮罩，
+     * 再延迟一小段时间跳转 —— 否则瞬间切页，用户看不到任何反馈。
+     */
+    private void enterMain(String username, String role) {
+        showLoadingOverlay();
+
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("username", username);
+        bundle.putString("role", role);
+        bundle.putInt("age", 20);
+        bundle.putBoolean("isVip", true);
+        bundle.putDouble("score", 99.5);
+        intent.putExtras(bundle);
+
+        new android.os.Handler(android.os.Looper.getMainLooper())
+                .postDelayed(() -> {
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    finish();
+                }, 600);
+    }
+
+    /** 全屏半透明遮罩 + 转圈 + 「正在进入…」 */
+    private void showLoadingOverlay() {
+        android.view.ViewGroup root = findViewById(android.R.id.content);
+        if (root == null || root.findViewById(R.id.ll_login_loading) != null) {
+            return;
+        }
+        LinearLayout box = new LinearLayout(this);
+        box.setId(R.id.ll_login_loading);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setGravity(android.view.Gravity.CENTER);
+        box.setBackgroundColor(0xCC000000);
+        box.setClickable(true);   // 遮罩期间挡住点击
+
+        android.widget.ProgressBar bar = new android.widget.ProgressBar(this);
+        box.addView(bar);
+
+        TextView label = new TextView(this);
+        label.setText(R.string.login_loading);
+        label.setTextColor(0xFFFFFFFF);
+        label.setTextSize(15);
+        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        labelParams.topMargin = (int) (12 * getResources().getDisplayMetrics().density);
+        box.addView(label, labelParams);
+
+        root.addView(box, new android.view.ViewGroup.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
     @Override

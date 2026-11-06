@@ -42,6 +42,13 @@
             <param-value>classpath:spring-mvc.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+        <!-- 群文件上传：单文件 50MB / 整请求 55MB，超过 1MB 直接落临时文件
+             （StandardServletMultipartResolver 读这里，不需要 commons-fileupload） -->
+        <multipart-config>
+            <max-file-size>52428800</max-file-size>
+            <max-request-size>57671680</max-request-size>
+            <file-size-threshold>1048576</file-size-threshold>
+        </multipart-config>
     </servlet>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>

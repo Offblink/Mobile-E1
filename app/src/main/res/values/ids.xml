@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 代码里动态创建、但需要稳定 id 的视图 -->
+<resources>
+    <!-- 登录/注册通过后盖在登录页上的加载遮罩 -->
+    <item name="ll_login_loading" type="id" />
+</resources>

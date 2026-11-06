@@ -36,6 +36,36 @@ public class DatabaseInitializer implements InitializingBean {
                     "remark VARCHAR(255)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
+            // 班级群 · 公告
+            st.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS notice (" +
+                    "id INT PRIMARY KEY AUTO_INCREMENT," +
+                    "title VARCHAR(120) NOT NULL," +
+                    "content TEXT," +
+                    "author VARCHAR(50)," +
+                    "created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+
+            // 班级群 · 消息（客户端按 id 游标增量拉取）
+            st.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS chat_message (" +
+                    "id INT PRIMARY KEY AUTO_INCREMENT," +
+                    "sender VARCHAR(50)," +
+                    "content TEXT," +
+                    "created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+
+            // 班级群 · 文件（本体在 ${catalina.base}/files，这里只存元数据；同名覆盖靠 uk_name）
+            st.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS app_file (" +
+                    "id INT PRIMARY KEY AUTO_INCREMENT," +
+                    "name VARCHAR(200) NOT NULL," +
+                    "size BIGINT," +
+                    "uploader VARCHAR(50)," +
+                    "uploaded_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                    "UNIQUE KEY uk_name(name)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+
             int count = rowCount(conn);
             if (count == 0) {
                 st.executeUpdate("INSERT INTO mate(name, phone, email, gender, remark) VALUES " +

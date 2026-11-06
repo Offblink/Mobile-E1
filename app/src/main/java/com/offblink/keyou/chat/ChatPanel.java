@@ -3,11 +3,12 @@ package com.offblink.keyou.chat;
 import com.offblink.keyou.R;
 import com.offblink.keyou.download.DownloadActivity;
 import com.offblink.keyou.log.AppLog;
+import com.offblink.keyou.net.HttpUtil;
 
-import com.offblink.keyou.util.Streams;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,43 +17,65 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 「课友圈」Tab 内嵌的聊天面板：消息列表 + 输入行 + 班级群入口。
- * 页面常驻在底部导航里，切走再切回消息不丢（状态挂在 Activity 上）。
+ * 「班级群」Tab 内嵌的聊天面板：消息列表 + 输入行 + 群公告/群文件入口。
  *
- * 输入框内容实时落到 files/chat_draft.txt（与「草稿」页同一个文件）：
- * 切后台、进草稿页都能看到未发送的内容；发送后清空文件。
+ * 消息后端起在 SSM（`/api/messages`）：
+ * - 进入面板先拉一次全量（after=0&size=100），之后在宿主 onResume/onPause 之间
+ *   每 4 秒用 after=最后一条 id 增量拉取 —— 电脑端客户端发来的消息会自动出现；
+ * - 发送走 POST /api/message，成功后把服务端返回的那条追加到本地列表（不重复拉）。
+ * 页面常驻在底部导航里，切走再切回消息不丢（状态挂在 Activity 上）。
  */
 public final class ChatPanel {
 
     private static final String TAG = "Keyou/Chat";
-    private static final String DRAFT_FILE = "chat_draft.txt";
+
+    /** 增量拉取间隔：够电脑端发完消息基本"秒到"，又不至于把服务端打满 */
+    private static final long POLL_INTERVAL_MS = 4000L;
 
     private final List<ChatMessage> messages = new ArrayList<>();
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
     private ChatAdapter adapter;
     private Activity host;
+    private RecyclerView recyclerView;
     private EditText etInput;
+    private String sender = "我";
+    /** 已收到的最大消息 id，增量拉取游标 */
+    private long lastId;
+    private boolean polling;
+
+    private final Runnable pollTask = new Runnable() {
+        @Override
+        public void run() {
+            if (!polling) {
+                return;
+            }
+            fetchNew(false);
+            handler.postDelayed(this, POLL_INTERVAL_MS);
+        }
+    };
 
     public ChatPanel() {
-        messages.add(new ChatMessage("大家好，我是班长张三", false));
-        messages.add(new ChatMessage("收到，明天的课在 301", true));
     }
 
-    public void attach(Activity host, View root) {
+    /** @param myName 本机昵称，作为发消息时的 sender */
+    public void attach(Activity host, View root, String myName) {
         this.host = host;
+        if (myName != null && !myName.trim().isEmpty()) {
+            this.sender = myName.trim();
+        }
 
-        RecyclerView rv = root.findViewById(R.id.rv_messages);
-        rv.setLayoutManager(new LinearLayoutManager(host));
+        recyclerView = root.findViewById(R.id.rv_messages);
+        recyclerView.setLayoutManager(new LinearLayoutManager(host));
         adapter = new ChatAdapter(messages);
-        rv.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);
 
         etInput = root.findViewById(R.id.et_message);
         Button btnSend = root.findViewById(R.id.btn_send);
@@ -63,12 +86,7 @@ public final class ChatPanel {
                 Toast.makeText(host, R.string.chat_empty_tip, Toast.LENGTH_SHORT).show();
                 return;
             }
-            messages.add(new ChatMessage(text, true));
-            adapter.notifyItemInserted(messages.size() - 1);
-            rv.scrollToPosition(messages.size() - 1);
-            etInput.setText("");
-            clearDraft();
-            AppLog.d(TAG, "发送: " + text);
+            sendToServer(text);
         };
         btnSend.setOnClickListener(v -> send.run());
         // 键盘上的「发送」键也能直接发（回车不换行）
@@ -80,66 +98,133 @@ public final class ChatPanel {
             return false;
         });
 
-        // 班级群的三个入口：公告 / 群文件 / 草稿，都在会话上下文里
+        // 班级群的两个入口：公告 / 群文件
         root.findViewById(R.id.btn_chat_notice).setOnClickListener(v ->
                 host.startActivity(new Intent(host, RssParseActivity.class)));
         root.findViewById(R.id.btn_chat_files).setOnClickListener(v ->
                 host.startActivity(new Intent(host, DownloadActivity.class)));
-        root.findViewById(R.id.btn_chat_draft).setOnClickListener(v -> {
-            saveDraft();   // 先把当前输入落盘，草稿页读到的就是最新内容
-            host.startActivity(new Intent(host, DraftActivity.class));
-        });
 
-        restoreDraft();
+        fetchNew(true);
     }
 
-    /** 离开会话（切后台/进二级页）时保存；空输入就删文件 */
-    public void onHostPause() {
-        saveDraft();
-    }
-
-    /** 回到会话时以文件为准（草稿页可能刚改过） */
+    /** 回到会话：恢复轮询并补拉断线期间的消息 */
     public void onHostResume() {
-        restoreDraft();
+        if (host == null) {
+            return;
+        }
+        polling = true;
+        handler.removeCallbacks(pollTask);
+        handler.post(pollTask);
     }
 
-    private void saveDraft() {
-        if (host == null || etInput == null) {
-            return;
-        }
-        String text = etInput.getText().toString();
-        if (text.trim().isEmpty()) {
-            clearDraft();
-            return;
-        }
-        try (FileOutputStream out = host.openFileOutput(DRAFT_FILE, Context.MODE_PRIVATE)) {
-            out.write(text.getBytes(StandardCharsets.UTF_8));
-            AppLog.d(TAG, "草稿已保存 (" + text.length() + " 字)");
-        } catch (IOException e) {
-            AppLog.e(TAG, "草稿保存失败", e);
-        }
+    /** 离开会话：停轮询（页面常驻，消息列表不清空） */
+    public void onHostPause() {
+        polling = false;
+        handler.removeCallbacks(pollTask);
     }
 
-    private void restoreDraft() {
-        if (host == null || etInput == null) {
+    // ---------- 网络 ----------
+
+    /** @param reset true=全量拉取（首次进入），false=按 after 游标增量 */
+    private void fetchNew(boolean reset) {
+        if (host == null) {
             return;
         }
-        try (FileInputStream in = host.openFileInput(DRAFT_FILE)) {
-            String text = new String(Streams.readAll(in), StandardCharsets.UTF_8);
-            if (!text.equals(etInput.getText().toString())) {
-                etInput.setText(text);
-                etInput.setSelection(text.length());
+        long after = reset ? 0 : lastId;
+        HttpUtil.get(host, "/api/messages?after=" + after + "&size=100", new HttpUtil.Callback() {
+            @Override
+            public void onSuccess(String body) {
+                applyMessages(body, reset);
             }
-        } catch (FileNotFoundException e) {
-            // 还没有草稿，正常路径
-        } catch (IOException e) {
-            AppLog.e(TAG, "草稿读取失败", e);
+
+            @Override
+            public void onError(String message, Exception e) {
+                // 断网时保持列表不动，下次轮询再试
+                AppLog.w(TAG, "拉取群消息失败: " + message);
+            }
+        });
+    }
+
+    private void applyMessages(String body, boolean reset) {
+        try {
+            JSONObject root = new JSONObject(body);
+            if (root.optInt("code", -1) != 0) {
+                AppLog.w(TAG, "服务端返回错误: " + root.optString("message"));
+                return;
+            }
+            JSONArray array = root.optJSONArray("data");
+            if (array == null) {
+                return;
+            }
+            if (reset) {
+                messages.clear();
+                lastId = 0;
+            }
+            int added = 0;
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject item = array.getJSONObject(i);
+                long id = item.optLong("id", 0);
+                String content = item.optString("content", "");
+                String from = item.optString("sender", "");
+                if (id <= lastId) {
+                    continue;
+                }
+                lastId = Math.max(lastId, id);
+                messages.add(new ChatMessage(id, from, content, sender.equals(from)));
+                added++;
+            }
+            if (added > 0) {
+                if (added == messages.size()) {
+                    adapter.notifyDataSetChanged();
+                } else {
+                    adapter.notifyItemRangeInserted(messages.size() - added, added);
+                }
+                recyclerView.scrollToPosition(messages.size() - 1);
+                AppLog.d(TAG, "收到 " + added + " 条群消息，lastId=" + lastId);
+            }
+        } catch (Exception e) {
+            AppLog.e(TAG, "群消息解析失败", e);
         }
     }
 
-    private void clearDraft() {
-        if (host != null && host.deleteFile(DRAFT_FILE)) {
-            AppLog.d(TAG, "草稿文件已清空");
+    private void sendToServer(String text) {
+        try {
+            JSONObject payload = new JSONObject();
+            payload.put("sender", sender);
+            payload.put("content", text);
+            HttpUtil.postJson(host, "/api/message", payload.toString(), new HttpUtil.Callback() {
+                @Override
+                public void onSuccess(String body) {
+                    try {
+                        JSONObject root = new JSONObject(body);
+                        if (root.optInt("code", -1) != 0) {
+                            Toast.makeText(host, root.optString("message"), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        JSONObject data = root.optJSONObject("data");
+                        long id = data == null ? 0 : data.optLong("id", 0);
+                        lastId = Math.max(lastId, id);
+                        messages.add(new ChatMessage(id, sender, text, true));
+                        adapter.notifyItemInserted(messages.size() - 1);
+                        recyclerView.scrollToPosition(messages.size() - 1);
+                        etInput.setText("");
+                        AppLog.i(TAG, "已发送群消息 id=" + id);
+                    } catch (Exception e) {
+                        Toast.makeText(host, R.string.chat_send_failed,
+                                Toast.LENGTH_SHORT).show();
+                        AppLog.e(TAG, "发送结果解析失败", e);
+                    }
+                }
+
+                @Override
+                public void onError(String message, Exception e) {
+                    Toast.makeText(host, host.getString(R.string.chat_send_failed, message),
+                            Toast.LENGTH_LONG).show();
+                    AppLog.w(TAG, "发送失败: " + message);
+                }
+            });
+        } catch (Exception e) {
+            AppLog.e(TAG, "构造消息失败", e);
         }
     }
 }

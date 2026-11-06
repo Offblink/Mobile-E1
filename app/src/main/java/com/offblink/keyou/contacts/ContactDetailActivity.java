@@ -128,7 +128,8 @@ public class ContactDetailActivity extends KeyouActivity {
         contactId = getIntent().getLongExtra(EXTRA_ID, -1);
         source = getIntent().getIntExtra(EXTRA_SOURCE, Contact.SOURCE_LOCAL);
         remoteId = getIntent().getLongExtra(EXTRA_REMOTE_ID, -1);
-        isNew = source == Contact.SOURCE_LOCAL && contactId <= 0;
+        // 本地与班级成员都用同一个新增页：来源只决定保存打到哪儿
+        isNew = contactId <= 0;
 
         topTitle = findViewById(R.id.tv_top_title);
         saveButton = findViewById(R.id.btn_save);
@@ -491,6 +492,11 @@ public class ContactDetailActivity extends KeyouActivity {
             return;
         }
 
+        if (source == Contact.SOURCE_CLASS) {
+            saveNewRemote(values);
+            return;
+        }
+
         Contact contact = new Contact();
         contact.setName(values.get(KEY_NAME));
         contact.setPhone(values.get(KEY_PHONE));
@@ -509,6 +515,49 @@ public class ContactDetailActivity extends KeyouActivity {
         Toast.makeText(this, R.string.contacts_saved, Toast.LENGTH_SHORT).show();
         AppLog.i(TAG, "新增成功 id=" + id);
         finish();
+    }
+
+    /** 班级成员新增：POST /api/mate（与本地新增共用同一张表单页） */
+    private void saveNewRemote(Map<String, String> values) {
+        Mate mate = new Mate();
+        mate.setName(values.get(KEY_NAME));
+        mate.setPhone(values.get(KEY_PHONE));
+        mate.setEmail(values.get(KEY_EMAIL));
+        mate.setGender(values.get(KEY_GENDER));
+        mate.setRemark(remark);
+
+        saveButton.setEnabled(false);
+        HttpUtil.postJson(this, "/api/mate", gson.toJson(mate), new HttpUtil.Callback() {
+            @Override
+            public void onSuccess(String body) {
+                saveButton.setEnabled(true);
+                try {
+                    JSONObject root = new JSONObject(body);
+                    if (root.optInt("code", -1) != 0) {
+                        Toast.makeText(ContactDetailActivity.this,
+                                root.optString("message"), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    closing = true;
+                    setResult(RESULT_OK);
+                    Toast.makeText(ContactDetailActivity.this,
+                            R.string.contacts_saved, Toast.LENGTH_SHORT).show();
+                    AppLog.i(TAG, "班级成员新增成功");
+                    finish();
+                } catch (Exception e) {
+                    Toast.makeText(ContactDetailActivity.this,
+                            R.string.contacts_save_failed, Toast.LENGTH_SHORT).show();
+                    AppLog.e(TAG, "新增响应解析失败", e);
+                }
+            }
+
+            @Override
+            public void onError(String message, Exception e) {
+                saveButton.setEnabled(true);
+                Toast.makeText(ContactDetailActivity.this,
+                        getString(R.string.mate_network_error, message), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /** 班级成员：PUT /api/mate（Gson 序列化，改完用新值回填） */

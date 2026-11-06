@@ -41,7 +41,6 @@
         <activity android:name="com.offblink.keyou.ui.MainActivity" android:exported="false" />
         <activity android:name="com.offblink.keyou.contacts.ContactDetailActivity" android:exported="false" />
         <activity android:name="com.offblink.keyou.log.LogActivity" android:exported="false" />
-        <activity android:name="com.offblink.keyou.chat.DraftActivity" android:exported="false" />
         <activity android:name="com.offblink.keyou.contacts.JsonCompareActivity" android:exported="false" />
         <activity android:name="com.offblink.keyou.chat.RssParseActivity" android:exported="false" />
         <activity android:name="com.offblink.keyou.download.DownloadActivity" android:exported="false" />

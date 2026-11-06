@@ -59,9 +59,9 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 主界面：三个 Tab（同学录 / 课友圈 / 我的）共用一套胶囊导航。
+ * 主界面：三个 Tab（同学录 / 班级群 / 我的）共用一套胶囊导航。
  *
- * 同学录是本地 + 班级合并列表，课友圈直接是聊天界面（含公告/群文件/草稿入口），
+ * 同学录是本地 + 班级合并列表，班级群直接是聊天界面（含公告/群文件入口），
  * 我的页放个人信息、自动定位的省份、日志与退出登录。
  *
  * 动效双轨（mobile-design 约定）：位移走 spring（OvershootInterpolator 0.7 / 350ms），
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         ContactsPage.attach(this, findViewById(R.id.page_contacts));
 
         chatPanel = new ChatPanel();
-        chatPanel.attach(this, findViewById(R.id.page_chat));
+        chatPanel.attach(this, findViewById(R.id.page_chat), nickname);
 
         bindMine();
     }
@@ -681,8 +681,10 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 boolean connected = isCurrentlyConnected();
                 AppLog.i(TAG, "收到网络变化广播, connected=" + connected);
-                showBanner(getString(connected
-                        ? R.string.banner_net_on : R.string.banner_net_off));
+                // 只提示断开；「已恢复连接」按用户要求不再打扰
+                if (!connected) {
+                    showBanner(getString(R.string.banner_net_off));
+                }
             }
         };
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);

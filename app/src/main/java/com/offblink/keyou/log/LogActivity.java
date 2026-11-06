@@ -2,7 +2,6 @@ package com.offblink.keyou.log;
 
 import com.offblink.keyou.R;
 import com.offblink.keyou.debug.DiagnosticsActivity;
-import com.offblink.keyou.debug.ServiceActivity;
 import com.offblink.keyou.ui.KeyouActivity;
 
 import android.content.Intent;
@@ -71,8 +70,6 @@ public class LogActivity extends KeyouActivity implements AppLog.Listener {
 
         findViewById(R.id.btn_log_diag).setOnClickListener(v ->
                 startActivity(new Intent(this, DiagnosticsActivity.class)));
-        findViewById(R.id.btn_log_service).setOnClickListener(v ->
-                startActivity(new Intent(this, ServiceActivity.class)));
 
         shown.addAll(AppLog.snapshot());
         adapter.notifyDataSetChanged();

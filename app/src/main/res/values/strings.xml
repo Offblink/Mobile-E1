@@ -6,8 +6,8 @@
     <!-- m3 胶囊导航 -->
     <string name="nav_contacts">同学录</string>
     <string name="nav_contacts_sub">分组</string>
-    <string name="nav_chat">课友圈</string>
-    <string name="nav_chat_sub">聊天</string>
+    <string name="nav_chat">班级群</string>
+    <string name="nav_chat_sub">群聊</string>
     <string name="nav_mine">我的</string>
     <string name="nav_mine_sub">设置</string>
 
@@ -26,6 +26,7 @@
     <string name="login_agree_required">请先勾选同意用户协议</string>
     <string name="login_wrong_password">密码错误</string>
     <string name="login_guest">未注册，以游客身份进入</string>
+    <string name="login_loading">正在进入…</string>
 
     <!-- 注册（SharedPreferences 账号库） -->
     <string name="register_title">注册新账号</string>
@@ -65,7 +66,11 @@
 
     <!-- 服务 / 定位 / 多媒体 -->
     <string name="download_title">群文件</string>
-    <string name="download_start">下载示例资料</string>
+    <string name="download_refresh">刷新</string>
+    <string name="download_loading">正在加载群文件…</string>
+    <string name="download_empty">还没有文件，用电脑端客户端上传试试</string>
+    <string name="download_count">共 %1$d 个文件</string>
+    <string name="download_parse_error">文件列表解析失败</string>
     <string name="download_idle">尚未开始</string>
     <string name="download_starting">启动中…</string>
     <string name="notify_permission_denied">通知权限被拒：下载仍会进行，但没有进度通知</string>
@@ -91,15 +96,11 @@
     <string name="json_fetch_failed">请求失败：%1$s</string>
     <string name="rss_title">班级公告</string>
     <string name="rss_fetch_btn">刷新公告</string>
+    <string name="notice_empty">还没有公告，用电脑端客户端发一条试试</string>
+    <string name="notice_item">%1$s\n%2$s · %3$s\n%4$s</string>
 
     <!-- 跨 App -->
-    <!-- 文件草稿箱 / SP / SQLite 通讯录 -->
-    <string name="draft_title">聊天草稿</string>
-    <string name="draft_hint">课友圈输入框的草稿会自动存在这里，改完点保存即可同步…</string>
-    <string name="draft_save">保存</string>
-    <string name="draft_load">读取</string>
-    <string name="draft_saved">草稿已保存</string>
-    <string name="draft_save_failed">保存失败</string>
+    <!-- SP / SQLite 通讯录 -->
     <string name="common_cancel">取消</string>
     <string name="contact_name_hint">姓名（必填）</string>
     <string name="contact_phone_hint">电话</string>
@@ -122,14 +123,17 @@
     <string name="broadcast_custom_sent">已发送，看 Logcat Keyou/Broadcast</string>
     <string name="broadcast_ordered_sent">已发送（不截断），应有 High+Low 两条日志</string>
     <string name="broadcast_abort_sent">已发送（截断），应只有 High 一条日志</string>
-    <string name="banner_net_on">📶 网络已恢复连接</string>
-    <string name="banner_net_off">📡 网络已断开</string>
+        <string name="banner_net_off">📡 网络已断开</string>
 
     <!-- 同学录列表 + 聊天室 -->
-    <string name="chat_title">课友圈 · 班级群</string>
+    <string name="chat_title">班级群</string>
     <string name="chat_input_hint">说点什么…</string>
     <string name="chat_send">发送</string>
     <string name="chat_empty_tip">消息不能为空</string>
+    <string name="chat_loading">正在加载群消息…</string>
+    <string name="chat_empty">还没有消息，说点什么吧</string>
+    <string name="chat_send_failed">发送失败：%1$s</string>
+    <string name="chat_placeholder_demo">大家好，我是班长张三</string>
 
     <!-- 关于 / Log 自检 -->
     <string name="log_title">日志</string>
@@ -164,9 +168,6 @@
     <!-- 分散到各页的入口 -->
     <string name="chat_entry_notice">班级公告</string>
     <string name="chat_entry_files">群文件</string>
-    <string name="chat_entry_draft">草稿</string>
-    <string name="contacts_entry_check">自检</string>
     <string name="log_entry_diag">调试面板</string>
-    <string name="log_entry_service">服务自检</string>
     <string name="service_title">服务自检</string>
 </resources>
