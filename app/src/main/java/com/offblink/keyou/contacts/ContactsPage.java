@@ -158,7 +158,7 @@ public final class ContactsPage {
 
         View fab = pageRoot.findViewById(R.id.fab_add);
         if (fab != null) {
-            fab.setOnClickListener(v -> chooseNewSource());
+            fab.setOnClickListener(v -> openNewDetail());
         }
 
         seedIfEmpty();
@@ -375,22 +375,14 @@ public final class ContactsPage {
         detailLauncher.launch(intent);
     }
 
-    /** FAB：先选新建的是本地同学还是班级成员 */
-    private void chooseNewSource() {
-        String[] options = {
-                host.getString(R.string.contacts_new_local),
-                host.getString(R.string.contacts_new_class)};
-        new MaterialAlertDialogBuilder(host)
-                .setTitle(R.string.contacts_new_choose)
-                .setItems(options, (dialog, which) -> {
-                    // 本地 / 班级成员都进同一张整页表单，只是保存打到不同的地方
-                    int source = which == 0 ? Contact.SOURCE_LOCAL : Contact.SOURCE_CLASS;
-                    Intent intent = new Intent(host, ContactDetailActivity.class);
-                    intent.putExtra(ContactDetailActivity.EXTRA_SOURCE, source);
-                    intent.putExtra(ContactDetailActivity.EXTRA_ID, -1L);
-                    detailLauncher.launch(intent);
-                })
-                .show();
+    /**
+     * FAB：直接进新增页，不再先弹「本地同学 / 班级成员」选择框。
+     * 来源是表单里的「来源」行（本地同学 / 班级成员），保存时按它分派到 SQLite 或 /api/mate。
+     */
+    private void openNewDetail() {
+        Intent intent = new Intent(host, ContactDetailActivity.class);
+        intent.putExtra(ContactDetailActivity.EXTRA_ID, -1L);
+        detailLauncher.launch(intent);
     }
 
     /** 长按删除：本地走 SQLite，班级成员走 DELETE /api/mate/{id} */

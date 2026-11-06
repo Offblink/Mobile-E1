@@ -34,7 +34,9 @@
     <string name="register_password_hint">密码（至少 6 位）</string>
     <string name="register_confirm_hint">确认密码</string>
     <string name="register_ok">注册</string>
-    <string name="register_success">注册成功，已回填登录框</string>
+    <string name="register_subtitle">注册后直接进入课友，无需再次登录</string>
+    <string name="register_back_login">已有账号？返回登录</string>
+    <string name="register_success">注册成功</string>
     <string name="register_exists">该账号已注册</string>
     <string name="register_pwd_mismatch">两次密码不一致</string>
     <string name="register_pwd_short">密码至少 6 位</string>
@@ -133,6 +135,12 @@
     <string name="chat_loading">正在加载群消息…</string>
     <string name="chat_empty">还没有消息，说点什么吧</string>
     <string name="chat_send_failed">发送失败：%1$s</string>
+    <!-- 群文件上传：与电脑端客户端同一接口 POST /api/file -->
+    <string name="chat_upload">上传</string>
+    <string name="chat_uploading">上传中…</string>
+    <string name="chat_upload_done">已上传：%1$s</string>
+    <string name="chat_upload_failed">上传失败：%1$s</string>
+    <string name="chat_upload_parse_failed">上传结果解析失败</string>
     <string name="chat_placeholder_demo">大家好，我是班长张三</string>
 
     <!-- 关于 / Log 自检 -->

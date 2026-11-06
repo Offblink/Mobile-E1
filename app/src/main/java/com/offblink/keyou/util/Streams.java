@@ -17,6 +17,18 @@ public final class Streams {
     private Streams() {
     }
 
+    /** 流拷贝（大文件不进内存），返回拷贝的字节数；两边都由调用方 close */
+    public static long copy(InputStream in, java.io.OutputStream out) throws IOException {
+        byte[] buffer = new byte[BUFFER_SIZE];
+        long total = 0;
+        int read;
+        while ((read = in.read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+            total += read;
+        }
+        return total;
+    }
+
     /** 读完整个流（调用方负责 close，通常配合 try-with-resources） */
     public static byte[] readAll(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

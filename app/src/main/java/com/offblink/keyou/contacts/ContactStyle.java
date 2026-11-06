@@ -29,6 +29,8 @@ final class ContactStyle {
             com.google.android.material.R.attr.colorPrimaryContainer;
     static final int ATTR_ON_PRIMARY_CONTAINER =
             com.google.android.material.R.attr.colorOnPrimaryContainer;
+    static final int ATTR_ON_SECONDARY_CONTAINER =
+            com.google.android.material.R.attr.colorOnSecondaryContainer;
 
     private ContactStyle() {
     }

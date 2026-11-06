@@ -5,20 +5,33 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- 标题行：标题 + 上传群文件（与电脑端客户端同一条 POST /api/file） -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
         android:paddingTop="20dp"
+        android:paddingEnd="12dp"
         android:paddingBottom="8dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/chat_title"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="20sp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_upload"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:text="@string/chat_upload" />
 
     </LinearLayout>
 

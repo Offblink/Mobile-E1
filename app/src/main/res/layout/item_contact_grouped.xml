@@ -4,6 +4,7 @@
   背景由 ContactGroupDecoration 按分组画圆角卡片，这里保持透明，只留水波纹。
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="72dp"
     android:layout_marginStart="16dp"
@@ -82,6 +83,6 @@
         android:alpha="0.45"
         android:contentDescription="@null"
         android:src="@drawable/contact_ic_chevron"
-        android:tint="?attr/colorOnSurfaceVariant" />
+        app:tint="?attr/colorOnSurfaceVariant" />
 
 </LinearLayout>

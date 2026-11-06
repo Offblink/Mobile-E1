@@ -9,6 +9,7 @@ import com.offblink.keyou.util.Streams;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.Editable;
 import android.text.InputType;
@@ -21,6 +22,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -56,7 +58,8 @@ import java.util.Map;
  * 「右 + 下」1dp 外边距，第一列补左、第一行补上 —— 这样外框与内线恒为 1dp，
  * 不会出现「有粗有细」；格子高度用 MATCH_PARENT，行间不会露灰带。
  *
- * 数据只走 ContactDao（本地 SQLite），不涉及服务端。
+ * 新增时表单里的「来源」行决定保存到哪儿：本地同学 → ContactDao（SQLite），
+ * 班级成员 → POST /api/mate；编辑时来源固定（换来源等于删了重建），该行隐藏。
  */
 public class ContactDetailActivity extends KeyouActivity {
 
@@ -101,6 +104,10 @@ public class ContactDetailActivity extends KeyouActivity {
     private String avatarPath;
     private ImageView avatarImage;
     private TextView sourceBadge;
+    /** 表单里的「来源」行：新增时可选，编辑时整行隐藏（换来源等于删了重建） */
+    private TableRow sourceRow;
+    private TextView sourceLocalView;
+    private TextView sourceClassView;
     private final Gson gson = new Gson();
 
     private TextView topTitle;
@@ -183,6 +190,7 @@ public class ContactDetailActivity extends KeyouActivity {
                 InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
                 one, labelWidth);
         addGenderRow(table, 3, one, labelWidth);
+        addSourceRow(table, 4, one, labelWidth);
     }
 
     private void addTextRow(TableLayout table, int index, int labelRes, String key,
@@ -262,6 +270,83 @@ public class ContactDetailActivity extends KeyouActivity {
         row.addView(genderCell, cellParams);
         table.addView(row, new TableLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+
+    /**
+     * 来源格：新增页两个选项直接放在格子里点选（不再先弹对话框）。
+     * 选中「班级成员」→ 保存走 POST /api/mate；选「本地同学」→ INSERT 本地 contact 表。
+     */
+    private void addSourceRow(TableLayout table, int index, int one, int labelWidth) {
+        TableRow row = new TableRow(this);
+        int topMargin = index == 0 ? one : 0;
+
+        TextView label = new TextView(this);
+        label.setText(R.string.contacts_label_source);
+        label.setTextSize(13);
+        label.setTextColor(ContactStyle.color(this, ContactStyle.ATTR_ON_SURFACE_VARIANT));
+        label.setGravity(Gravity.CENTER);
+        label.setBackgroundResource(R.drawable.contact_bg_cell_label);
+
+        LinearLayout group = new LinearLayout(this);
+        group.setOrientation(LinearLayout.HORIZONTAL);
+        group.setGravity(Gravity.CENTER_VERTICAL);
+        group.setBackgroundResource(R.drawable.contact_bg_cell_value);
+        group.setPadding(ContactStyle.dp(this, 6), 0, ContactStyle.dp(this, 6), 0);
+        group.setMinimumHeight(ContactStyle.dp(this, 44));
+
+        sourceLocalView = newSourceOption(R.string.contacts_new_local);
+        sourceClassView = newSourceOption(R.string.contacts_new_class);
+        sourceLocalView.setOnClickListener(v -> selectSource(Contact.SOURCE_LOCAL));
+        sourceClassView.setOnClickListener(v -> selectSource(Contact.SOURCE_CLASS));
+
+        LinearLayout.LayoutParams firstParams =
+                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        firstParams.setMarginEnd(ContactStyle.dp(this, 6));
+        group.addView(sourceLocalView, firstParams);
+        group.addView(sourceClassView,
+                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        TableRow.LayoutParams labelParams =
+                new TableRow.LayoutParams(labelWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+        labelParams.setMargins(one, topMargin, one, one);
+
+        TableRow.LayoutParams cellParams =
+                new TableRow.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f);
+        cellParams.setMargins(0, topMargin, one, one);
+
+        row.addView(label, labelParams);
+        row.addView(group, cellParams);
+        table.addView(row, new TableLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        sourceRow = row;
+    }
+
+    private TextView newSourceOption(int textRes) {
+        TextView option = new TextView(this);
+        option.setText(textRes);
+        option.setTextSize(13);
+        option.setGravity(Gravity.CENTER);
+        option.setMinHeight(ContactStyle.dp(this, 34));
+        option.setPadding(ContactStyle.dp(this, 4), ContactStyle.dp(this, 6),
+                ContactStyle.dp(this, 4), ContactStyle.dp(this, 6));
+        return option;
+    }
+
+    /** 只在新增模式可点：已有记录换来源等于删了重建，不做隐式迁移 */
+    private void selectSource(int newSource) {
+        if (!isNew || source == newSource) {
+            return;
+        }
+        source = newSource;
+        renderSource();
+    }
+
+    private void styleSourceOption(TextView option, boolean selected) {
+        option.setBackgroundResource(selected
+                ? R.drawable.contact_bg_option_selected : R.drawable.contact_bg_option);
+        option.setTextColor(ContactStyle.color(this, selected
+                ? ContactStyle.ATTR_ON_SECONDARY_CONTAINER : ContactStyle.ATTR_ON_SURFACE_VARIANT));
+        option.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
     }
 
     private void wireCell(final EditText cell, final String key) {
@@ -363,6 +448,7 @@ public class ContactDetailActivity extends KeyouActivity {
         silent = false;
         saved.clear();
         updateHeader("", "", "");
+        renderSource();
     }
 
     // ================= 绑定 / 回写 =================
@@ -408,6 +494,15 @@ public class ContactDetailActivity extends KeyouActivity {
                 ? R.string.contacts_source_class : R.string.contacts_source_local);
         sourceBadge.setBackgroundResource(fromClass
                 ? R.drawable.bg_badge_class : R.drawable.bg_badge_local);
+
+        // 来源行只在新增页出现：编辑时来源由记录本身决定，改它等于删了重建
+        sourceRow.setVisibility(isNew ? View.VISIBLE : View.GONE);
+        if (isNew) {
+            styleSourceOption(sourceLocalView, !fromClass);
+            styleSourceOption(sourceClassView, fromClass);
+            topTitle.setText(fromClass
+                    ? R.string.mate_add_title : R.string.contacts_new_title);
+        }
     }
 
     private Map<String, String> values() {
@@ -538,11 +633,26 @@ public class ContactDetailActivity extends KeyouActivity {
                                 root.optString("message"), Toast.LENGTH_LONG).show();
                         return;
                     }
+                    // data 是插入后的对象数组：拿到新 id，把新增期间选的头像挂到它名下
+                    long newId = -1;
+                    org.json.JSONArray inserted = root.optJSONArray("data");
+                    if (inserted != null) {
+                        JSONObject first = inserted.optJSONObject(0);
+                        if (first != null) {
+                            newId = first.optLong("id", -1);
+                        }
+                    }
+                    if (newId > 0) {
+                        remoteId = newId;
+                        if (avatarPath != null) {
+                            ContactAvatarStore.put(ContactDetailActivity.this, newId, avatarPath);
+                        }
+                    }
                     closing = true;
                     setResult(RESULT_OK);
                     Toast.makeText(ContactDetailActivity.this,
                             R.string.contacts_saved, Toast.LENGTH_SHORT).show();
-                    AppLog.i(TAG, "班级成员新增成功");
+                    AppLog.i(TAG, "班级成员新增成功 id=" + newId);
                     finish();
                 } catch (Exception e) {
                     Toast.makeText(ContactDetailActivity.this,
@@ -658,7 +768,8 @@ public class ContactDetailActivity extends KeyouActivity {
 
             String previous = avatarPath;
             avatarPath = target.getAbsolutePath();
-            if (source == Contact.SOURCE_CLASS) {
+            // 新增班级成员时还没有服务端 id（remoteId = -1），保存成功拿到 id 后再挂头像
+            if (source == Contact.SOURCE_CLASS && !isNew) {
                 ContactAvatarStore.put(this, remoteId, avatarPath);
             } else if (!isNew) {
                 Contact contact = new Contact();

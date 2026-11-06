@@ -5,22 +5,17 @@ import com.offblink.keyou.log.AppLog;
 import com.offblink.keyou.mine.StartupSound;
 import com.offblink.keyou.mine.UserStore;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
- * 登录页：账号 / 密码校验、记住密码、注册入口（本地账号库，密码存 SHA-256 摘要）。
+ * 登录页：账号 / 密码校验、记住密码、注册入口（跳整页 {@link RegisterActivity}，不再弹模态框）。
  *
  * 生命周期七个方法全部重写并打日志：正常进入 / Home 键 / 旋转屏 / finish() 四条路径
  * 都能在 Logcat（过滤 Keyou/Login）里看到完整序列。
@@ -104,55 +99,9 @@ public class LoginActivity extends AppCompatActivity {
             enterMain(username, role);
         });
 
-        // 注册 —— 弹窗表单 → 校验 → 写入 SharedPreferences 账号库（SHA-256 摘要）
-        btnRegister.setOnClickListener(v -> showRegisterDialog(etUsername, etPassword));
-    }
-
-    /**
-     * 注册弹窗：账号 / 密码 / 确认密码 → UserStore.register。
-     * 用 AlertDialog 承载 dialog_register.xml，并覆写确认键
-     * —— 默认点击即关闭，校验失败时用户会被踢出表单、已输入内容全丢。
-     */
-    private void showRegisterDialog(EditText etUsername, EditText etPassword) {
-        View form = LayoutInflater.from(this).inflate(R.layout.dialog_register, null);
-        EditText etName = form.findViewById(R.id.et_reg_username);
-        EditText etPwd = form.findViewById(R.id.et_reg_password);
-        EditText etConfirm = form.findViewById(R.id.et_reg_confirm);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.register_title)
-                .setView(form)
-                .setPositiveButton(R.string.register_ok, null)
-                .setNegativeButton(R.string.common_cancel, null)
-                .create();
-        dialog.show();
-
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            String name = etName.getText().toString().trim();
-            String pwd = etPwd.getText().toString();
-            if (name.isEmpty()) {
-                toast(R.string.login_username_empty);
-                return;
-            }
-            if (pwd.length() < 6) {
-                toast(R.string.register_pwd_short);
-                return;
-            }
-            if (!pwd.equals(etConfirm.getText().toString())) {
-                toast(R.string.register_pwd_mismatch);
-                return;
-            }
-            if (!UserStore.register(this, name, pwd)) {
-                toast(R.string.register_exists);
-                return;
-            }
-            // 回填登录框：注册完直接能点登录（演示动线少一步手输）
-            etUsername.setText(name);
-            etPassword.setText(pwd);
-            AppLog.i(TAG, "注册成功: " + name);
-            toast(R.string.register_success);
-            dialog.dismiss();
-        });
+        // 注册 —— 独立的整页表单（RegisterActivity），注册成功直接进主界面
+        btnRegister.setOnClickListener(v -> startActivity(
+                new Intent(LoginActivity.this, RegisterActivity.class)));
     }
 
     private void toast(int resId) {
@@ -160,60 +109,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * 登录/注册通过后先给一个加载态再进主界面。
-     * 校验与 SharedPreferences 写入是同步的（毫秒级），所以这里先显示遮罩，
-     * 再延迟一小段时间跳转 —— 否则瞬间切页，用户看不到任何反馈。
-     */
+    /** 登录通过后走与注册页共用的进入动线：全屏遮罩 → 600ms 淡入主界面 */
     private void enterMain(String username, String role) {
-        showLoadingOverlay();
-
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("username", username);
-        bundle.putString("role", role);
-        bundle.putInt("age", 20);
-        bundle.putBoolean("isVip", true);
-        bundle.putDouble("score", 99.5);
-        intent.putExtras(bundle);
-
-        new android.os.Handler(android.os.Looper.getMainLooper())
-                .postDelayed(() -> {
-                    startActivity(intent);
-                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    finish();
-                }, 600);
-    }
-
-    /** 全屏半透明遮罩 + 转圈 + 「正在进入…」 */
-    private void showLoadingOverlay() {
-        android.view.ViewGroup root = findViewById(android.R.id.content);
-        if (root == null || root.findViewById(R.id.ll_login_loading) != null) {
-            return;
-        }
-        LinearLayout box = new LinearLayout(this);
-        box.setId(R.id.ll_login_loading);
-        box.setOrientation(LinearLayout.VERTICAL);
-        box.setGravity(android.view.Gravity.CENTER);
-        box.setBackgroundColor(0xCC000000);
-        box.setClickable(true);   // 遮罩期间挡住点击
-
-        android.widget.ProgressBar bar = new android.widget.ProgressBar(this);
-        box.addView(bar);
-
-        TextView label = new TextView(this);
-        label.setText(R.string.login_loading);
-        label.setTextColor(0xFFFFFFFF);
-        label.setTextSize(15);
-        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        labelParams.topMargin = (int) (12 * getResources().getDisplayMetrics().density);
-        box.addView(label, labelParams);
-
-        root.addView(box, new android.view.ViewGroup.LayoutParams(
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT));
+        AuthFlow.enter(this, username, role);
     }
 
     @Override

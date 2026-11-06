@@ -39,6 +39,10 @@
         </activity>
 
         <activity android:name="com.offblink.keyou.ui.MainActivity" android:exported="false" />
+        <activity
+            android:name="com.offblink.keyou.ui.RegisterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.offblink.keyou.contacts.ContactDetailActivity" android:exported="false" />
         <activity android:name="com.offblink.keyou.log.LogActivity" android:exported="false" />
         <activity android:name="com.offblink.keyou.contacts.JsonCompareActivity" android:exported="false" />

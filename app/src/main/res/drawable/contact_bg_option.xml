@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 表格「来源」格里未选中的选项：细描边胶囊，颜色走主题，深色模式自动跟随 -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <solid android:color="?attr/colorSurface" />
+            <stroke
+                android:width="1dp"
+                android:color="?attr/colorOutlineVariant" />
+        </shape>
+    </item>
+</ripple>

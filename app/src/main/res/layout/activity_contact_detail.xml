@@ -6,6 +6,7 @@
   正文 = 头像首字 + 姓名/联系方式摘要 + TableLayout 可编辑信息表（代码里由 buildTable 生成）。
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
@@ -57,7 +58,7 @@
             android:contentDescription="@string/contact_delete_ok"
             android:padding="10dp"
             android:src="@drawable/contact_ic_delete"
-            android:tint="?attr/colorOnSurfaceVariant"
+            app:tint="?attr/colorOnSurfaceVariant"
             android:visibility="gone" />
     </LinearLayout>
 
